@@ -160,8 +160,6 @@ namespace Model.TelegramBot
 		public override async Task<IMessage> Message(CommandMessage message, Guid chatId)
 		{
 			long longChatId = chatId.ToLong();
-			//ToDo: bug.
-			if (longChatId == -429358480) longChatId = -1001156738448;
 
 			var replaceMsg = message.OnIdMessage.ToInt();
 
