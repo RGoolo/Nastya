@@ -1,0 +1,26 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp2.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Args\**" />
+    <Compile Remove="Types\Base\**" />
+    <Compile Remove="WebModel\**" />
+    <EmbeddedResource Remove="Args\**" />
+    <EmbeddedResource Remove="Types\Base\**" />
+    <EmbeddedResource Remove="WebModel\**" />
+    <None Remove="Args\**" />
+    <None Remove="Types\Base\**" />
+    <None Remove="WebModel\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Google.Cloud.Speech.V1" Version="1.1.0-beta02" />
+    <PackageReference Include="Google.Cloud.Vision.V1" Version="1.2.0" />
+    <PackageReference Include="Telegram.Bot" Version="14.10.0" />
+  </ItemGroup>
+
+</Project>
