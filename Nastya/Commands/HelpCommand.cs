@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using Model.Logic.Settings;
 using Model.Types.Attribute;
 using Model.Types.Class;
 using Model.Types.Enums;
@@ -13,19 +14,26 @@ namespace Nastya.Commands
 	[CommandClass(nameof(HelpCommand), "Помощь:", Model.Types.Enums.TypeUser.User)]
 	public class HelpCommand
 	{
-		private CommandAttribute GetCommandAttr(MemberInfo mInfo)
-		{
-			return mInfo.GetCustomAttribute<CommandAttribute>(true);
-		}
+		private CommandAttribute GetCommandAttr(MemberInfo mInfo) => mInfo.GetCustomAttribute<CommandAttribute>(true);
 
-		[Command(nameof(Start), "Что я умею.", Model.Types.Enums.TypeUser.User)]
-		public string Start()
+		[Command(nameof(Start), "Стартовые данные.", Model.Types.Enums.TypeUser.User)]
+		public List<CommandMessage> Start()
 		{
-			//ToDo:
+			var result = new List<CommandMessage>();
+			
 			var sb = new StringBuilder();
-			sb.Append("Добрый день. Вас приветствует бот для ночных игр.");
+			sb.AppendLine($"Добрый день. Вас приветствует бот для ночных игр. Для полной информации введите: /{nameof(Help)}.");
+			sb.AppendLine("При первом запуске заполните данные аккаунта движка, из под которых будет играть бот:");
 
-			return sb.ToString();
+			result.Add(CommandMessage.GetTextMsg(sb.ToString()));
+			sb.Clear();
+
+			sb.AppendLine($"/{Const.Game.Uri} http://classic.dzzzr.ru/demo/");
+			sb.AppendLine($"/{Const.Game.Login} login");
+			sb.AppendLine($"/{Const.Game.Password} \"password\"");
+
+			result.Add(CommandMessage.GetTextMsg(sb.ToString()));
+			return result;
 		}
 
 		[Command(nameof(Help), "Что я умею.", Model.Types.Enums.TypeUser.User)]

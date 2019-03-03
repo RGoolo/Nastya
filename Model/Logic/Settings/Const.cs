@@ -53,6 +53,7 @@
 			public const string IsSendVoice = "sendwitchvoice";
 
 			public const string CheckOtherTask = "checkotask";
+			public const string City = "city";
 		}
 
 		public static class Web
