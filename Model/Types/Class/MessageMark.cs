@@ -90,7 +90,7 @@ namespace Model.Types.Class
 			};
 		}
 
-		public static CommandMessage GetPhototMsg(IFileToken photoPath, string text,bool withHtmlTags = false)
+		public static CommandMessage GetPhototMsg(IFileToken photoPath, string text, bool withHtmlTags = false)
 		{
 			return new CommandMessage()
 			{

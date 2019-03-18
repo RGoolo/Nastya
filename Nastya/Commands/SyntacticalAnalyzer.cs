@@ -78,11 +78,11 @@ namespace Nastya.Commands
 					foreach (var symb in strs)
 					{
 						if (int.TryParse(symb, out var integ) && integ < alp.Value.Length)
-							result.Append(alp.Value[integ]);
+							result.Append(alp.Value[integ - 1]);
 						else
 							result.Append("-");
 					}
-					result.Append(alp.Key + "\n");
+					result.AppendLine();
 				}
 				return result.ToString();
 			}

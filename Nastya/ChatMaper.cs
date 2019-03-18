@@ -242,16 +242,16 @@ namespace Nastya
 							if (res is TransactionCommandMessage res2)
 								result.Add(res2);
 
-							if (res is IEnumerable<TransactionCommandMessage> res3)
+							else if (res is IEnumerable<TransactionCommandMessage> res3)
 								result.AddRange(res3);
 
-							if (res is CommandMessage res4)
+							else if (res is CommandMessage res4)
 								result.Add(new TransactionCommandMessage(res4));
 
-							if (res is IEnumerable<CommandMessage> res5)
+							else if (res is IEnumerable<CommandMessage> res5)
 								result.Add(new TransactionCommandMessage(res5));
 
-							if (res is string res6)
+							else if (res is string res6)
 								result.Add(new TransactionCommandMessage(CommandMessage.GetTextMsg(res6)));
 						}
 					}

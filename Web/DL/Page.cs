@@ -367,6 +367,6 @@ namespace Web.DL
 			Task = tmp?.InnerText;
 		}
 
-		protected HtmlNode GetContentBlock() => htmlDocument.DocumentNode.SelectSingleNode("/html/body/div[@class='content']");
+		protected HtmlNode GetContentBlock() => htmlDocument.DocumentNode.SelectSingleNode("//div[@class='content']");
 	}
 }

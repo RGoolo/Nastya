@@ -87,8 +87,6 @@ namespace Model.Types.Class
 			{
 				if (param.ParameterType == typeof(string[]))
 					parametrs.Add(msgCommand.Values.ToArray());
-				if (param.ParameterType == typeof(string[]))
-					parametrs.Add(msgCommand.Values.ToArray());
 				else if (param.ParameterType == typeof(IFileToken))
 					parametrs.Add(msg.Resource.File);
 				else if (param.ParameterType == typeof(IEnumerable<string>))

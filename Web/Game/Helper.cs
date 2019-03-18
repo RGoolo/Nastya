@@ -30,13 +30,10 @@ namespace Web.Game
 					if (val.Length < 2 || val[0] == "" || val[1] == "")
 						continue;
 
-					var domen = split.FirstOrDefault(x => x.StartsWith("domain="))?.Split("=")[1];
-					var path = split.FirstOrDefault(x => x.StartsWith("path="))?.Split("=")[1] ?? @"/";
-
-					//бага, когда приходит 2 секции set cookies
-					if (domen.Contains(",")) domen = domen.Split(",").First();
-
-
+					var domen = NormalizeCookies( split.FirstOrDefault(x => x.StartsWith("domain=", StringComparison.CurrentCultureIgnoreCase))?.Split("=")[1]);
+					var path = NormalizeCookies( split.FirstOrDefault(x => x.StartsWith("path=", StringComparison.CurrentCultureIgnoreCase))?.Split("=")[1] ?? @"/");
+						
+				
 					result.Add(domen == null
 						? new Cookie(val[0], val[1], path)
 						: new Cookie(val[0], val[1], path, domen));
@@ -45,6 +42,16 @@ namespace Web.Game
 			}
 			return result;
 		}
+
+		private static string NormalizeCookies(string cook)
+		{
+			//бага, когда приходит 2 секции set cookies
+			var result = cook.Replace("%2E", ".");
+			if (result.Contains(",")) result = result.Split(",").First();
+			return result;
+		}
+
+
 
 		public static HttpWebRequest PostHttpWebRequest(string url, string context, CookieContainer cookies)
 		{
