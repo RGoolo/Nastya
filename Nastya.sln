@@ -13,7 +13,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UnitTest", "UnitTest\UnitTe
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{69A67F3A-E805-418D-8E4B-6C6D716D9516}"
 	ProjectSection(SolutionItems) = preProject
-		readme.txt = readme.txt
+		LICENSE = LICENSE
+		README.md = README.md
 		todo.txt = todo.txt
 	EndProjectSection
 EndProject
