@@ -47,7 +47,7 @@ namespace Web.DZR
 				case EventTypes.SendCode:
 				case EventTypes.StartGame:
 				case EventTypes.StopGame:
-				case EventTypes.SendSpoyeler:
+				case EventTypes.SendSpoiler:
 					break;
 
 				case EventTypes.GetLvlInfo:

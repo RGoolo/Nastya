@@ -82,7 +82,7 @@ namespace Web.DZR
 
 			if (str.StartsWith("!"))
 			{
-				SetEvent(new SimpleEvent(EventTypes.SendSpoyeler, str.Substring(1), replaceMsg));
+				SetEvent(new SimpleEvent(EventTypes.SendSpoiler, str.Substring(1), replaceMsg));
 				return;
 			}
 

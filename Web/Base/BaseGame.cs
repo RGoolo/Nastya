@@ -91,7 +91,7 @@ namespace Web.Base
 					Validator.AfterSendCode(page, iEvent.Text, iEvent.IdMsg);
 					break;
 
-				case EventTypes.SendSpoyeler:
+				case EventTypes.SendSpoiler:
 					var context = Validator.GetContextSetSpoyler(iEvent.Text);
 					if (context == null)
 						throw new GameException("Не найти спойлер.");

@@ -8,7 +8,7 @@ namespace Web.Game.Model
 	public enum EventTypes
 	{
 		Refresh,
-		SendSpoyeler,
+		SendSpoiler,
 		SendCode,
 		GetLvlInfo,
 		GetAllInfo,

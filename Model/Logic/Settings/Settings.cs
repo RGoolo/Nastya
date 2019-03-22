@@ -37,8 +37,7 @@ namespace Model.Logic.Settings
 		[NonSerialized]
 		private readonly object _lock = new object();
 
-		[NonSerialized]
-		Dictionary<string, string> _properties = new Dictionary<string, string>();
+		[NonSerialized] readonly Dictionary<string, string> _properties = new Dictionary<string, string>();
 
 		public List<KeyVal> Setting { get; set; }
 
@@ -56,7 +55,6 @@ namespace Model.Logic.Settings
 			lock (_lock)
 			{
 				_properties.Clear();
-
 				Setting.ForEach( x => _properties.Add(x.Key, x.Val));
 			}
 		}
