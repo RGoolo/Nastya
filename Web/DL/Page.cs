@@ -222,7 +222,7 @@ namespace Web.DL
 		{
 			Sectors = new SectorsCollection();
 
-			var contentBlock = this.GetContentBlock();
+			var contentBlock = GetContentBlock();
 			var Headers = contentBlock.SelectNodes("h3");
 
 			var regexSectorsTitle = new Regex(@"(На уровне|Level has) (\d+).+");
@@ -295,7 +295,7 @@ namespace Web.DL
 		{
 			Links = new List<ILink>();
 
-			var linkNodes = this.GetContentBlock()?.SelectNodes("//p[1]//a");
+			var linkNodes = GetContentBlock()?.SelectNodes("//p[1]//a");
 			if (null == linkNodes)
 				return;
 			
@@ -314,7 +314,7 @@ namespace Web.DL
 		{
 			ImageUrls = new List<string>();
 
-			var imageNodes = this.GetContentBlock()?.SelectNodes("//p[1]//img");
+			var imageNodes = GetContentBlock()?.SelectNodes("//p[1]//img");
 			if (null == imageNodes)
 				return;
 

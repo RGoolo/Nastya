@@ -134,7 +134,7 @@ namespace Web.Base
 			_refreshTimer.Elapsed += _refreshTimer_Elapsed;
 		}
 
-		private void _validator_SendMsg(System.Collections.Generic.IEnumerable<CommandMessage> messages)
+		private void _validator_SendMsg(IEnumerable<CommandMessage> messages)
 		{
 			SendMsg?.Invoke(messages.ToList(), Validator.Settings.ChatGuid);
 		}

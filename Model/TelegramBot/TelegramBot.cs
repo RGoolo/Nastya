@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Threading.Tasks;
 using System.Linq;
 using Telegram.Bot.Types.Enums;
@@ -81,7 +80,7 @@ namespace Model.TelegramBot
 			_token = token;
 		}
 
-		private TypeUser GetTypeUser(bool isAdmin, Telegram.Bot.Types.Message msg)
+		private TypeUser GetTypeUser(bool isAdmin, Message msg)
 		{
 			TypeUser userType = TypeUser.User;
 
@@ -117,7 +116,7 @@ namespace Model.TelegramBot
 			}
 		}
 
-		private TypeUser GetTypeUser(Telegram.Bot.Types.Message msg)
+		private TypeUser GetTypeUser(Message msg)
 		{
 			if (msg.Chat.Type == ChatType.Private)
 				return GetTypeUser(true, msg);

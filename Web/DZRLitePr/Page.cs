@@ -253,7 +253,7 @@ namespace Web.DZRLitePr
 			var codes = s.Substring(a[0].Length + 1).Split(",");
 			foreach (var code in codes)
 			{
-				ListCode.Add(new Code(WebHelper.RemoveTag(code).Trim(), code.Contains("span")));
+				ListCode.Add(new Code(RemoveTag(code).Trim(), code.Contains("span")));
 			}
 		}
 	}
@@ -321,7 +321,7 @@ namespace Web.DZRLitePr
 				var levelNumberBegin = node.InnerHtml.IndexOf("<!--beginSpoilerText-->");
 				var startNumber = levelNumberBegin + "<!--beginSpoilerText-->".Length;
 
-				Text = WebHelper.RemoteTagToTelegram(node.InnerHtml.Substring(startNumber, levelNumberEnd - startNumber));
+				Text = RemoteTagToTelegram(node.InnerHtml.Substring(startNumber, levelNumberEnd - startNumber));
 			}
 		}
 

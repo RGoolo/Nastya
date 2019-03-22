@@ -53,13 +53,13 @@ namespace Model.Dummy
 		{
 			switch (message.TypeMessage)
 			{
-				case Types.Enums.MessageType.Text:
+				case MessageType.Text:
 					Console.WriteLine(message.Text);
 					break;
-				case Types.Enums.MessageType.Coordinates:
+				case MessageType.Coordinates:
 					Console.WriteLine($"{message.Coord} : {message.Text}");
 					break;
-				case Types.Enums.MessageType.Photo:
+				case MessageType.Photo:
 					Console.WriteLine($"{message.FileToken}");
 					break;
 			}

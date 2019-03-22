@@ -1,5 +1,4 @@
-﻿using System;
-using Ts = System.Timers;
+﻿using Ts = System.Timers;
 using System.Text;
 using System.IO;
 
@@ -20,7 +19,7 @@ namespace Web
 				str = stream.ReadToEnd();
 			
 			//string  = ((Settings.Settings.TypeGame & TypeGame.Dummy) == TypeGame.Dummy) ? string.Empty : GetUrl();
-			Web.DZR.Page p = new Web.DZR.Page(str, "C:\\");
+			DZR.Page p = new DZR.Page(str, "C:\\");
 		}
 
 	}

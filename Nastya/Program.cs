@@ -1,10 +1,4 @@
-﻿using Model.Types.Class;
-using System;
-using System.Diagnostics;
-using System.Text;
-using System.Text.RegularExpressions;
-
-namespace Nastya
+﻿namespace Nastya
 {
 	class Program
 	{

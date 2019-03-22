@@ -173,7 +173,7 @@ namespace Model.Sociation
 			var fileStream = new FileStream(path + Words, FileMode.Open);
 			var logFile = File.Create(path + Words1);
 
-			using (var logWriter = new System.IO.StreamWriter(logFile))
+			using (var logWriter = new StreamWriter(logFile))
 			{
 				using (var reader = new StreamReader(fileStream))
 				{

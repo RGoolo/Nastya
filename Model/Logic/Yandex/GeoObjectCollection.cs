@@ -109,8 +109,8 @@ namespace Model.Logic.Yandex
 			Lat = lat;
 		}
 
-		public override string ToString() => $"{Long.ToString(CultureInfo.InvariantCulture)} {this.Lat.ToString(CultureInfo.InvariantCulture)}";
-		public string ToString(string format) => string.Format(format, this.Long.ToString(CultureInfo.InvariantCulture), this.Lat.ToString(CultureInfo.InvariantCulture));
+		public override string ToString() => $"{Long.ToString(CultureInfo.InvariantCulture)} {Lat.ToString(CultureInfo.InvariantCulture)}";
+		public string ToString(string format) => string.Format(format, Long.ToString(CultureInfo.InvariantCulture), Lat.ToString(CultureInfo.InvariantCulture));
 		public string ToString(ToStringFunc formatFunc) => formatFunc(Long, Lat);
 	}
 

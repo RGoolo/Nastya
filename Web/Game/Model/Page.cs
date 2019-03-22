@@ -170,7 +170,7 @@ namespace Web.Game.Model
 		{
 			Links = new List<ILink>();
 
-			var linkNodes = this.getContentBlock()?.SelectNodes("//p[1]//a");
+			var linkNodes = getContentBlock()?.SelectNodes("//p[1]//a");
 			if (null == linkNodes)
 			{
 				return;
@@ -189,7 +189,7 @@ namespace Web.Game.Model
 		{
 			ImageUrls = new List<string>();
 
-			var imageNodes = this.getContentBlock()?.SelectNodes("//p[1]//img");
+			var imageNodes = getContentBlock()?.SelectNodes("//p[1]//img");
 			if (null == imageNodes)
 			{
 				return;
@@ -212,7 +212,7 @@ namespace Web.Game.Model
 		protected void SetLevelTitle()
 		{
 			var titleBlock = getContentBlock()?.SelectSingleNode("h2[1]");
-			this.LevelTitle = titleBlock?.InnerText;
+			LevelTitle = titleBlock?.InnerText;
 		}
 
 		/// <summary>
@@ -233,7 +233,7 @@ namespace Web.Game.Model
 
 		protected HtmlNode getContentBlock()
 		{
-			return this.htmlDocument.DocumentNode.SelectSingleNode(
+			return htmlDocument.DocumentNode.SelectSingleNode(
 				"/html/body/div[@class='container']/div[@class='content']");
 		}
 	}

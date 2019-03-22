@@ -1,10 +1,8 @@
 ﻿using Model.Logic.Google;
-using Model.Types.Class;
 using Model.Types.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
 using System.Text.RegularExpressions;
 
 namespace Model.Logic.Coordinates
@@ -39,12 +37,12 @@ namespace Model.Logic.Coordinates
 
 		public static string GetUrl(string link, string name) => $"<a href=\"{link}\">{name}</a>";
 
-		private string GetUrlLink(Google.Maps maps, string YaCoord, bool withInfo = false) => 
+		private string GetUrlLink(Maps maps, string YaCoord, bool withInfo = false) => 
 			(withInfo? GetPlace(YaCoord): string.Empty) 
 			+ GetUrl(GetUrlYa(YaCoord), YandexName) + " " + GetUrl(maps.ToString(false), GoogleName);
 
-		public string GetUrlLink(Coordinate coord, bool withInfo) => GetUrlLink(Google.FactoryMaps.GetMap(coord), $@"{coord.Latitude},{coord.Longitude}", withInfo);
-		public string GetUrlLink(string coord, bool withInfo) => GetUrlLink(Google.FactoryMaps.GetMap(coord), coord, withInfo);
+		public string GetUrlLink(Coordinate coord, bool withInfo) => GetUrlLink(FactoryMaps.GetMap(coord), $@"{coord.Latitude},{coord.Longitude}", withInfo);
+		public string GetUrlLink(string coord, bool withInfo) => GetUrlLink(FactoryMaps.GetMap(coord), coord, withInfo);
 		public string GetUrlLink(Coordinate coord) => GetUrlLink(coord, false);
 		public string GetUrlLink(string coord) => GetUrlLink(coord, false);
 
@@ -73,7 +71,7 @@ namespace Model.Logic.Coordinates
 		{
 			return GetPointes(str,
 				GetCoords,
-				Google.FactoryMaps.GetMap,
+				FactoryMaps.GetMap,
 				(x) => x.OriginText);
 		}
 
@@ -81,13 +79,13 @@ namespace Model.Logic.Coordinates
 		{
 			return GetPointes(str,
 				_splitString,
-				Google.FactoryMaps.GetMap,
+				FactoryMaps.GetMap,
 				(x) => x);
 		}
 
 		private string GetPointes<T>(string text, 
 			Func<string, IEnumerable<T>> getCoords, 
-			Func<IEnumerable<T>, Google.Maps> createMap, 
+			Func<IEnumerable<T>, Maps> createMap, 
 			Func<T, string> toString )
 		{
 			List<T> coords = getCoords(text).ToList();
@@ -99,7 +97,7 @@ namespace Model.Logic.Coordinates
 
 		public string ReplaceCoords<T>(string text,
 			Func<string, IEnumerable<T>> getCoords,
-			Func<IEnumerable<T>, Logic.Google.Maps> createMap,
+			Func<IEnumerable<T>, Maps> createMap,
 			Func<T, string> toString,
 			Func<T, string> getUrlsLink
 			)
@@ -126,18 +124,18 @@ namespace Model.Logic.Coordinates
 		{
 			return ReplaceCoords(str,
 				GetCoords,
-				Google.FactoryMaps.GetMap,
+				FactoryMaps.GetMap,
 				(x) => x.OriginText,
 				GetUrlLink);
 		}
 
 		public string ReplaceTextCoords(string str)
 		{
-			return ReplaceCoords(str, _splitString, Google.FactoryMaps.GetMap, (x) => x, GetUrlLink);
+			return ReplaceCoords(str, _splitString, FactoryMaps.GetMap, (x) => x, GetUrlLink);
 		}
 
-		public void GetPicture(string str, IFileToken file) => _factoryMaps.SaveImg(file, new Google.Maps(GetCoords(str)));
-		public void GetPictureText(string str, IFileToken file) => _factoryMaps.SaveImg(file, new Google.Maps(_splitString(str)));
+		public void GetPicture(string str, IFileToken file) => _factoryMaps.SaveImg(file, new Maps(GetCoords(str)));
+		public void GetPictureText(string str, IFileToken file) => _factoryMaps.SaveImg(file, new Maps(_splitString(str)));
 
 		public static IEnumerable<Coordinate> GetCoords(string text)
 		{

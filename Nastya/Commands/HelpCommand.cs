@@ -11,12 +11,12 @@ using Model.Types.Enums;
 namespace Nastya.Commands
 {
 
-	[CommandClass(nameof(HelpCommand), "Помощь:", Model.Types.Enums.TypeUser.User)]
+	[CommandClass(nameof(HelpCommand), "Помощь:", TypeUser.User)]
 	public class HelpCommand
 	{
 		private CommandAttribute GetCommandAttr(MemberInfo mInfo) => mInfo.GetCustomAttribute<CommandAttribute>(true);
 
-		[Command(nameof(Start), "Стартовые данные.", Model.Types.Enums.TypeUser.User)]
+		[Command(nameof(Start), "Стартовые данные.", TypeUser.User)]
 		public List<CommandMessage> Start()
 		{
 			var result = new List<CommandMessage>();
@@ -36,7 +36,7 @@ namespace Nastya.Commands
 			return result;
 		}
 
-		[Command(nameof(Help), "Что я умею.", Model.Types.Enums.TypeUser.User)]
+		[Command(nameof(Help), "Что я умею.", TypeUser.User)]
 		public TransactionCommandMessage Help(string classAlias)
 		{
 			var result = new  List<CommandMessage>();

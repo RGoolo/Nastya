@@ -5,9 +5,6 @@ using Model.Logic.Settings;
 using Model.Types.Attribute;
 using Model.Types.Class;
 using Web.Base;
-using Web.DL;
-using Web.DZR;
-using Web.DZRLitePr;
 using Web.Game.Model;
 
 namespace Nastya.Commands

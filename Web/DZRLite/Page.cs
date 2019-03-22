@@ -313,7 +313,7 @@ namespace Web.DZRLite
 				var levelNumberBegin = node.InnerHtml.IndexOf("<!--beginSpoilerText-->");
 				var startNumber = levelNumberBegin + "<!--beginSpoilerText-->".Length;
 
-				Text = WebHelper.RemoteTagToTelegram(node.InnerHtml.Substring(startNumber, levelNumberEnd - startNumber));
+				Text = RemoteTagToTelegram(node.InnerHtml.Substring(startNumber, levelNumberEnd - startNumber));
 			}
 		}
 
