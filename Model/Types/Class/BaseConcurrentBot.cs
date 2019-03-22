@@ -117,28 +117,42 @@ namespace Model.Types.Class
 				return;
 
 			while (!_toSendQueue.IsEmpty)
-				if (_toSendQueue.TryDequeue(out var msg))
+			{
+				if (!_toSendQueue.TryDequeue(out var msg)) continue;
+
+				try
+				{
 					await MessagesSyncAsync(msg);
+				}
+				catch (Exception e)
+				{
+					_toSendQueue.Enqueue(msg);
+					_loger.WriteError(e.Message);
+					throw;
+				}
+			}
 		}
 
 		private async Task MessagesSyncAsync(TransactionCommandMessage tMessage)
 		{
 			if (tMessage.Message != null)
-			//lock (_lockerSendMsg) I am lucky!
+				//lock (_lockerSendMsg) I am lucky!
 			{
 				var a = await Message(tMessage.Message, tMessage.ChatId);
 				AfterSendMessage(tMessage.Message, a);
 			}
 
-			if (tMessage.Messages != null && tMessage.Messages.Any())
+			if (tMessage.Messages != null)
 			{
-				foreach (var msg in tMessage.Messages)
-				//lock (_lockerSendMsg) I am lucky!
+				foreach (var msg in tMessage.Messages.ToList())
+					//lock (_lockerSendMsg) I am lucky!
 				{
-					var b =  Message(msg, tMessage.ChatId);
+					var b = Message(msg, tMessage.ChatId);
+					tMessage.Messages.Remove(msg);
 					AfterSendMessage(msg, b.Result);
 				}
 			}
+		
 		}
 
 		protected void DownloadResources()
