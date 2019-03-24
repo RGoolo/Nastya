@@ -116,7 +116,7 @@ namespace Web.DZR
 			//ToDo: Через группы.
 			var digMatch = Regex.Match(msg, @"\d*");
 			if(digMatch.Success && digMatch.Value == msg)
-				return new List<string>() { prefix + "r" + digMatch.Value, prefix + digMatch.Value + "r" };
+				return new List<string>() { prefix + digMatch.Value, prefix + "r" + digMatch.Value, prefix + digMatch.Value + "r" };
 
 			return new List<string>()
 			{

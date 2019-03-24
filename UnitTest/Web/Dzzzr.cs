@@ -26,7 +26,7 @@ namespace UnitTest.Model
 		{
 			yield return new object[] { "abvd", "" };
 			yield return new object[] { " d1", ""};
-			yield return new object[] { "1", "1d", new[] { "1dr1", "1d1r" } };
+			yield return new object[] { "1", "1d", new[] { "1d1", "1dr1", "1d1r" } };
 			yield return new object[] { "1a", "1d"};
 			yield return new object[] { "1@", "1d", new[] { "1d1r" } };
 			yield return new object[] { "r", "1d", new[] { "1dr" } };
