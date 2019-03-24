@@ -8,6 +8,8 @@ namespace Model.Logic.Yandex
 	{
 		const string RequesrtUrl = "http://geocode-maps.yandex.ru/1.x/?geocode={0}&format=xml&results={1}&lang={2}";
 
+		public static string GetSearchPhotoUrl(string url) => $@"https://yandex.ru/images/search?rpt=imageview&cbird=1&img_url={url}";
+
 		static YandexGeocoder()
 		{
 			Key = Empty;

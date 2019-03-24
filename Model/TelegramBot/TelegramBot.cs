@@ -19,26 +19,31 @@ namespace Model.TelegramBot
 	{
 		//private const string webProxyurl = "144.217.161.149:8080"; //90.187.45.5:8123";
 
+		public static Random random = new Random(DateTime.Now.Millisecond);
+
+
 		public static WebProxy Create()
 		{
-			//var proxyURI = $"{server}:{port}";
-			//ICredentials credentials = new NetworkCredential(userName, password);
-			//return new WebProxy(proxyURI, true, null, credentials);
-			//ToDo: RandomProxy
-			return new WebProxy("144.217.161.149:8080");
-/*
-154.117.208.214:8080
-95.85.58.154:8080
-103.25.122.1:8080
-119.28.24.210:80
-147.75.113.108:443
-180.234.219.165:8080
-202.150.147.22:53281
-36.72.112.161:80
-159.203.91.6:8080
-103.210.56.209:8082
-*/
+			var ran = random.Next(Proxies.Count - 1);
+			return new WebProxy(Proxies[ran]);
 		}
+		
+		static List<string> Proxies = new List<string>()
+		{
+			"62.149.12.98:3128",
+			"51.75.33.220:3128",
+			"134.209.230.82:8080",
+			"46.4.115.48:3128",
+			"91.211.247.26:8080",
+			"145.239.92.81:3128",
+			"91.211.247.26:80",
+			"195.201.129.206:3128",
+			"195.230.131.210:3128",
+			"54.37.136.149:3128",
+			"159.65.204.30:8080",
+			"51.75.75.193:3128",
+			"212.182.25.89:3128",
+		};
 	}
 
 	public class TelegramBot : BaseConcurrentBot
@@ -73,7 +78,6 @@ namespace Model.TelegramBot
 		{
 			_loger.WriteTrace(".ctor");
 			var cred = new NetworkCredential(string.Empty, token).Password;
-
 			_bot = new Telegram.Bot.TelegramBotClient(cred, WebProxyExtension.Create());
 			//ToDo: SetWebHook 
 			//ToDo: GetMeAsync
@@ -169,7 +173,7 @@ namespace Model.TelegramBot
 				case Types.Enums.MessageType.Text:
 					var parseMode =  message.WithHtmlTags ? ParseMode.Html : ParseMode.Default;
 					var text = message.WithHtmlTags ? GetCorrectWebText(message.Text) : message.Text;
-					//text = _telegramHTML.RemoveAllTag(text);
+					//text = _telegramHtml.RemoveAllTag(text);
 					if (!string.IsNullOrEmpty(text))
 						senderMsg = await _bot.SendTextMessageAsync(longChatId, text, parseMode, replyToMessageId: replaceMsg, disableWebPagePreview: true, cancellationToken: _cancellationToken); 
 					break;
@@ -190,7 +194,7 @@ namespace Model.TelegramBot
 					else
 					{
 						var photo = new InputOnlineFile(message.FileToken.Url);
-						senderMsg = await _bot.SendPhotoAsync(longChatId, photo, message.Text, replyToMessageId: replaceMsg, cancellationToken: _cancellationToken);
+						senderMsg = await _bot.SendPhotoAsync(longChatId, photo, message.Text, parseModet, replyToMessageId: replaceMsg, cancellationToken: _cancellationToken);
 					}
 					break;
 				case Types.Enums.MessageType.Document:
@@ -266,6 +270,17 @@ namespace Model.TelegramBot
 			//var filePath = SettingHelper.DontExistFile("jpg", resourceMsg.ChatId);
 			var fileToken = _chatFileWorker(msg.ChatId).NewFileTokenByExt(".jpg");
 			DownloadFile(tMsg.Photo[tMsg.Photo.Length - 1].FileId, fileToken, msg, TypeResource.Photo);
+		}
+
+		protected override void OnError(Exception ex)
+		{
+			//Временное, настроить VPN!;
+			_loger.WriteTrace(nameof(OnError));
+			var cred = new NetworkCredential(string.Empty, _token).Password;
+			_bot = new Telegram.Bot.TelegramBotClient(cred, WebProxyExtension.Create());
+
+			_bot.SetWebhookAsync(string.Empty);
+			_loger.WriteTrace($"{nameof(_bot.SetWebhookAsync)} successfully");
 		}
 	}
 }

@@ -33,20 +33,8 @@ namespace Web.DZR
 		{
 			foreach (Match match in Regex.Matches(node.InnerHtml, "<!--beginSpoilerText-->((\\s|\\S)*)<!--endSpoilerText-->"))
 			{
-				Text = WebHelper.RemoveTag( match.Groups[1].Value);
+				Text = match.Groups[1].Value;
 				return;
-			}
-			return;
-
-			var levelNumberEnd = node.InnerHtml.IndexOf("");
-			if (levelNumberEnd != -1)
-			{
-				var levelNumberBegin = node.InnerHtml.IndexOf("");
-				var startNumber = levelNumberBegin + "<!--beginSpoilerText-->".Length;
-
-				var allinfoText = WebHelper.RemoveImg(WebHelper.RemoteTagToTelegram(node.InnerHtml.Substring(startNumber, levelNumberEnd - startNumber)), false, _defaulUri);
-				Text = allinfoText.Item1;
-				Urls = allinfoText.Item2;
 			}
 		}
 
@@ -88,6 +76,7 @@ namespace Web.DZR
 				if (first)
 					sb.Append("&");
 
+				//ToDo:String.Format()
 				sb.Append(nod.GetAttributeValue("type", string.Empty) == text
 					? $"{nameAtt}={_code_}"
 					: $"{nameAtt}={nod.GetAttributeValue(value, string.Empty)}");

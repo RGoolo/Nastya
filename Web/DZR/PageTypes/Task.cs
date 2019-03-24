@@ -21,9 +21,9 @@ namespace Web.DZR
 
 		public int NumberHint => _hints.Count;
 		public List<Hint> _hints { get; } = new List<Hint>();
-		public List<LinkStruct> Urls { get; } = new List<LinkStruct>();
+		//public List<LinkStruct> Urls { get; } = new List<LinkStruct>();
 
-		private readonly string _defaulUri;
+		public string DefaulUri { get; }
 
 		private string _postForCode;
 		public string GetPostForCode(string code)
@@ -33,7 +33,7 @@ namespace Web.DZR
 
 		public Task(List<HtmlNode> nodes, string defaultUri)
 		{
-			_defaulUri = defaultUri;
+			DefaulUri = defaultUri;
 			HtmlNode nodeTitle = null;
 			bool wasTask = false;
 
@@ -62,10 +62,9 @@ namespace Web.DZR
 			}
 		}
 
-
 		private void SetTask(HtmlNode nodeTitle, HtmlNode node)
 		{
-			TitleText = WebHelper.RemoteTagToTelegram(nodeTitle.InnerHtml); //todo 
+			TitleText = WebHelper.RemoveTag(nodeTitle.InnerHtml);
 			var levelNumberEnd = nodeTitle.InnerHtml.IndexOf("<!--levelNumberEnd-->");
 			if (levelNumberEnd != -1)
 			{
@@ -76,7 +75,7 @@ namespace Web.DZR
 				Alias = nodeTitle.InnerHtml.Substring(0, levelNumberEnd).Replace("<!--levelNumberBegin-->", "");
 			}
 
-			Spoilers = new Spoilers(node, _defaulUri);
+			Spoilers = new Spoilers(node, DefaulUri);
 
 			SetCodes(node);
 
@@ -86,25 +85,8 @@ namespace Web.DZR
 				var levelTextBegin = node.InnerHtml.IndexOf("<!--levelTextBegin-->");
 				var startNumber = levelTextBegin + "<!--levelTextBegin-->".Length;
 
-				//var allinfoText = WebHelper.RemoveTag(WebHelper.RemoteTagToTelegram(node.InnerHtml.Substring(startNumber, levelTextEnd - startNumber)));
-				var buffText = node.InnerHtml.Substring(startNumber, levelTextEnd - startNumber);//.Item1;
-				buffText = WebHelper.RemoteTagToTelegram(buffText);
-
-				var textTask = WebHelper.RemoveImg(buffText, false, _defaulUri);
-				buffText = textTask.Item1;
-				Urls.AddRange(textTask.Item2);
-				
-				foreach (var img in textTask.Item2.Where(x => x.TypeUrl == WebHelper.TypeUrl.Img))
-				{
-					buffText = buffText.Replace(img.Name, $"<a href=\"{img.Url}\">{img.Name}</a>");
-					//Urls.AddRange(new ImgLinkStruct(img.Url, img.Name));
-				}
-				Text = buffText;
-
-				//	Urls = allinfoText.Item2;
+				Text = node.InnerHtml.Substring(startNumber, levelTextEnd - startNumber);
 			}
-			//if (Spoiler != null)
-			//	Urls.AddRange(Spoiler.Urls);
 		}
 
 		private void SetCodes(HtmlNode node)
@@ -146,6 +128,20 @@ namespace Web.DZR
 
 			_postForCode = sb.ToString();
 		}
+
+		public string GetTextTimeToEnd(string time)
+		{
+			switch (_hints.Count)
+			{
+				case 0:
+					return $"⏳ До первой подсказки: {time}";
+				case 1:
+					return $"⏳ До второй подсказки: {time}";
+				default:
+					return $"⏳ До закрытия уровня: {time}";
+			}
+		}
+
 	}
 }
 /*

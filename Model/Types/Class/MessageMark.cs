@@ -49,11 +49,12 @@ namespace Model.Types.Class
 
 		public CommandMessage() { }
 
-		protected CommandMessage(bool b, IFileToken photoPath, string text)
+		protected CommandMessage(bool b, IFileToken photoPath, string text, bool withHtmlTags = false)
 		{
 			TypeMessage = MessageType.Photo;
 			FileToken = photoPath;
 			Text = text;
+			WithHtmlTags = withHtmlTags;
 		}
 
 		protected CommandMessage(string text, bool withHtmlTags = false)

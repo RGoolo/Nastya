@@ -67,8 +67,7 @@ namespace Web.DZR
 				case EventTypes.GetTimeForEnd:
 					var msg = new List<CommandMessage>
 					{
-
-						new Text("Времени осталось: " + _lastPage.TimeToEnd?.ToString("HH:mm:ss")),
+						new Text("⏳. Времени осталось: " + _lastPage.TimeToEnd?.ToString("HH:mm:ss")),
 					};
 					SndMsg(msg);
 					break;
@@ -78,7 +77,8 @@ namespace Web.DZR
 		public override void AfterSendCode(string html, string code, Guid? idMsg)
 		{
 			var page = new Page(html, GetUrl());
-			SendTexttMsg(code + ". " + (page.SysMesssage ?? "Что-то непонятное"), idMsg);
+
+			SendTexttMsg(page.GetAnswerText(code), idMsg);
 			SetNewPage(page);
 		}
 
@@ -91,7 +91,6 @@ namespace Web.DZR
 			_lastPage = page;
 		}
 
-
 		private void SendDiffTime(DateTime? lastTime, DateTime? newTime , int minutes)
 		{
 			if (lastTime == null || newTime == null)
@@ -99,14 +98,13 @@ namespace Web.DZR
 
 			var time = new DateTime(0, 0, 0, 0, minutes, 0);
 			if (lastTime > time && newTime < time)
-				SendTexttMsg($"Осталось минут: {minutes}.");
+				SendTexttMsg($"⏳. Осталось минут: {minutes}.");
 		}
 
 		private void SendDiffTime(DateTime? lastTime, DateTime? newTime)
 		{
 			SendDiffTime(lastTime, newTime, 5);
 			SendDiffTime(lastTime, newTime, 1);
-
 		}
 
 		public void SendDifference(Page lastPage, Page newPage)
@@ -159,16 +157,14 @@ namespace Web.DZR
 					if (!(i < oldTask.Spoilers?.Count)) continue;
 
 					if (!oldTask.Spoilers[i].IsComplited && task.Spoilers[i].IsComplited)
-					{
-						msg.Add(new Text($"{task.Alias}\nРазгадан спойлер:\n{task.Spoilers[i].Text}", true));
-					}
+						msg.AddRange(WebHelper.ReplaceTextOnPhoto($"{task.Alias}\n🔑Разгадан спойлер:\n{task.Spoilers[i].Text}", task.DefaulUri));
 				}
 			}
 			if (oldTask.NumberHint != task.NumberHint)
 			{
 				var hint = task._hints.LastOrDefault();
-				if (hint != null && hint.Text != "\n---\n") 
-					msg.Add(new Text($"{task.Alias}\nПришла подсказка:\n{hint.Name}\n{hint.Text}", true));
+				if (hint != null && !hint.IsEmpty()) 
+					msg.AddRange(WebHelper.ReplaceTextOnPhoto($"{task.Alias}\n🔑Пришла подсказка:\n{hint.Name}\n{hint.Text}", task.DefaulUri));
 			}
 			SndMsg(msg);
 		}
@@ -181,23 +177,12 @@ namespace Web.DZR
 
 			var result = new StringBuilder();
 
-			if (!int.TryParse(start, result: out var i))
-				i = 1;
-
 			result.Append(task.Alias);
 			result.Append(!all ? "\nОстались:" : "\nКоды сложности:");
 
 			foreach (var codes in task.Codes)
-			{
-				result.Append("\n" + codes.Name + ":\n");
-				foreach (var code in codes)
-				{
-					if (all || !code.Accepted)
-						result.Append($"{i}) {code}\n");
-					i++;
-				}
-				i = 1;
-			}
+				result.AppendLine(codes.Text(!all));
+
 			SendTexttMsg(result.ToString(), withHtml:true);
 		}
 
@@ -215,7 +200,7 @@ namespace Web.DZR
 
 			if (page.Type != PageType.GameGo)
 			{
-				msg.Add(new Text(page.SysMesssage));
+				msg.Add(new Text(page.SysMessage));
 				SndMsg(msg);
 				return;
 			}
@@ -234,56 +219,31 @@ namespace Web.DZR
 
 		private List<CommandMessage> GetTaskInfo(Task task, bool newTask = false, string timeForEnd = null)
 		{
-
 			var msg = new List<CommandMessage>();
-
-			string split = "+++++";
 			StringBuilder taskText = new StringBuilder();
 
 			if (newTask)
-				taskText.Append("!!!Новое Задание!!!\n");
+				taskText.Append("📩Новое Задание\n");
 
-			taskText.Append(task.TitleText + ".\n" );
+			taskText.Append(task.TitleText + Environment.NewLine );
 
 			if (!string.IsNullOrEmpty(timeForEnd))
-			{
-				if (task._hints.Count == 0)
-					taskText.Append($"Осталось времени до первой подсказки: {timeForEnd}");
-				else if (task._hints.Count == 1)
-					taskText.Append($"Осталось времени до второй подсказки: {timeForEnd}");
-				else 
-					taskText.Append($"Осталось времени до закрытия уровня: {timeForEnd}");
-			}
+				taskText.Append(timeForEnd);
 
-			taskText.Append(task.Text + ".\n");
+			taskText.Append(task.Text + Environment.NewLine);
 
 			if (task.Spoilers != null)
-			{
-				foreach (var spoiler in task.Spoilers)
-				{
-					taskText.Append(spoiler.IsComplited
-						? $"{split}Спойлер разгадан:{split}\n{spoiler.Text}\n"
-						: $"{split}Спойлер не разгадан!{split}\n");
-				}
-			}
-
+				taskText.Append(task.Spoilers.Text());
+			
 			foreach (var hint in task._hints)
-			{
-				taskText.Append($"{split}{hint.Name}{split}\n{hint.Text}\n");
-			}
+				taskText.Append($"📖{hint.Name}\n{hint.Text}{Environment.NewLine}");
+			
+			taskText.Append($"Коды сложности /{Const.Game.Codes}:\n");
 
-			taskText.Append($"{split}Коды сложности /{Const.Game.Codes}:{split}");
 			foreach (var codes in task.Codes)
-			{
-				taskText.Append("\n" + codes.Name + ":\n");
-				int i = 0;
-				foreach (var code in codes)
-					taskText.Append($"{++i}:{code};");
-			}
-			msg.Add(new Text(taskText.ToString(), true, withHtml: true));
-			msg.AddRange(task.Urls.Where(x => x.TypeUrl == WebHelper.TypeUrl.Img).Select(x => new Photo(x.Url, true, null, x.Name)));
-			//msg.ForEach(x => x.Body = Web.Base.WebHelper.RemoveTag( x.Body));
-			return msg;
+				taskText.AppendLine(codes.Text());
+
+			return WebHelper.ReplaceTextOnPhoto(taskText.ToString(), task.DefaulUri);
 		}
 
 		private Task GetMainTask(Page page) => page?.Tasks?.Main(Settings.Game.Level);

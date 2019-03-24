@@ -11,12 +11,14 @@ namespace Web.DZR
 		{
 			Name = nodeTitle.InnerText;
 
+			//ToDo RegEx
 			var begin1 = node.InnerHtml.IndexOf("<!--");
 			var end1 = node.InnerHtml.IndexOf("-->", begin1) + 3;
 			var begin2 = node.InnerHtml.IndexOf("<!--", end1);
 
-			var text = (node.InnerHtml.Substring(end1, begin2 - end1));
-			Text = WebHelper.RemoteTagToTelegram(node.InnerHtml.Substring(end1, begin2 - end1));
+			Text = (node.InnerHtml.Substring(end1, begin2 - end1));
 		}
+
+		public bool IsEmpty()=> !(string.IsNullOrEmpty(Text) || Text == "\n---\n");
 	}
 }

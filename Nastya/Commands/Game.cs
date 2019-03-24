@@ -126,8 +126,8 @@ namespace Nastya.Commands
 		}
 
 		[CheckProperty(nameof(GameIsStart))]
-		[Command(nameof(GetTimeForEnd), "Сколько времени осталось", Model.Types.Enums.TypeUser.User)]
-		public void GetTimeForEnd()
+		[Command(nameof(Time), "Сколько времени осталось", Model.Types.Enums.TypeUser.User)]
+		public void Time()
 		{
 			GetGame()?.SetEvent(new SimpleEvent(EventTypes.GetTimeForEnd));
 		}

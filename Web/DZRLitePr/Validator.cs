@@ -192,7 +192,7 @@ namespace Web.DZRLitePr
 					taskText.Append($"{++i}{code}");
 			}
 			msg.Add(new Text(taskText.ToString(), true, withHtml: true));
-			msg.AddRange(task.Urls.Where(x => x.TypeUrl == WebHelper.TypeUrl.Img).Select(x => new Photo(x.Url, true, null, x.Name)));
+			//msg.AddRange(task.Urls.Where(x => x.TypeUrl == WebHelper.TypeUrl.Img).Select(x => new Photo(x.Url, true, null, x.Name)));
 			return msg;
 		}
 

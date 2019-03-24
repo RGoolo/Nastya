@@ -32,7 +32,10 @@ namespace Model.Types.Class
 		public abstract Task<IMessage> Message(CommandMessage message, Guid chatId);
 		protected virtual void PreCycle() { /*empty*/ }
 		protected abstract void DownloadFile(IMessage msg);
+		protected virtual void OnError(Exception ex)
+		{
 
+		}
 
 		protected void Cycle()
 		{
@@ -63,6 +66,12 @@ namespace Model.Types.Class
 				catch (Exception ex)
 				{
 					//ToDo hey!
+					try
+					{
+						OnError(ex);
+					}
+					catch { }
+
 					_loger.WriteError(ex.Message + ex.StackTrace);
 					Thread.Sleep(1000);
 				}

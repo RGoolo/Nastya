@@ -191,8 +191,6 @@ namespace Web.DL
 						? $"\n{hint.Name}: {hint.Text}\n"
 						: $"\n{hint.Name} откроется через: {hint.TimeTo.ToString(TimeFormat)}\n");
 				}
-
-				//sb.Append($"На уровне осталось закрыть: {page.Sectors.SectorsRemain}(/sectors) из {page.Sectors.CountSectors}(/allsectors).\n");
 			}
 
 			var textTask = WebHelper.RemoveImg(WebHelper.RemoteTagToTelegram(sb.ToString()));

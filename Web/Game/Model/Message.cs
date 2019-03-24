@@ -58,8 +58,8 @@ namespace Web.Game.Model
 		//url image
 		//public string Body { get; set; }
 		public Guid ReplaceMSGID { get; }
-		public bool WithHtmlTag => false;
-		public Photo(string body, bool checkCoord = false, Guid? replaceMsgId = null, string parameter = null) : base(true,  new UrlFileToken(body), parameter)
+		public bool WithHtmlTag { get; }
+		public Photo(string body, bool checkCoord = false, Guid? replaceMsgId = null, string parameter = null, bool withHtmlTag = false) : base(true,  new UrlFileToken(body), parameter)
 		{
 			CheckCoord = checkCoord;
 			//Body = body;
@@ -67,6 +67,19 @@ namespace Web.Game.Model
 			Parameter = parameter;
 		
 			OnIdMessage = replaceMsgId ?? Guid.Empty;
+			WithHtmlTag = withHtmlTag;
+			//if (replaceMSGID.GetValueOrDefault() != Guid.Empty) IsAnswer = true;
+		}
+
+		public Photo(string url, string text, bool withHtmlTag) : base(true, new UrlFileToken(url), text, withHtmlTag)
+		{
+			CheckCoord = false;
+			//Body = body;
+			ReplaceMSGID = Guid.Empty;
+			Parameter = null;
+
+			
+			WithHtmlTag = withHtmlTag;
 			//if (replaceMSGID.GetValueOrDefault() != Guid.Empty) IsAnswer = true;
 		}
 	}

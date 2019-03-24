@@ -7,7 +7,7 @@ using System.Linq;
 namespace Web.DZR
 
 {
-	public enum PageType : byte
+	public enum PageType
 	{
 		NotFound,
 		GameNotStart,
@@ -16,16 +16,23 @@ namespace Web.DZR
 		YouAreNotDeclared,
 		Break,
 		TaskNotScheduled,
+		MainGameFinished,
 	}
 
-	public class Page
+	public enum AnswerType : byte
+	{
+		none, correct, notcorrect, repited
+	}
+
+
+	public partial class Page
 	{
 		private const string YouAreNotDeclared = "Мы рады, что вы заглянули. В настоящее время вы не заявлены ни в одной из ближайших игр.";
 
 		public PageType Type;
+		public AnswerType AnswerType;
 
-
-		public string SysMesssage;
+		public string SysMessage;
 		private string CommentBeforeSystemMsg;
 		public Tasks Tasks;
 		public DateTime? TimeToEnd;
@@ -44,6 +51,8 @@ namespace Web.DZR
 			htmlDocument.LoadHtml(html);
 
 			SetSysMessage();
+			SetAnswerType();
+
 			SetTimerToEnd();
 
 			Type = CheckType();
@@ -59,7 +68,7 @@ namespace Web.DZR
 
 		private PageType CheckType()
 		{
-			if (YouAreNotDeclared == SysMesssage)
+			if (YouAreNotDeclared == SysMessage)
 				return PageType.YouAreNotDeclared;
 
 			if (!string.IsNullOrEmpty(CommentBeforeSystemMsg))
@@ -70,6 +79,8 @@ namespace Web.DZR
 					return PageType.Break;
 			}
 			
+			//if (: byte copntain )
+
 			return PageType.GameGo;
 		}
 
@@ -98,7 +109,7 @@ namespace Web.DZR
 				var timeToEnd = scrits.InnerText.Substring(timeStart, timeEnd - timeStart);
 				try
 				{
-					TimeToEnd = new DateTime().AddSeconds(long.Parse(timeToEnd) * 1000);
+					TimeToEnd = new DateTime().AddSeconds(long.Parse(timeToEnd) );
 				}
 				catch
 				{
@@ -108,6 +119,24 @@ namespace Web.DZR
 			}
 		}
 
+		private void SetAnswerType()
+		{
+			if (string.IsNullOrEmpty(SysMessage))
+			{
+				AnswerType = AnswerType.none;
+				return;
+			}
+
+			if (SysMessage.StartsWith("Код принят"))
+				AnswerType = AnswerType.correct;
+			else if (SysMessage.StartsWith("Код не принят"))
+				AnswerType = AnswerType.notcorrect;
+			else if(SysMessage.StartsWith("Вы уже вводили этот код"))
+				AnswerType = AnswerType.repited;
+			else
+				AnswerType = AnswerType.none;
+		}
+
 		private void SetSysMessage()
 		{
 			var sysMsg = htmlDocument.DocumentNode.SelectSingleNode("//div[@class='sysmsg']");
@@ -115,13 +144,13 @@ namespace Web.DZR
 			{
 				var NotDeclared = htmlDocument.DocumentNode.SelectSingleNode($"//body/table/tr/td[text() = '{YouAreNotDeclared}']");
 				if (NotDeclared != null)
-					SysMesssage = YouAreNotDeclared;
+					SysMessage = YouAreNotDeclared;
 
 				return;
 			}
 
 			CommentBeforeSystemMsg = sysMsg.PreviousSibling?.PreviousSibling?.InnerHtml;
-			SysMesssage = sysMsg.InnerText;
+			SysMessage = sysMsg.InnerText;
 		}
 
 		protected void SetTask()

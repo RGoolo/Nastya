@@ -6,6 +6,8 @@ using System.Text.RegularExpressions;
 using Web.Base;
 using Web.Game.Model;
 using Model.Logic.Settings;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Web.DZR
 {
@@ -68,52 +70,58 @@ namespace Web.DZR
 
 		public override void SendCode(string str, Guid replaceMsg)
 		{
+			var codes = GetCodes(str, Validator.Settings.Game.Prefix?.ToLower() ?? string.Empty);
+			if (codes == null) return;
+
+			switch (codes.Count)
+			{
+				case 0:
+					break;
+				case 1:
+					SetEvent(new SimpleEvent(EventTypes.SendCode, codes[0], replaceMsg));
+					break;
+				default:
+					//ToDo:
+					//SetEvent(new SimpleEvent(EventTypes.SendCodes, codes.Aggregate((x, y) => x + "\n" + y), replaceMsg));
+					foreach(var code  in codes)
+						SetEvent(new SimpleEvent(EventTypes.SendCode, code, replaceMsg));
+					break;
+			}			
+		}
+
+		static public List<string> GetCodes(string str, string prefix)
+		{
+		
 			//if (!Validator.Settings.Game.Send)
 			//	return;
-
+			
 			if (string.IsNullOrEmpty(str))
-				return;
+				return null;
 
 			if (str.StartsWith("."))
+				return new List<string>() { str.Substring(1) };
+
+			if (str.Contains(" "))
+				return null;
+
+			var msg = str.ToLower();
+
+			var match = Regex.Match(msg, @"(\d|d|r|[^\s\w]|д|р|p)+");
+			if (!match.Success)
+				return null;
+
+			if (match.Value != msg)
+				return null;
+
+			//ToDo: Через группы.
+			var digMatch = Regex.Match(msg, @"\d*");
+			if(digMatch.Success && digMatch.Value == msg)
+				return new List<string>() { prefix + "r" + digMatch.Value, prefix + digMatch.Value + "r" };
+
+			return new List<string>()
 			{
-				SetEvent(new SimpleEvent(EventTypes.SendCode, str.Substring(1), replaceMsg));
-				return;
-			}
-
-			if (str.StartsWith("!"))
-			{
-				SetEvent(new SimpleEvent(EventTypes.SendSpoiler, str.Substring(1), replaceMsg));
-				return;
-			}
-
-			var msg = str.Split(" ")[0]?.ToLower();
-
-			foreach (Match match in Regex.Matches(msg, @"[\ddr@дрp]+"))
-			{
-				if (msg != match.Value)
-					return;
-
-				foreach (Match match2 in Regex.Matches(msg, @"[\d]+"))
-				{
-					if (match2.Value == msg)
-						return;
-				}
-
-				var prefix = Validator.Settings.Game.Prefix?.ToLower() ?? string.Empty;
-
-				msg = msg.Replace("д", "d");
-				msg = msg.Replace("р", "r");
-				msg = msg.Replace("p", "r");
-				msg = msg.Replace("@", "r");
-
-				msg = msg.StartsWith(prefix) ? msg : (prefix + msg);
-
-				SetEvent(new SimpleEvent(EventTypes.SendCode, msg, replaceMsg));
-
-				//SendSimpleMsg(msg);
-
-				return;
-			}
+				prefix + Regex.Replace(Regex.Replace(msg, @"д", "d"), @"р|p|[^\d\w]", "r")
+			};
 		}
 	}
 }

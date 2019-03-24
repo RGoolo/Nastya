@@ -14,7 +14,9 @@ namespace Model.Logic.Google
 
 	public class FactoryMaps
 	{
-	
+		public static string GetSearchPhotoUrl(string url) => $@"https://www.google.com/searchbyimage?image_url={url}";
+
+
 		private static string _startImg = @"https://maps.googleapis.com/maps/api/staticmap?size=600x600";
 		private readonly IFileWorker _fileWorker;
 		private string _googleToken { get; }

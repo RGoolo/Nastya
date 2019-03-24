@@ -35,7 +35,5 @@ namespace Web.DZR.PageTypes
 			var task = this.FirstOrDefault(x => x.LvlNumber == name);
 			return task ?? this.FirstOrDefault();
 		}
-
-
 	}
 }

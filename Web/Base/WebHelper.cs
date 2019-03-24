@@ -1,7 +1,15 @@
-﻿using System.Collections.Generic;
+﻿using Model.Logic.Coordinates;
+using Model.Logic.Google;
+using Model.Logic.Settings;
+using Model.Logic.Yandex;
+using Model.Types.Class;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
+using Web.Game.Model;
 
 namespace Web.Base
 {
@@ -84,5 +92,49 @@ namespace Web.Base
 			using (var stream = new StreamReader(file, Encoding.GetEncoding(1251)))
 				return stream.ReadToEnd();
 		}
+
+		public static List<CommandMessage> ReplaceTextOnPhoto(string html, string _defaulUri) 
+		{
+			var result = new List<CommandMessage>();
+			var buffText = RemoteTagToTelegram(html);
+
+			var textTask = RemoveImg(buffText, false, _defaulUri);
+
+			buffText = textTask.Item1;
+
+			var coords = Coordinates.GetCoords(buffText).ToList();
+
+			var cord = new Coordinates(SettingsHelper.FileWorker, new NetworkCredential(string.Empty, SecurityEnvironment.GetPassword("google_map")).Password);
+
+			foreach (var coord in coords)
+				buffText = buffText.Replace(coord.OriginText, cord.GetUrlLink(coord));
+
+			foreach (var img in textTask.Item2.Where(x => x.TypeUrl == WebHelper.TypeUrl.Img))
+				buffText = buffText.Replace(img.Name, $"<a href=\"{img.Url}\">[{img.Name}]</a>");
+			result.Add(new Text(buffText, true, withHtml: true));
+
+			foreach (var coord in coords)
+			{
+				result.Add(new MessageCoord(coord));
+				result.Add(new Text(coord.OriginText));
+			}
+
+			result.AddRange(textTask.Item2.Where(x => x.TypeUrl == WebHelper.TypeUrl.Img).Select(x => WithUrls(x)));
+			return result;
+		}
+
+		private static Photo WithUrls(LinkStruct url)
+		{
+			var sb = new StringBuilder();
+			sb.Append(GetUrl(url.Name, url.Url));
+			sb.Append("		");
+			sb.Append(GetUrl("[G]", FactoryMaps.GetSearchPhotoUrl(url.Url)));
+			sb.Append("		");
+			sb.Append(GetUrl("[Y]", YandexGeocoder.GetSearchPhotoUrl(url.Url)));
+
+			return new Photo(url.Url, sb.ToString(), true);
+		}
+
+		public static string GetUrl(string link, string name) => $"<a href=\"{name}\">{link}</a>";
 	}
 }

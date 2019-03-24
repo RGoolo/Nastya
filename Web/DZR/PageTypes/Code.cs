@@ -26,7 +26,7 @@
 			if (Accepted)
 				return $"{Name}" + (Answer == null ? string.Empty : $"({Answer})");
 			else
-				return $"<b>{Name}</b>;";
+				return $"{Name}";
 		}
 	}
 }

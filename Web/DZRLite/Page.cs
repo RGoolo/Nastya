@@ -170,10 +170,7 @@ namespace Web.DZRLite
 				var levelTextBegin = node.InnerHtml.IndexOf("<!--prequel-->");
 				var startNumber = levelTextBegin + "<!--prequel-->".Length;
 
-
-				var allinfoText = RemoveImg(RemoteTagToTelegram(node.InnerHtml.Substring(startNumber, levelTextEnd - startNumber)), false, _defaulUri);
-				Text = allinfoText.Item1;
-				Urls = allinfoText.Item2;
+				Text = node.InnerHtml.Substring(startNumber, levelTextEnd - startNumber);
 			}
 		}
 
@@ -270,8 +267,7 @@ namespace Web.DZRLite
 			var end1 = node.InnerHtml.IndexOf("-->", begin1) + 3;
 			var begin2 = node.InnerHtml.IndexOf("<!--", end1);
 
-			var text = (node.InnerHtml.Substring(end1, begin2 - end1));
-			Text = RemoteTagToTelegram(node.InnerHtml.Substring(end1, begin2 - end1));
+			Text = (node.InnerHtml.Substring(end1, begin2 - end1));
 		}
 	}
 
@@ -313,7 +309,7 @@ namespace Web.DZRLite
 				var levelNumberBegin = node.InnerHtml.IndexOf("<!--beginSpoilerText-->");
 				var startNumber = levelNumberBegin + "<!--beginSpoilerText-->".Length;
 
-				Text = RemoteTagToTelegram(node.InnerHtml.Substring(startNumber, levelNumberEnd - startNumber));
+				Text = node.InnerHtml.Substring(startNumber, levelNumberEnd - startNumber);
 			}
 		}
 

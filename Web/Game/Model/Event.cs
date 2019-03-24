@@ -10,6 +10,7 @@ namespace Web.Game.Model
 		Refresh,
 		SendSpoiler,
 		SendCode,
+		SendCodes,
 		GetLvlInfo,
 		GetAllInfo,
 		GetBonus,
