@@ -7,6 +7,7 @@ namespace Web.DZR
 	{
 		public string Name;
 		public string Text;
+
 		public Hint(HtmlNode nodeTitle, HtmlNode node)
 		{
 			Name = nodeTitle.InnerText;
@@ -16,9 +17,9 @@ namespace Web.DZR
 			var end1 = node.InnerHtml.IndexOf("-->", begin1) + 3;
 			var begin2 = node.InnerHtml.IndexOf("<!--", end1);
 
-			Text = (node.InnerHtml.Substring(end1, begin2 - end1));
+			Text = (node.InnerHtml.Substring(end1, begin2 - end1)).Trim();
 		}
 
-		public bool IsEmpty()=> !(string.IsNullOrEmpty(Text) || Text == "\n---\n");
+		public bool IsEmpty()=> string.IsNullOrEmpty(Text) || Text == "---" || Text == "-" ;
 	}
 }
