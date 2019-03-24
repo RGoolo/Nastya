@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -10,14 +10,14 @@ namespace Web.DZR
 		{
 			switch (AnswerType)
 			{
-				case AnswerType.correct:
-					return $"❌{code}: не принят";
 				case AnswerType.notcorrect:
+					return $"❌{code}: не принят";
+				case AnswerType.correct:
 					return $"✅{code}: принят";
 				case AnswerType.repited:
 					return $"🔄{code}: отправлен повторно";
 				default:
-					return $"⚠️{code}: не получилось отправить код";
+					return $"⚠️{code}: не стандартный ответ: {SysMessage}";
 			}
 		}
 	}

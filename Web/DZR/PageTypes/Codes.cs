@@ -16,18 +16,18 @@ namespace Web.DZR
 				return;
 
 			Name = text[0].Trim();
+			var i = 0;
 			var codes = s.Substring(text[0].Length + 1).Split(",");
-			AddRange(codes.Select(code => new Code(WebHelper.RemoveTag(code).Trim(), code.Contains("span"))));
-			
+			AddRange(codes.Select(code => new Code(WebHelper.RemoveTag(code).Trim(), code.Contains("span"), ++i)));
 		}
 
-		public string Text(bool onlyNotAccepted = false)
+		public string Text(bool onlyNotAccepted = false, string splitter = "    ")
 		{
 			var sb = new StringBuilder();
 			sb.Append(Name + ":\n");
-			int i = 0;
+			
 			foreach (var code in this.Where(x => !onlyNotAccepted || !x.Accepted))
-				sb.Append($"#{++i}:{code}  ");
+				sb.Append($"{code}{splitter}");
 			return sb.ToString();
 		}
 	}

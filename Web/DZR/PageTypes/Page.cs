@@ -150,7 +150,7 @@ namespace Web.DZR
 			}
 
 			CommentBeforeSystemMsg = sysMsg.PreviousSibling?.PreviousSibling?.InnerHtml;
-			SysMessage = sysMsg.InnerText;
+			SysMessage = sysMsg.InnerText.Trim();
 		}
 
 		protected void SetTask()

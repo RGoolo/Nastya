@@ -5,8 +5,9 @@
 		public string Name { get; }
 		public string Answer { get; }
 		public bool Accepted { get; }
+		public int Count { get; }
 
-		public Code(string name, bool accepted)
+		public Code(string name, bool accepted, int count)
 		{
 			Name = name;
 
@@ -19,14 +20,15 @@
 			}
 	
 			Accepted = accepted;
+			Count = count;
 		}
 
 		public override string ToString()
 		{
 			if (Accepted)
-				return $"{Name}" + (Answer == null ? string.Empty : $"({Answer})");
+				return $"{Count}✅{Name}" + (Answer == null ? string.Empty : $"({Answer})");
 			else
-				return $"{Name}";
+				return $"{Count}❌{Name}";
 		}
 	}
 }

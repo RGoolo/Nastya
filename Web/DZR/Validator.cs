@@ -65,14 +65,22 @@ namespace Web.DZR
 					SendPageInfo(_lastPage, false);
 					break;
 				case EventTypes.GetTimeForEnd:
-					var msg = new List<CommandMessage>
-					{
-						new Text("⏳. Времени осталось: " + _lastPage.TimeToEnd?.ToString("HH:mm:ss")),
-					};
-					SndMsg(msg);
+					SendTimeTiEnd();
 					break;
 			}
 		}
+
+		public void SendTimeTiEnd()
+		{
+			var task = GetMainTask(_lastPage);
+			var time = _lastPage.TimeToEnd?.ToString("HH:mm:ss");
+			var text = (task == null)? "⏳. Времени осталось: " + time : task.GetTextTimeToEnd(time);
+
+			var msg = new List<CommandMessage>(){new Text(text),};
+			SndMsg(msg);
+		
+		}
+
 
 		public override void AfterSendCode(string html, string code, Guid? idMsg)
 		{
@@ -96,15 +104,17 @@ namespace Web.DZR
 			if (lastTime == null || newTime == null)
 				return;
 
-			var time = new DateTime(0, 0, 0, 0, minutes, 0);
-			if (lastTime > time && newTime < time)
-				SendTexttMsg($"⏳. Осталось минут: {minutes}.");
+			var time = new DateTime().AddMinutes(minutes);
+
+			if (lastTime.Value > time && newTime.Value <= time)
+				SendTimeTiEnd();
 		}
 
 		private void SendDiffTime(DateTime? lastTime, DateTime? newTime)
 		{
-			SendDiffTime(lastTime, newTime, 5);
+			//for (var i = 0; i < 15; ++i)
 			SendDiffTime(lastTime, newTime, 1);
+			SendDiffTime(lastTime, newTime, 5);
 		}
 
 		public void SendDifference(Page lastPage, Page newPage)
@@ -115,11 +125,7 @@ namespace Web.DZR
 					return;
 			}
 
-			if (newPage.Type == lastPage.Type && newPage.Type != PageType.GameGo)
-			{
-				SendDiffTime(lastPage.TimeToEnd, newPage.TimeToEnd);
-					return;
-			}
+			SendDiffTime(lastPage.TimeToEnd, newPage.TimeToEnd);
 
 			var checkOtherTask = Settings.Game.CheckOtherTask;
 			if (!checkOtherTask)
@@ -178,10 +184,11 @@ namespace Web.DZR
 			var result = new StringBuilder();
 
 			result.Append(task.Alias);
-			result.Append(!all ? "\nОстались:" : "\nКоды сложности:");
-
+			result.AppendLine();
+			result.Append(!all ? "Остались:" : "Коды сложности:");
+			result.AppendLine();
 			foreach (var codes in task.Codes)
-				result.AppendLine(codes.Text(!all));
+				result.AppendLine(codes.Text(!all, Environment.NewLine));
 
 			SendTexttMsg(result.ToString(), withHtml:true);
 		}
@@ -238,7 +245,7 @@ namespace Web.DZR
 			foreach (var hint in task._hints)
 				taskText.Append($"📖{hint.Name}\n{hint.Text}{Environment.NewLine}");
 			
-			taskText.Append($"Коды сложности /{Const.Game.Codes}:\n");
+			taskText.Append($"Коды сложности /{Const.Game.Codes} остались /{Const.Game.LastCodes}:\n");
 
 			foreach (var codes in task.Codes)
 				taskText.AppendLine(codes.Text());
