@@ -23,11 +23,11 @@ namespace Model.Dummy
 					if (_toSendQueue.TryDequeue(out var tMsg))
 					{
 						if (tMsg.Message != null)
-							Console.WriteLine(tMsg.Message.Text);
+							Console.WriteLine(tMsg.Message.Texter);
 
 						if (tMsg.Messages != null)
 							foreach (var msg in tMsg.Messages)
-								Console.WriteLine(msg.Text);
+								Console.WriteLine(msg.Texter);
 					}
 				}
 				Thread.Sleep(100);
@@ -54,10 +54,10 @@ namespace Model.Dummy
 			switch (message.TypeMessage)
 			{
 				case MessageType.Text:
-					Console.WriteLine(message.Text);
+					Console.WriteLine(message.Texter);
 					break;
 				case MessageType.Coordinates:
-					Console.WriteLine($"{message.Coord} : {message.Text}");
+					Console.WriteLine($"{message.Coord} : {message.Texter}");
 					break;
 				case MessageType.Photo:
 					Console.WriteLine($"{message.FileToken}");

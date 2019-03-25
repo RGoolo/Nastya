@@ -3,20 +3,21 @@ using Xunit;
 using Model.Types.Enums;
 using Model.Types.Class;
 using System.Text.RegularExpressions;
+using Model.TelegramBot;
 
 namespace UnitTest
 {
 	public class RegexTest
 	{
 
-		public static string pattern = "(</[^abi][^>]*>)|(<[^abi/][^>]*>)|(</(\\w){2,}>)|(<a[^ ][^>]*>)|(<(b|i)[^>]+>)"; //(<[^>a/]*>)|(</[^a>]*>)|(</[^a][^ ][^>]*>)
-
+		
 		[Theory]
 		[MemberData(nameof(TypeUsers))]
 		public void CoordTest(string input, string output)
 		{
 			//var 
-			var str = new  Regex(pattern).Replace(input, string.Empty);
+			var texter = new Texter(input, true);
+			var str = TelegramBot.GetText(texter);
 			Assert.Equal(str, output);
 
 		}

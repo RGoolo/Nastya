@@ -16,6 +16,16 @@ namespace Model.Types.Class
 		public Guid ChatId { get; set; }
 		public List<Guid> PrepareCommands { get; set; }
 
+		public TransactionCommandMessage(string message)
+		{
+			Message = CommandMessage.GetTextMsg(message);
+		}
+
+		public TransactionCommandMessage(Texter message)
+		{
+			Message = CommandMessage.GetTextMsg(message);
+		}
+
 		public TransactionCommandMessage(CommandMessage message)
 		{
 			Message = message;
@@ -28,98 +38,63 @@ namespace Model.Types.Class
 
 		public TransactionCommandMessage(IEnumerable<CommandMessage> messages)
 		{
-			Messages = messages.ToList();
+			Messages = messages.ToList();	
 		}
 	}
 
 	public class CommandMessage
 	{
-		public MessageType TypeMessage { get; protected set; }
+		public MessageType TypeMessage { get; }
+		public SystemType SystemType { get; }
+		public object SystemResource { get; }
+
 		public Guid OnIdMessage { get; set; }
+		public Texter Texter { get; set; }
+		public Coordinate Coord { get; set; }
+		public IFileToken FileToken { get; set; }
+		
+		public Notification Notification { get; set; }
 
-		public bool CheckedCoordsInText { get; set; }
-		public string Text { get; set; }
-		public Coordinate Coord { get; protected set; }
+		//public CommandMessage() { }
 
-		public bool WithHtmlTags { get; set; }
-		public IFileToken FileToken { get; protected set; }
-
-		public object SystemResource { get; protected set; }
-		public SystemType SystemType { get; protected set; }
-
-		public CommandMessage() { }
-
-		protected CommandMessage(bool b, IFileToken photoPath, string text, bool withHtmlTags = false)
+		protected CommandMessage(MessageType msgType)
 		{
-			TypeMessage = MessageType.Photo;
-			FileToken = photoPath;
-			Text = text;
-			WithHtmlTags = withHtmlTags;
+			TypeMessage = msgType;
 		}
 
-		protected CommandMessage(string text, bool withHtmlTags = false)
+		protected CommandMessage(SystemType sysType, object systemResource) : this(MessageType.SystemMessage)
 		{
-			TypeMessage = MessageType.Text;
-			Text = text;
-			WithHtmlTags = withHtmlTags;
+			SystemType = SystemType;
+			SystemResource = systemResource;
 		}
 
-		protected CommandMessage(Coordinate coord, string description = "")
-		{
-			TypeMessage = MessageType.Coordinates;
-			Coord = coord;
-			Text = description;
-		}
 
-		public static CommandMessage GetSystemMsg(object message, SystemType systemType)
-		{
-			return new CommandMessage()
-			{
-				TypeMessage = MessageType.SystemMessage,
-				SystemResource = message,
-				SystemType = systemType
-			};
-		}
+		public static CommandMessage GetSystemMsg(object obj, SystemType systemType)
+			=> new CommandMessage(systemType, obj);
 
-		public static CommandMessage GetTextMsg(string text, bool withHtmlTags = false)
-		{
-			return new CommandMessage()
-			{
-				TypeMessage = MessageType.Text,
-				Text = text,
-				WithHtmlTags = withHtmlTags,
-			};
-		}
+		public static CommandMessage GetTextMsg(string text)
+			=> new CommandMessage(MessageType.Text) { Texter = new Texter(text)};
 
-		public static CommandMessage GetPhototMsg(IFileToken photoPath, string text, bool withHtmlTags = false)
-		{
-			return new CommandMessage()
-			{
-				TypeMessage = MessageType.Photo,
-				FileToken = photoPath,
-				Text = text,
-				WithHtmlTags = withHtmlTags,
-			};
-		}
+		public static CommandMessage GetTextMsg(Texter texter)
+			=> new CommandMessage(MessageType.Text) { Texter = texter };
+
+		public static CommandMessage GetPhototMsg(IFileToken token, Texter text)
+			=> new CommandMessage(MessageType.Photo) { Texter = text };
+
+		public static CommandMessage GetPhototMsg(IFileToken token, string text)
+			=> GetPhototMsg(token, new Texter(text));
+
+		public static CommandMessage GetPhototMsg(string url, Texter text)
+			=> GetPhototMsg(new UrlFileToken(url), text); 
 
 		public static CommandMessage GetDocumentMsg(IFileToken path, string text)
-		{
-			return new CommandMessage()
-			{
-				TypeMessage = MessageType.Document,
-				FileToken = path,
-				Text = text,
-			};
-		}
+			=> new CommandMessage(MessageType.Document) { Texter = new Texter(text) };
+
+		public static CommandMessage GetCoordMsg(Coordinate coord, string text = null)
+			=> new CommandMessage(MessageType.Coordinates) { Texter = new Texter(text)};
 
 
-		public static CommandMessage GetInfoMsg(string text)
-		{
-			var info = GetTextMsg(text);
-			//info.IsAnswer = true;
-			return info;
-		}
-
+		public static CommandMessage GetInfoMsg(string text) => GetTextMsg(text);
 		public static CommandMessage GetWarningMsg(string text) => GetInfoMsg(text);
 		public static CommandMessage GetErrorMsg(string text) => GetInfoMsg(text);
 		public static CommandMessage GetErrorMsg(ModelException ex) => GetErrorMsg(ex.Message);
@@ -128,55 +103,6 @@ namespace Model.Types.Class
 			var msg = GetErrorMsg((ModelException)ex);
 			msg.OnIdMessage = ex.IMessage.MessageId;
 			return msg;
-	}	
-		public static CommandMessage GetCoordMsg(Coordinate coord, string description = "", bool withHtml = false)
-		{
-			return new CommandMessage()
-			{
-				TypeMessage = MessageType.Coordinates,
-				Coord = coord,
-				Text = description,
-			};
-		}
-	}
-
-	public class  MessageMarks : CommandMessage
-	{
-		public IMessage Message { get; }
-
-		private MessageMarks(IMessage msg)
-		{
-			Message = msg;
-		}
-
-		public static MessageMarks GetMessageMarks(IMessage msg, CommandMessage cmdMsg)
-		{
-			return new MessageMarks(msg)
-			{
-				TypeMessage = cmdMsg.TypeMessage,
-				Text = cmdMsg.Text,
-				Coord = cmdMsg.Coord,
-				//IsAnswer = cmdMsg.IsAnswer,
-			};
-		}
-
-		public static MessageMarks GetTextMark(IMessage msg, string text)
-		{
-			return new MessageMarks(msg)
-			{
-				TypeMessage = MessageType.Text,
-				Text = text,
-			};
-		}
-
-		public static MessageMarks GetCoordMark(IMessage msg, Coordinate coord, string text)
-		{
-			return new MessageMarks(msg)
-			{
-				TypeMessage = MessageType.Coordinates,
-				Coord = coord,
-				Text = text,
-			};
-		}
+		}	
 	}
 }

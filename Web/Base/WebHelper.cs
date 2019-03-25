@@ -111,19 +111,18 @@ namespace Web.Base
 
 			foreach (var img in textTask.Item2.Where(x => x.TypeUrl == WebHelper.TypeUrl.Img))
 				buffText = buffText.Replace(img.Name, $"<a href=\"{img.Url}\">[{img.Name}]</a>");
-			result.Add(new Text(buffText, true, withHtml: true));
+
+			result.Add(CommandMessage.GetTextMsg(new Texter(buffText, true)));
 
 			foreach (var coord in coords)
-			{
-				result.Add(new MessageCoord(coord));
-				result.Add(new Text(coord.OriginText));
-			}
+				result.Add(CommandMessage.GetCoordMsg(coord));
+			
 
 			result.AddRange(textTask.Item2.Where(x => x.TypeUrl == WebHelper.TypeUrl.Img).Select(x => WithUrls(x)));
 			return result;
 		}
 
-		private static Photo WithUrls(LinkStruct url)
+		private static CommandMessage WithUrls(LinkStruct url)
 		{
 			var sb = new StringBuilder();
 			sb.Append(GetUrl(url.Name, url.Url));
@@ -132,7 +131,7 @@ namespace Web.Base
 			sb.Append("		");
 			sb.Append(GetUrl("[Y]", YandexGeocoder.GetSearchPhotoUrl(url.Url)));
 
-			return new Photo(url.Url, sb.ToString(), true);
+			return CommandMessage.GetPhototMsg( url.Url, new Texter(sb.ToString(), true));
 		}
 
 		public static string GetUrl(string link, string name) => $"<a href=\"{name}\">{link}</a>";

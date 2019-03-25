@@ -74,11 +74,9 @@ namespace Web.DZR
 		{
 			var task = GetMainTask(_lastPage);
 			var time = _lastPage.TimeToEnd?.ToString("HH:mm:ss");
-			var text = (task == null)? "⏳. Времени осталось: " + time : task.GetTextTimeToEnd(time);
+			var text = (task == null)? "⏳ Времени осталось: " + time : task.GetTextTimeToEnd(time);
 
-			var msg = new List<CommandMessage>(){new Text(text),};
-			SndMsg(msg);
-		
+			SendTexttMsg(text);
 		}
 
 
@@ -190,6 +188,8 @@ namespace Web.DZR
 			foreach (var codes in task.Codes)
 				result.AppendLine(codes.Text(!all, Environment.NewLine));
 
+			var t = CommandMessage.GetTextMsg(result.ToString());
+			//t.Notification = Model.Types.Enums.Notification. 
 			SendTexttMsg(result.ToString(), withHtml:true);
 		}
 
@@ -199,7 +199,7 @@ namespace Web.DZR
 
 			if (page == null)
 			{
-				msg.Add(new Text("Не получить данные об игре"));
+				msg.Add(CommandMessage.GetTextMsg("Не получить данные об игре"));
 
 				SndMsg(msg);
 				return;
@@ -207,7 +207,7 @@ namespace Web.DZR
 
 			if (page.Type != PageType.GameGo)
 			{
-				msg.Add(new Text(page.SysMessage));
+				msg.Add(CommandMessage.GetTextMsg(new Texter(page.SysMessage)));
 				SndMsg(msg);
 				return;
 			}

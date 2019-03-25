@@ -101,11 +101,11 @@ namespace Model.Types.Class
 				case SystemType.NeedResource:
 					DownloadResource((IMessage)message.SystemResource);
 					break;
-				case SystemType.PhotoToCoord:
-				case SystemType.TextToCoord:
+				case SystemType.None:
+					break;
+				default:
 					EnqueueMessage(senderMsg);
 					break;
-
 			}
 
 			/*switch (message.TypeMessage)

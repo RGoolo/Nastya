@@ -84,10 +84,10 @@ namespace Web.DL
 			var msg = new List<CommandMessage>();
 	
 			if (IsBorderValue (page.TimeToEnd , _lastPage.TimeToEnd, 5))
-				msg.Add(new Text($"! Осталось меньше 5 минут"));
+				msg.Add(CommandMessage.GetTextMsg($"! Осталось меньше 5 минут"));
 
 			if (IsBorderValue(page.TimeToEnd, _lastPage.TimeToEnd, 1))
-				msg.Add(new Text($"! Осталось меньше минуты"));
+				msg.Add(CommandMessage.GetTextMsg($"! Осталось меньше минуты"));
 
 
 			for (var i = 0; i < page.Hints.Count; ++i)
@@ -99,10 +99,10 @@ namespace Web.DL
 						continue;
 
 					if (IsBorderValue(page.Hints[i].TimeTo, hint.TimeTo, 5))
-						msg.Add(new Text($"{hint.Name} Откроется через {hint.TimeTo.ToString(TimeFormat)}"));
+						msg.Add(CommandMessage.GetTextMsg($"{hint.Name} Откроется через {hint.TimeTo.ToString(TimeFormat)}"));
 
 					if (IsBorderValue(page.Hints[i].TimeTo, hint.TimeTo, 1))
-						msg.Add(new Text($"{hint.Name} Откроется через {hint.TimeTo.ToString(TimeFormat)}"));
+						msg.Add(CommandMessage.GetTextMsg($"{hint.Name} Откроется через {hint.TimeTo.ToString(TimeFormat)}"));
 		}
 			}
 			if (msg.Any())
@@ -203,19 +203,19 @@ namespace Web.DL
 
 			text = text.Replace("<a>", "</a>)");
 			 
-			msg.Add(new Text(text, true, withHtml: true));
+			msg.Add(CommandMessage.GetTextMsg(new Texter(text, true)));
 
 
 			var currentCoords = Model.Logic.Coordinates.Coordinates.GetCoords(sb.ToString()).ToList();
 			foreach (var x in currentCoords)
-				msg.Add(new MessageCoord(x));
+				msg.Add(CommandMessage.GetCoordMsg(x));
 
 			if (page.ImageUrls.Any())
 			{
 				if (page.ImageUrls.Count > 10)
-					msg.Add(new Text("Тут должны быть картинки, но их больше 10, так что не загружаю!" , true));
+					msg.Add(CommandMessage.GetTextMsg("Тут должны быть картинки, но их больше 10, так что не загружаю!"));
 				else
-					msg.AddRange(page.ImageUrls.Select(x => new Photo(x, true,parameter: x)));
+					msg.AddRange(page.ImageUrls.Select(x => CommandMessage.GetPhototMsg(x, new Texter(x))));
 			}
 			SndMsg(msg);
 		}
@@ -230,13 +230,12 @@ namespace Web.DL
 			else
 				page.Bonuses.Where(x => isAll || !x.IsReady).ToList().ForEach(x => sb.Append(x.Name + "\n" +( string.IsNullOrEmpty(x.Text) ? ("\n") : (x.Text + "\n\n"))));
 			
-			msg.Add(new Text(sb.ToString() == ""?"Все бонусы закрыты.": sb.ToString(), true));
+			msg.Add(CommandMessage.GetTextMsg(sb.ToString() == ""?"Все бонусы закрыты.": sb.ToString()));
 			SndMsg(msg);
 		}
 
 		public void SendSectors(Page page, bool isAll = false)
 		{
-			var msg = new List<CommandMessage>();
 			StringBuilder sb = new StringBuilder();
 
 			if ((page.Sectors.SectorsRemain ?? "") != "")
@@ -252,7 +251,8 @@ namespace Web.DL
 				sb.Append($"На уровне нет секторов");
 			}
 
-			msg.Add(new Text(sb.ToString(), true, withHtml: true));
+			var msg = CommandMessage.GetTextMsg(new Texter(sb.ToString(), true));
+			msg.Notification = Model.Types.Enums.Notification.SendSectors;
 			SndMsg(msg);
 		}
 

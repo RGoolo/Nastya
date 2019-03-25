@@ -21,20 +21,26 @@ namespace Web.Base
 
 		protected void SendTexttMsg(string message, Guid? replaceMsgId = null, bool withHtml = false)
 		{
-			var t = CommandMessage.GetTextMsg(message, withHtmlTags: withHtml);
+			var t = CommandMessage.GetTextMsg( new Texter(message, withHtml));
 			t.OnIdMessage = replaceMsgId.GetValueOrDefault();
 
-			var msg = new List<CommandMessage>
-			{
-				t,
-			};
-			SendMsg?.Invoke(msg);
+			SndMsg(t);
 		}
 
 		protected void SndMsg(IEnumerable<CommandMessage> messages)
 		{
 			SendMsg?.Invoke(messages);
 		}
+
+		protected void SndMsg(CommandMessage messages)
+		{
+			var msg = new List<CommandMessage>
+			{
+				messages,
+			};
+			SendMsg?.Invoke(msg);
+		}
+
 
 		public abstract void AfterSendCode(string html, string code, Guid? idMsg);
 		public abstract void SetNewPage(string html);

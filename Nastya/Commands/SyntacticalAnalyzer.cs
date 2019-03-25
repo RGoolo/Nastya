@@ -43,8 +43,8 @@ namespace Nastya.Commands
 		{
 			private static Dictionary<string, string> Alphabets = new Dictionary<string, string>()
 				{
-					{ "ru", "абвгдеёжзийклмнопрстуфхцчшщъыьэюя"},
-					{ "en", "abcdefghijklmnopqrstuvwxyz"},
+					{ "ru:", "абвгдеёжзийклмнопрстуфхцчшщъыьэюя"},
+					{ "en:󠁢󠁥", "abcdefghijklmnopqrstuvwxyz"},
 				//{"", "αΑβΒγΓδΔεΕζηΖΘθ Ηι κΚλ  μ ν  ξ ο π ρ σ τ υ φ χ ψ ω" } ΙΛΜΝΞΟΠΡΣΤΥΦΧΨΩ
 				};
 

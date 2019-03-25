@@ -184,6 +184,14 @@ namespace Nastya.Commands
 			GetGame()?.SendCode( msg.Text, msg.MessageId);
 		}
 
+		public bool CheckSystemMsg => true;
+
+		[CommandOnMsg(nameof(CheckSystemMsg), Model.Types.Enums.MessageType.SystemMessage, Model.Types.Enums.TypeUser.User)]
+		public void CheckSystem(Model.Types.Interfaces.IMessage msg)
+		{
+			
+		}
+
 	}
 
 }

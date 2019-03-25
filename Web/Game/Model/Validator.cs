@@ -6,6 +6,7 @@ using Model.Types.Class;
 namespace Web.Game.Model
 {
 	public delegate void SendLightMsgDel(IEnumerable<CommandMessage> messages);
+
 	public class Validator
 	{
 		protected Page _oldPage;
@@ -16,11 +17,8 @@ namespace Web.Game.Model
 
 		private void SendTexttMsg(string message, Guid? replaceMsgId = null)
 		{
-			var msg = new List<CommandMessage>
-			{
-				new Text(message,replaceMSGID:replaceMsgId)
-			};
-			SendMsg?.Invoke(msg);
+			var msg = CommandMessage.GetTextMsg(message);
+			msg.OnIdMessage = replaceMsgId.GetValueOrDefault();
 		}
 
 		private void SndMsg(IEnumerable<CommandMessage> messages)
@@ -28,8 +26,10 @@ namespace Web.Game.Model
 			SendMsg?.Invoke(messages);
 		}
 
-		//public string GetContextSetCode(string code);
-		//public string GetUrl();
+		private void SndMsg(CommandMessage message)
+		{
+			SndMsg(new List<CommandMessage>() { message, });
+		}
 
 		public virtual void AfterSendCode(Page page, string code, Guid idMsg)
 		{
@@ -76,12 +76,10 @@ namespace Web.Game.Model
 		{
 			var msg = new List<CommandMessage>
 			{
-				new Text("❤️ Следующий уровень ❤️\n" + page.LevelTitle + "\n" + page.Task, true)
+				 CommandMessage.GetTextMsg(new Texter("❤️ Следующий уровень ❤️\n" + page.LevelTitle + "\n" + page.Task, true)),
 			};
 
-
-			if (page.ImageUrls.Any())
-				msg.AddRange(page.ImageUrls.Select(x => new Photo(x, true)));
+			msg.AddRange(page.ImageUrls.Select(x => CommandMessage.GetPhototMsg(x, new Texter(x))));
 
 			SndMsg(msg);
 		}

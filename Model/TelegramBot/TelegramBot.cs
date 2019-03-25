@@ -12,6 +12,7 @@ using Telegram.Bot.Types;
 using Telegram.Bot.Types.InputFiles;
 using System.Threading;
 using System.Security;
+using System.Text.RegularExpressions;
 
 namespace Model.TelegramBot
 {
@@ -20,7 +21,6 @@ namespace Model.TelegramBot
 		//private const string webProxyurl = "144.217.161.149:8080"; //90.187.45.5:8123";
 
 		public static Random random = new Random(DateTime.Now.Millisecond);
-
 
 		public static WebProxy Create()
 		{
@@ -157,8 +157,16 @@ namespace Model.TelegramBot
 
 		protected TelegramMessage TelegramMessage(Message msg) =>  new TelegramMessage(msg, GetTypeUser(msg));
 
-		//ToDo
-		private string GetCorrectWebText(string text) => text;
+		
+		public static string GetText(Texter text)
+		{
+			if (!text.Html) return text.ToString();
+			const string pattern = "(</[^abi][^>]*>)|(<[^abi/][^>]*>)|(</(\\w){2,}>)|(<a[^ ][^>]*>)|(<(b|i)[^>]+>)";
+			return new Regex(pattern).Replace(text.ToString(), string.Empty);
+			//ToDo: conver text to messages
+		}
+
+		private ParseMode GetParseMod(Texter text) => text.Html ? ParseMode.Html : ParseMode.Default;
 
 		public override async Task<IMessage> Message(CommandMessage message, Guid chatId)
 		{
@@ -170,39 +178,42 @@ namespace Model.TelegramBot
 
 			switch (message.TypeMessage)
 			{
+				case Types.Enums.MessageType.Edit:
+					var parseModeEdit = GetParseMod(message.Texter);
+					var textEdit = GetText(message.Texter);
+					if (!string.IsNullOrEmpty(textEdit))
+						senderMsg = await _bot.EditMessageTextAsync(longChatId, message.OnIdMessage.ToInt(), textEdit, parseModeEdit, disableWebPagePreview: true, cancellationToken: _cancellationToken);
+					break;
 				case Types.Enums.MessageType.Text:
-					var parseMode =  message.WithHtmlTags ? ParseMode.Html : ParseMode.Default;
-					var text = message.WithHtmlTags ? GetCorrectWebText(message.Text) : message.Text;
-					//text = _telegramHtml.RemoveAllTag(text);
+					var text = GetText(message.Texter);
 					if (!string.IsNullOrEmpty(text))
-						senderMsg = await _bot.SendTextMessageAsync(longChatId, text, parseMode, replyToMessageId: replaceMsg, disableWebPagePreview: true, cancellationToken: _cancellationToken); 
+						senderMsg = await _bot.SendTextMessageAsync(longChatId, text, GetParseMod(message.Texter), replyToMessageId: replaceMsg, disableWebPagePreview: true, cancellationToken: _cancellationToken); 
 					break;
 				case Types.Enums.MessageType.Coordinates:
 					senderMsg = await _bot.SendLocationAsync(longChatId, message.Coord.Latitude, message.Coord.Longitude, replyToMessageId: replaceMsg, cancellationToken: _cancellationToken);
-					//senderMsg = await _bot.Send
 					break;
 				case Types.Enums.MessageType.Photo:
 					//var lstindex = message.FileToken.LastIndexOf("/");
 					//var number = message.FileToken.Substring(lstindex + 1, 2);
-					var parseModet = message.WithHtmlTags ? ParseMode.Html : ParseMode.Default;
+
 					//todo: remove, test, linux
 					if (message.FileToken.Type == Types.Enums.FileType.Local)
 					{
 						using (var stream = _fileWorker.ReadStream(message.FileToken))
-							senderMsg = await _bot.SendPhotoAsync(longChatId, stream, message.Text, parseModet, replyToMessageId: replaceMsg, cancellationToken: _cancellationToken);
+							senderMsg = await _bot.SendPhotoAsync(longChatId, stream, message.Texter.ToString(), GetParseMod(message.Texter), replyToMessageId: replaceMsg, cancellationToken: _cancellationToken);
 					}
 					else
 					{
 						var photo = new InputOnlineFile(message.FileToken.Url);
-						senderMsg = await _bot.SendPhotoAsync(longChatId, photo, message.Text, parseModet, replyToMessageId: replaceMsg, cancellationToken: _cancellationToken);
+						senderMsg = await _bot.SendPhotoAsync(longChatId, photo, GetText(message.Texter), GetParseMod(message.Texter), replyToMessageId: replaceMsg, cancellationToken: _cancellationToken);
 					}
 					break;
 				case Types.Enums.MessageType.Document:
 					using (var file = _fileWorker.ReadStream(message.FileToken))
-						senderMsg = await _bot.SendDocumentAsync(longChatId, file, message.Text, replyToMessageId: replaceMsg, cancellationToken: _cancellationToken);
+						senderMsg = await _bot.SendDocumentAsync(longChatId, file, GetText(message.Texter), GetParseMod(message.Texter), replyToMessageId: replaceMsg, cancellationToken: _cancellationToken);
 					break;
 			}
-			return senderMsg == null? null : TelegramMessage(senderMsg);
+			return senderMsg == null ? null : TelegramMessage(senderMsg);
 		}
 
 		private async void DownloadFile(string fileId, IFileToken token, IMessage msg, TypeResource type)

@@ -139,12 +139,14 @@ namespace Web.Base
 			SendMsg?.Invoke(messages.ToList(), Validator.Settings.ChatGuid);
 		}
 
+		private void _validator_SendMsg(CommandMessage message) => _validator_SendMsg(new List<CommandMessage>() { message });
+
+
 		protected void SendSimpleMsg(string s, Guid? idmsg = null)
 		{
-			var msg = new List<CommandMessage>
-			{
-				new Text(s, replaceMSGID: idmsg)
-			};
+			var msg = CommandMessage.GetTextMsg(s);
+			msg.OnIdMessage = idmsg.GetValueOrDefault();
+
 
 			_validator_SendMsg(msg);
 		}

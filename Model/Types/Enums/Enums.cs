@@ -13,6 +13,7 @@ namespace Model.Types.Enums
 		Video = 0x20,
 		Document = 0x40,
 		SystemMessage = 0x80,
+		Edit = 0x100,
 
 		WithResource = Photo | Voice | Video | Document,
 		All = Undefined | Text | Photo | Coordinates | Voice | Video | Document
@@ -25,11 +26,23 @@ namespace Model.Types.Enums
 
 	public enum SystemType : long
 	{
+		None,
+		NeedResource,
+		FindCoords,
+		PhotoToCoord,
+		TextToCoord,
+		DzrSectors,
+		NewLvl 
+	}
+
+	public enum Notification
+	{
 		None = 0,
-		NeedResource = 1,
-		FindCoords = 2,
-		PhotoToCoord = 3,
-		TextToCoord = 4,
+		NewLevel,
+		NewHint,
+		NewSpoiler,
+		SendSectors,
+		
 	}
 
 	public enum TypeResource

@@ -180,27 +180,6 @@ namespace Nastya
 			}
 			Dispose();
 		}
-
-		private void SendMsg(IEnumerable<MessageMarks> msgs)
-		{
-			if (msgs == null)
-				return;
-			foreach (var msg in msgs)
-			{
-				//_bots[msg.Message.BotId].SendMessage(msg, msg.Message.ChatId);
-			}
-		}
-
-		private void SendMsg(IEnumerable<CommandMessage> msgs, IMessage imsg)
-		{
-			if (msgs == null)
-				return;
-
-			foreach (var msg in msgs)
-			{
-				//_bots[imsg.BotId].SendMessage(MessageMarks.GetMessageMarks(imsg, msg), imsg.ChatId);
-			}
-		}
 	}
 }
 

@@ -18,11 +18,6 @@ namespace Model.UnitTestBot
 			throw new NotImplementedException();
 		}
 
-		public void DownloadResource(MessageMarks msg)
-		{
-			throw new NotImplementedException();
-		}
-
 		public void DownloadResource(IMessage msg)
 		{
 			throw new NotImplementedException();

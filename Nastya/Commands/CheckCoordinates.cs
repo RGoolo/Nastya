@@ -128,11 +128,11 @@ namespace Nastya.Commands
 				if (isText.Value) _coordinates.GetPictureText(text, file);
 				else _coordinates.GetPicture(text, file);
 
-				result = CommandMessage.GetPhototMsg(file, func(text), true);
+				result = CommandMessage.GetPhototMsg(file, func(text));
 			}
 			else
 			{
-				CommandMessage.GetTextMsg(func(text), true);
+				CommandMessage.GetTextMsg(new Texter(func(text), true));
 			}
 			result.OnIdMessage = msg.MessageId;
 			return result;
@@ -147,7 +147,7 @@ namespace Nastya.Commands
 
 			coords.ToList().ForEach(x =>
 			{
-				result.Add(CommandMessage.GetTextMsg(x.OriginText + Environment.NewLine + _coordinates.GetUrlLink(x, true), true));
+				result.Add(CommandMessage.GetTextMsg(x.OriginText + Environment.NewLine + _coordinates.GetUrlLink(x, true)));
 				result.Add(CommandMessage.GetCoordMsg(x));
 			});
 			return new  TransactionCommandMessage(result);

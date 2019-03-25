@@ -29,13 +29,13 @@ namespace Web.DZRLite
 
 					var imagesUrl = matches
 							.Cast<Match>()
-							.Select(m => m.Groups["imgsrc"].Value)
-						;
+							.Select(m => m.Groups["imgsrc"].Value)						;
 
-					var msg = new List<CommandMessage>();
-					imagesUrl.ToList().ForEach(x => msg.Add(new Photo(@"http://lite.dzzzr.ru/spb/go/" + x)));
-
-					SndMsg(msg);
+					//var msg = new List<CommandMessage>();
+						//msg.AddRange(imagesUrl.Select(x => CommandMessage.GetPhototMsg("http://lite.dzzzr.ru/spb/go/" + x, new Texter(x)); //ToDo replace spb!!!!
+					
+					//ToDo
+					//SndMsg(msg);
 					break;
 				}
 				case "1":
@@ -52,9 +52,9 @@ namespace Web.DZRLite
 							? ""
 							: (mhtml[i]) + $"!({i + 1})" + " ,");
 					}
-
-					msg.Add(new Text(codes == "" ? "Все коды сняты" : codes, withHtml: true));
-					SndMsg(msg);
+						//ToDo
+						//msg.Add(new MessageText(codes == "" ? "Все коды сняты" : codes, withHtml: true));
+						SndMsg(msg);
 					break;
 				}
 				case "2":
@@ -71,8 +71,8 @@ namespace Web.DZRLite
 							         ? (mhtml[i].Replace("!", $"({i + 1})"))
 							         : (mhtml[i]) + $"(!{i + 1})") + " ,";
 					}
-
-					msg.Add(new Text(codes, withHtml: true));
+					//ToDo
+					//msg.Add(new MessageText(codes, withHtml: true));
 					SndMsg(msg);
 					break;
 				}

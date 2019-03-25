@@ -63,12 +63,10 @@ namespace Nastya.Commands
 		{
 			var text = await toText(FileWorker, token);
 
-			var command = CommandMessage.GetTextMsg(text);
-			command.WithHtmlTags = true;
+			var command = CommandMessage.GetTextMsg(new Texter(text));
 			var transaction = new TransactionCommandMessage(command);
 			SendMsg?.Invoke(transaction);
 		}
-
 	}
 }
 	

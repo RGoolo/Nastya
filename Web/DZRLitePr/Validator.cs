@@ -45,32 +45,43 @@ namespace Web.DZRLitePr
 
 		public void SendDifference(Page lastPage, Page newPage)
 		{
-			var msg = new List<CommandMessage>();
+			
 
 			foreach (var task in newPage._tasks)
 			{
+				var msgs = new List<CommandMessage>();
 				var oldTask = lastPage._tasks.FirstOrDefault(x => x.LvlNumber == task.LvlNumber);
 
 				if (oldTask == null)
 				{
-					msg.AddRange(GetTaskInfo(task, true));
+					msgs.AddRange(GetTaskInfo(task, true));
 					continue;
 				}
+
 				if (oldTask.Spoiler != null && task.Spoiler != null)
 				{
 					if (!oldTask.Spoiler.IsComplited && task.Spoiler.IsComplited)
-						msg.Add(new Text($"{task.Alias}\nРазгадан спойлер:\n{task.Spoiler.Text}", true));
+					{
+						var msg = CommandMessage.GetTextMsg(new Texter($"{task.Alias}\nРазгадан спойлер:\n{task.Spoiler.Text}", true));
+						msg.Notification = Model.Types.Enums.Notification.NewSpoiler;
+						msgs.Add(msg);
+					}
+						
 				}
+
 				if (oldTask.NumberHint != task.NumberHint)
 				{
 					var hint = task._hints.LastOrDefault();
 					if (hint != null)
-						msg.Add(new Text($"{task.Alias}\nПришла подсказка:\n{hint.Name}\n{hint.Text}", true));
+					{
+						var msg = CommandMessage.GetTextMsg(new Texter($"{task.Alias}\nПришла подсказка:\n{hint.Name}\n{hint.Text}", true));
+						msg.Notification = Model.Types.Enums.Notification.NewHint;
+						msgs.Add(msg);
+					}
 				}
-				SndMsg(msg);
-				msg.Clear();
-			}
 
+				SndMsg(msgs);
+			}
 		}
 
 		public override void SetNewPage(string html)
@@ -191,7 +202,7 @@ namespace Web.DZRLitePr
 				foreach (var code in codes.ListCode)
 					taskText.Append($"{++i}{code}");
 			}
-			msg.Add(new Text(taskText.ToString(), true, withHtml: true));
+			msg.Add(CommandMessage.GetTextMsg(new Texter(taskText.ToString(), true)));
 			//msg.AddRange(task.Urls.Where(x => x.TypeUrl == WebHelper.TypeUrl.Img).Select(x => new Photo(x.Url, true, null, x.Name)));
 			return msg;
 		}
