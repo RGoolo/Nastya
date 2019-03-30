@@ -9,13 +9,13 @@ namespace Web.DL
 		public string Name;
 		public string Text;
 		public bool IsReady;
-		public DateTime TimeTo;
+		public DateTime TimeToEnd;
 		public int Number;
 		public Hint(string name, string text, DateTime timeTo)
 		{
 			Name = name;
 			Text = text;
-			TimeTo = timeTo;
+			TimeToEnd = timeTo;
 			IsReady = !string.IsNullOrEmpty(text);
 
 			var regexNumber = new Regex("\\d+");
