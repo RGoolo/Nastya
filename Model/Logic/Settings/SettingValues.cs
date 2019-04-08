@@ -1,4 +1,6 @@
-﻿namespace Model.Logic.Settings
+﻿using System;
+
+namespace Model.Logic.Settings
 {
 	public interface ISettingValues
 	{
@@ -7,6 +9,7 @@
 		//T GetValue<T>(string name, T @default);
 		bool GetValueBool(string name, bool @default = default(bool));
 		long GetValueLong(string name, long @default = default(long));
+		Guid GetValueGuid(string name, Guid @default = default(Guid));
 	}
 
 	public class SettingValues2
@@ -183,6 +186,16 @@
 		{
 			get => SettingsValues.GetValueBool(Const.Game.CheckOtherTask);
 			set => SettingsValues.SetValue(Const.Game.CheckOtherTask, value.ToString());
+		}
+		public Guid SectorsMsg
+		{
+			get => SettingsValues.GetValueGuid(Const.Game.SectorsMsg);
+			set => SettingsValues.SetValue(Const.Game.SectorsMsg, value.ToString());
+		}
+		public Guid AllSectorsMsg
+		{
+			get => SettingsValues.GetValueGuid(Const.Game.AllSectorsMsg);
+			set => SettingsValues.SetValue(Const.Game.AllSectorsMsg, value.ToString());
 		}
 	}
 

@@ -54,6 +54,9 @@
 
 			public const string CheckOtherTask = "checkotask";
 			public const string City = "city";
+
+			public const string SectorsMsg = "SectorsMsg";
+			public const string AllSectorsMsg = "AllSectorsMsg";
 		}
 
 		public static class Web

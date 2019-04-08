@@ -51,8 +51,6 @@ namespace Web.Game
 			return result;
 		}
 
-
-
 		public static HttpWebRequest PostHttpWebRequest(string url, string context, CookieContainer cookies)
 		{
 			var request = (HttpWebRequest)WebRequest.Create(url);

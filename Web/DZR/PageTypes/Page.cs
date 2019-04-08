@@ -21,7 +21,7 @@ namespace Web.DZR
 
 	public enum AnswerType : byte
 	{
-		none, correct, notcorrect, repited
+		None, Correct, Notcorrect, Repited
 	}
 
 
@@ -123,18 +123,18 @@ namespace Web.DZR
 		{
 			if (string.IsNullOrEmpty(SysMessage))
 			{
-				AnswerType = AnswerType.none;
+				AnswerType = AnswerType.None;
 				return;
 			}
 
 			if (SysMessage.StartsWith("Код принят"))
-				AnswerType = AnswerType.correct;
+				AnswerType = AnswerType.Correct;
 			else if (SysMessage.StartsWith("Код не принят"))
-				AnswerType = AnswerType.notcorrect;
+				AnswerType = AnswerType.Notcorrect;
 			else if(SysMessage.StartsWith("Вы уже вводили этот код"))
-				AnswerType = AnswerType.repited;
+				AnswerType = AnswerType.Repited;
 			else
-				AnswerType = AnswerType.none;
+				AnswerType = AnswerType.None;
 		}
 
 		private void SetSysMessage()

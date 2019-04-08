@@ -4,7 +4,7 @@ using System.Text.RegularExpressions;
 using Web.Base;
 using Model.Logic.Settings;
 using Web.Game.Model;
-
+using Model.Types.Interfaces;
 
 namespace Web.DL
 {
@@ -37,13 +37,13 @@ namespace Web.DL
 			return (response.ResponseUri.ToString().StartsWith(Validator.LogInUrl()));
 		}
 
-		public override void SendCode(string str, Guid replaceMsg)
+		public override void SendCode(string str, IUser user, Guid replaceMsg)
 		{
 			if (string.IsNullOrEmpty(str))
 				return;
 
 			if (str.StartsWith("."))
-				SetEvent(new SimpleEvent(EventTypes.SendCode, str.Substring(1), replaceMsg));
+				SetEvent(new SimpleEvent(EventTypes.SendCode, user, str.Substring(1), replaceMsg));
 
 			if (str.Contains(" "))
 				return;
@@ -57,7 +57,7 @@ namespace Web.DL
 				{
 					if (match.Value.Length == match2.Value.Length)
 						return;
-					SetEvent(new SimpleEvent(EventTypes.SendCode, match.Value, replaceMsg));
+					SetEvent(new SimpleEvent(EventTypes.SendCode, user, match.Value, replaceMsg));
 				}
 			}
 		}

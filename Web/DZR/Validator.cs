@@ -7,6 +7,7 @@ using Web.Base;
 using Web.Game.Model;
 using Model.Logic.Model;
 using Model.Types.Class;
+using Model.Types.Interfaces;
 
 namespace Web.DZR
 {
@@ -56,10 +57,10 @@ namespace Web.DZR
 				case EventTypes.GetBonus:
 					break;
 				case EventTypes.GetAllSectors:
-					SendSectors(_lastPage, iEvent.Text);
+					SendSectors(_lastPage, true, true);
 					break;
 				case EventTypes.GetSectors:
-					SendSectors(_lastPage, iEvent.Text, true);
+					SendSectors(_lastPage, true, false);
 					break;
 				case EventTypes.GetAllInfo:
 					SendPageInfo(_lastPage, false);
@@ -73,19 +74,27 @@ namespace Web.DZR
 		public void SendTimeTiEnd()
 		{
 			var task = GetMainTask(_lastPage);
-			var time = _lastPage.TimeToEnd?.ToString("HH:mm:ss");
+			var time = _lastPage?.TimeToEnd?.ToString("HH:mm:ss");
 			var text = (task == null)? "⏳ Времени осталось: " + time : task.GetTextTimeToEnd(time);
 
 			SendTexttMsg(text);
 		}
 
 
-		public override void AfterSendCode(string html, string code, Guid? idMsg)
+		public override void AfterSendCode(string html, IUser user, string code, Guid? idMsg)
 		{
 			var page = new Page(html, GetUrl());
 
+			//Controller(page, )
+			//var t = CommandMessage.GetTextMsg(new Texter(message, withHtml));
+			//t.OnIdMessage = replaceMsgId.GetValueOrDefault();
+
+			//Controller.SetGameAnswer( )
+
 			SendTexttMsg(page.GetAnswerText(code), idMsg);
 			SetNewPage(page);
+			SendSectors(page, false, false);
+			SendSectors(page, false, true);
 		}
 
 		public void SetNewPage(Page page)
@@ -95,6 +104,9 @@ namespace Web.DZR
 
 			SendDifference(_lastPage, page);
 			_lastPage = page;
+			
+			var lvlName = GetMainTask(_lastPage)?.LvlNumber;
+			Controller.SetNewLvl(lvlName);
 		}
 
 		private void SendDiffTime(DateTime? lastTime, DateTime? newTime , int minutes)
@@ -117,6 +129,8 @@ namespace Web.DZR
 
 		public void SendDifference(Page lastPage, Page newPage)
 		{
+			//if (newPage.AnswerType != AnswerType.None)
+
 			if (lastPage == null || lastPage.Type != newPage.Type)
 			{
 				SendPageInfo(newPage, !Settings.Game.CheckOtherTask);
@@ -139,6 +153,44 @@ namespace Web.DZR
 				}
 			}
 		}
+
+		private void CheckDiffCode(Page lastPage, Page newPage, IUser user)
+		{
+			var newTask = GetMainTask(newPage);
+			var oldTask = GetMainTask(lastPage);
+
+			if (newPage.AnswerType == AnswerType.None)
+			{
+				if (newTask == null || newTask.LvlNumber != oldTask?.LvlNumber)
+					return;
+
+				for (int i = 0; i < newTask.Codes.Count; ++i)
+				{
+					if (i >= oldTask.Codes.Count)
+						return;
+
+					var diffs = newTask.Codes[i].Diff(oldTask.Codes[i]).ToList();
+					if (!diffs.Any())
+						continue;
+
+					SendTexttMsg($"⚠️Новые коды:\n{newTask.Codes[i].DiffText(diffs)}");
+
+					foreach (var diff in diffs)
+					{
+						var answer = new Answer();
+						answer.Code = diff.Answered;
+						Controller.SetGameAnswer(answer);
+					}
+				}
+			}
+			else
+			{
+
+
+
+			}
+		}
+
 
 		private void SendDifference(Task task, Task oldTask)
 		{
@@ -173,7 +225,7 @@ namespace Web.DZR
 			SndMsg(msg);
 		}
 
-		public void SendSectors(Page page, string start, bool all = false)
+		public void SendSectors(Page page, bool update, bool all)
 		{
 			var task = GetMainTask(page);
 			if (task == null)
@@ -188,9 +240,9 @@ namespace Web.DZR
 			foreach (var codes in task.Codes)
 				result.AppendLine(codes.Text(!all, Environment.NewLine));
 
-			var t = CommandMessage.GetTextMsg(result.ToString());
-			//t.Notification = Model.Types.Enums.Notification. 
-			SendTexttMsg(result.ToString(), withHtml:true);
+			var msg = Controller.SendSectors(result.ToString(), all, update);
+
+			SndMsg(msg);
 		}
 
 		public void SendPageInfo(Page page, bool onlyMain)

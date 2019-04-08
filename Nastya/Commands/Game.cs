@@ -4,6 +4,7 @@ using System.Linq;
 using Model.Logic.Settings;
 using Model.Types.Attribute;
 using Model.Types.Class;
+using Model.Types.Interfaces;
 using Web.Base;
 using Web.Game.Model;
 
@@ -55,17 +56,17 @@ namespace Nastya.Commands
 		public bool GameIsStart { get; private set; }
 
 		[Command(Const.Game.Start, "Коннектится к сайту")]
-		public void Start()
+		public void Start(IUser user)
 		{
-			GetGame()?.SetEvent(new SimpleEvent(EventTypes.StartGame));
+			GetGame()?.SetEvent(new SimpleEvent(EventTypes.StartGame, user));
 			GameIsStart = true;
 		}
 
 		[CheckProperty(nameof(GameIsStart))]
 		[Command(Const.Game.Stop, "Заканчивает игру")]
-		public void Stop()
+		public void Stop(IUser user)
 		{
-			GetGame()?.SetEvent(new SimpleEvent(EventTypes.StopGame));
+			GetGame()?.SetEvent(new SimpleEvent(EventTypes.StopGame, user));
 			GameIsStart = false;
 			_game = null;
 		}
@@ -78,67 +79,74 @@ namespace Nastya.Commands
 
 		[CheckProperty(nameof(GameIsStart))]
 		[Command(Const.Game.LvlText, "Прислать текст текущего уровня в чат", Model.Types.Enums.TypeUser.User)]
-		public void LvlText()
+		public void LvlText(IUser user)
 		{
-			GetGame()?.SetEvent(new SimpleEvent(EventTypes.GetLvlInfo));
+			GetGame()?.SetEvent(new SimpleEvent(EventTypes.GetLvlInfo, user));
 		}
 
 		[CheckProperty(nameof(GameIsStart))]
 		[Command(Const.Game.LvlAllText, "Прислать всю инфу по уровню", Model.Types.Enums.TypeUser.User)]
-		public void LvlAllText()
+		public void LvlAllText(IUser user)
 		{
-			GetGame()?.SetEvent(new SimpleEvent(EventTypes.GetAllInfo));
+			GetGame()?.SetEvent(new SimpleEvent(EventTypes.GetAllInfo, user));
 		}
 
 		[CheckProperty(nameof(GameIsStart))]
 		[Command(Const.Game.LastCodes, "Оставшиеся сектора", Model.Types.Enums.TypeUser.User)]
-		public void LastCodes()
+		public void LastCodes(IUser user)
 		{
-			GetGame()?.SetEvent(new SimpleEvent(EventTypes.GetSectors));
+			GetGame()?.SetEvent(new SimpleEvent(EventTypes.GetSectors, user));
 		}
 
 		[CheckProperty(nameof(GameIsStart))]
 		[Command(Const.Game.Codes, "Секторы на уровне", Model.Types.Enums.TypeUser.User)]
-		public void Codes()
+		public void Codes(IUser user)
 		{
-			GetGame()?.SetEvent(new SimpleEvent(EventTypes.GetAllSectors));
+			GetGame()?.SetEvent(new SimpleEvent(EventTypes.GetAllSectors, user));
 		}
 
 		[CheckProperty(nameof(GameIsStart))]
 		[Command(Const.Game.Bonus, "Оставшиеся бонусы", Model.Types.Enums.TypeUser.User)]
-		public void Bonus()
+		public void Bonus(IUser user)
 		{
-			GetGame()?.SetEvent(new SimpleEvent(EventTypes.GetBonus));
+			GetGame()?.SetEvent(new SimpleEvent(EventTypes.GetBonus, user));
 		}
 
 		[CheckProperty(nameof(GameIsStart))]
 		[Command(Const.Game.AllBonus, "Бонусы на уровне", Model.Types.Enums.TypeUser.User)]
-		public void AllBonus()
+		public void AllBonus(IUser user)
 		{
-			GetGame()?.SetEvent(new SimpleEvent(EventTypes.GetAllBonus));
+			GetGame()?.SetEvent(new SimpleEvent(EventTypes.GetAllBonus, user));
 		}
 
 		[CheckProperty(nameof(GameIsStart))]
 		[Command(nameof(GoToTheNextLevel), "Перейти на следующий уровень")]
-		public void GoToTheNextLevel()
+		public void GoToTheNextLevel(IUser user)
 		{
-			GetGame()?.SetEvent(new SimpleEvent(EventTypes.GoToTheNextLevel));
+			GetGame()?.SetEvent(new SimpleEvent(EventTypes.GoToTheNextLevel, user));
 		}
 
 		[CheckProperty(nameof(GameIsStart))]
 		[Command(nameof(Time), "Сколько времени осталось", Model.Types.Enums.TypeUser.User)]
-		public void Time()
+		public void Time(IUser user)
 		{
-			GetGame()?.SetEvent(new SimpleEvent(EventTypes.GetTimeForEnd));
+			GetGame()?.SetEvent(new SimpleEvent(EventTypes.GetTimeForEnd, user));
 		}
 
 		[CheckProperty(nameof(GameIsStart))]
 		[Command(nameof(TakeBreak), "Взять перерыв", Model.Types.Enums.TypeUser.Admin)]
-		public void TakeBreak()
+		public void TakeBreak(IUser user)
 		{
-			GetGame()?.SetEvent(new SimpleEvent(EventTypes.TakeBreak));
+			GetGame()?.SetEvent(new SimpleEvent(EventTypes.TakeBreak, user));
 		}
-		
+
+		[CheckProperty(nameof(GameIsStart))]
+		[Command(nameof(Code), "Отправить код", Model.Types.Enums.TypeUser.User)]
+		public void Code(IUser user, IMessage msg, string code)
+		{
+			GetGame()?.SendCode(code, msg.User, msg.MessageId);
+		}
+
 		private ISettings SettingHelper => SettingsHelper.GetSetting(ChatId);
 
 		private IGame GetGame()
@@ -163,25 +171,25 @@ namespace Nastya.Commands
 			SendMsg?.Invoke(transaction);
 		}
 
-		private void DeleteGame()
+		private void DeleteGame(IUser user)
 		{
 			if (_game == null)
 				return;
 
 			//привет, параноя
-			_game.SetEvent(new SimpleEvent(EventTypes.StopGame));
+			_game.SetEvent(new SimpleEvent(EventTypes.StopGame, user));
 			_game.Dispose();
 			_game = null;
 		}
 
 		[CheckProperty(nameof(GameIsStart))]
 		[CommandOnMsg(nameof(IsSendCoord), Model.Types.Enums.MessageType.Text, Model.Types.Enums.TypeUser.User)]
-		public void Command(Model.Types.Interfaces.IMessage msg)
+		public void Command(IMessage msg)
 		{
 			if (msg.MessageCommands != null && msg.MessageCommands.Count() != 0)
 				return;
 
-			GetGame()?.SendCode( msg.Text, msg.MessageId);
+			GetGame()?.SendCode(msg.Text, msg.User, msg.MessageId);
 		}
 
 		public bool CheckSystemMsg => true;
@@ -189,7 +197,11 @@ namespace Nastya.Commands
 		[CommandOnMsg(nameof(CheckSystemMsg), Model.Types.Enums.MessageType.SystemMessage, Model.Types.Enums.TypeUser.User)]
 		public void CheckSystem(Model.Types.Interfaces.IMessage msg)
 		{
-			
+			if (msg.ReplyToCommandMessage?.Notification == Model.Types.Enums.Notification.SendAllSectors)
+				SettingHelper.Game.AllSectorsMsg = msg.MessageId;
+
+			if (msg.ReplyToCommandMessage?.Notification == Model.Types.Enums.Notification.SendSectors)
+				SettingHelper.Game.SectorsMsg = msg.MessageId;
 		}
 
 	}

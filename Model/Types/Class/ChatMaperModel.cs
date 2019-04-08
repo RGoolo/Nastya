@@ -95,6 +95,8 @@ namespace Model.Types.Class
 					parametrs.Add(msgCommand);
 				else if (param.ParameterType == typeof(IMessage))
 					parametrs.Add(msg);
+				else if (param.ParameterType == typeof(IUser))
+					parametrs.Add(msg.User);
 				else
 				{
 					if (i < msgCommand.Values.Count())

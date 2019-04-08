@@ -50,10 +50,12 @@ namespace Model.TelegramBot
 		//ToDo
 		public bool ContainsResources => false;
 
-		public TypeResource TypeResource => throw new NotImplementedException();
+		public TypeResource TypeResource => TypeResource.None;
 
 		//public string ResourcePath { get; set; }
 		public IResource Resource { get ; set; }
+
+		public CommandMessage ReplyToCommandMessage => throw new NotImplementedException();
 
 		public TelegramMessage(Telegram.Bot.Types.Message msg, TypeUser typeUser)
 		{

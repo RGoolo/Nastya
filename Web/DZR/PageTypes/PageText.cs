@@ -10,11 +10,11 @@ namespace Web.DZR
 		{
 			switch (AnswerType)
 			{
-				case AnswerType.notcorrect:
+				case AnswerType.Notcorrect:
 					return $"❌{code}: не принят";
-				case AnswerType.correct:
+				case AnswerType.Correct:
 					return $"✅{code}: принят";
-				case AnswerType.repited:
+				case AnswerType.Repited:
 					return $"🔄{code}: отправлен повторно";
 				default:
 					return $"⚠️{code}: не стандартный ответ: {SysMessage}";

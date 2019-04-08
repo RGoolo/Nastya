@@ -96,18 +96,11 @@ namespace Model.Types.Class
 
 		public void AfterSendMessage(CommandMessage message, IMessage senderMsg)
 		{
-			switch (message.SystemType)
-			{
-				case SystemType.NeedResource:
-					DownloadResource((IMessage)message.SystemResource);
-					break;
-				case SystemType.None:
-					break;
-				default:
-					EnqueueMessage(senderMsg);
-					break;
-			}
-
+			if (message.SystemType == SystemType.NeedResource)
+				DownloadResource((IMessage)message.SystemResource);
+			else if(senderMsg.TypeMessage == MessageType.SystemMessage)
+				EnqueueMessage(senderMsg);
+			
 			/*switch (message.TypeMessage)
 			{
 				case Types.Enums.MessageType.SystemMessage:

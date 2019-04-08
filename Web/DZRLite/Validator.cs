@@ -6,6 +6,7 @@ using Web.Base;
 using System.Text.RegularExpressions;
 using Web.Game.Model;
 using Model.Types.Class;
+using Model.Types.Interfaces;
 
 namespace Web.DZRLite
 {
@@ -17,7 +18,7 @@ namespace Web.DZRLite
 
 		}
 
-		public override void AfterSendCode(string html, string code, Guid? idMsg)
+		public override void AfterSendCode(string html, IUser user, string code, Guid? idMsg)
 		{
 			switch (code)
 			{

@@ -3,12 +3,15 @@ using System.Collections.Generic;
 using Web.Game.Model;
 using Model.Logic.Settings;
 using Model.Types.Class;
+using Model.Types.Interfaces;
 
 namespace Web.Base
 {
 	public abstract class BaseValidator
 	{
 		public ISettings Settings { get; protected set; }
+		public GameController Controller { get; }
+
 		public event SendLightMsgDel SendMsg;
 		public abstract string GetContextSetCode(string code);// => $"LevelId={_oldPage?.LevelId ?? "1"}&LevelNumber={_oldPage?.LevelNumber ?? "1"}&LevelAction.Answer=" + code;
 		public virtual string GetContextSetSpoyler(string code) => null;
@@ -17,13 +20,13 @@ namespace Web.Base
 		protected BaseValidator(ISettings setting)
 		{
 			Settings = setting;
+			Controller = new GameController(setting);
 		}
 
 		protected void SendTexttMsg(string message, Guid? replaceMsgId = null, bool withHtml = false)
 		{
-			var t = CommandMessage.GetTextMsg( new Texter(message, withHtml));
+			var t = CommandMessage.GetTextMsg(new Texter(message, withHtml));
 			t.OnIdMessage = replaceMsgId.GetValueOrDefault();
-
 			SndMsg(t);
 		}
 
@@ -42,7 +45,7 @@ namespace Web.Base
 		}
 
 
-		public abstract void AfterSendCode(string html, string code, Guid? idMsg);
+		public abstract void AfterSendCode(string html, IUser user, string code, Guid? idMsg);
 		public abstract void SetNewPage(string html);
 
 		public abstract string LogInContext();// => $@"socialAssign=0&Login={Settings.GetValue(Const.Game.Login)}&Password={Const.Game.Password}&EnButton1=Sign+In&ddlNetwork=1";

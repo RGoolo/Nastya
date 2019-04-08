@@ -20,6 +20,6 @@ namespace Web.DZR
 			Text = (node.InnerHtml.Substring(end1, begin2 - end1)).Trim();
 		}
 
-		public bool IsEmpty()=> string.IsNullOrEmpty(Text) || Text == "---" || Text == "-" ;
+		public bool IsEmpty()=> string.IsNullOrEmpty(Text) || Text == "---" || Text == "-" || Text == "нет";
 	}
 }

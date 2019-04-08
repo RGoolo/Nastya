@@ -1,13 +1,16 @@
-﻿namespace Web.DZR
+﻿using Model.Types.Class;
+
+namespace Web.DZR
 {
 	public class Code
 	{
 		public string Name { get; }
-		public string Answer { get; }
+		public string Answered { get; }
 		public bool Accepted { get; }
 		public int Count { get; }
+		public Answer Answer { get; }
 
-		public Code(string name, bool accepted, int count)
+		public Code(string name, bool accepted, int count, Answer answer)
 		{
 			Name = name;
 
@@ -16,19 +19,26 @@
 				var text = name.Split(":");
 				Name = text[0];
 				if (text.Length > 1)
-					Answer = text[1];
+					Answered = text[1];
 			}
 	
 			Accepted = accepted;
 			Count = count;
+			Answer = answer;
 		}
 
-		public override string ToString()
+		public override string ToString() => ToString(false);
+		
+
+		public string ToString(bool useAnswer)
 		{
-			if (Accepted)
+			if (useAnswer && Answer != null)
+				return $"{Count}✅{Name} прислал:" + (string.IsNullOrEmpty(Answer.User.Display) ? "-" : Answer.User.Display) + (Answer == null ? string.Empty : $" ({Answer})");
+			else if (Accepted)
 				return $"{Count}✅{Name}" + (Answer == null ? string.Empty : $"({Answer})");
 			else
 				return $"{Count}❌{Name}";
 		}
+
 	}
 }

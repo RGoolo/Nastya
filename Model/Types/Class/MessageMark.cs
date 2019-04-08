@@ -54,6 +54,7 @@ namespace Model.Types.Class
 		public IFileToken FileToken { get; set; }
 		
 		public Notification Notification { get; set; }
+		public Guid EditMsg { get; set; }
 
 		//public CommandMessage() { }
 
@@ -68,7 +69,6 @@ namespace Model.Types.Class
 			SystemResource = systemResource;
 		}
 
-
 		public static CommandMessage GetSystemMsg(object obj, SystemType systemType)
 			=> new CommandMessage(systemType, obj);
 
@@ -77,6 +77,12 @@ namespace Model.Types.Class
 
 		public static CommandMessage GetTextMsg(Texter texter)
 			=> new CommandMessage(MessageType.Text) { Texter = texter };
+
+		public static CommandMessage GetEditMsg(string text)
+			=> GetEditMsg(new Texter(text));
+
+		public static CommandMessage GetEditMsg(Texter texter)
+			=> new CommandMessage(MessageType.Edit) { Texter = texter};	
 
 		public static CommandMessage GetPhototMsg(IFileToken token, Texter text)
 			=> new CommandMessage(MessageType.Photo) { Texter = text };

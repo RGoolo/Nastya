@@ -8,6 +8,7 @@ using Web.Game.Model;
 using Model.Logic.Settings;
 using System.Collections.Generic;
 using System.Linq;
+using Model.Types.Interfaces;
 
 namespace Web.DZR
 {
@@ -68,7 +69,7 @@ namespace Web.DZR
 		protected override bool IsLogOut(HttpWebResponse response) => false;
 
 
-		public override void SendCode(string str, Guid replaceMsg)
+		public override void SendCode(string str, IUser user, Guid replaceMsg)
 		{
 			var codes = GetCodes(str, Validator.Settings.Game.Prefix?.ToLower() ?? string.Empty);
 			if (codes == null) return;
@@ -78,13 +79,13 @@ namespace Web.DZR
 				case 0:
 					break;
 				case 1:
-					SetEvent(new SimpleEvent(EventTypes.SendCode, codes[0], replaceMsg));
+					SetEvent(new SimpleEvent(EventTypes.SendCode, user, codes[0], replaceMsg));
 					break;
 				default:
 					//ToDo:
 					//SetEvent(new SimpleEvent(EventTypes.SendCodes, codes.Aggregate((x, y) => x + "\n" + y), replaceMsg));
 					foreach(var code  in codes)
-						SetEvent(new SimpleEvent(EventTypes.SendCode, code, replaceMsg));
+						SetEvent(new SimpleEvent(EventTypes.SendCode, user, code, replaceMsg));
 					break;
 			}			
 		}

@@ -1,4 +1,5 @@
-﻿using Model.Types.Enums;
+﻿using Model.Types.Class;
+using Model.Types.Enums;
 using System;
 using System.Collections.Generic;
 
@@ -14,6 +15,7 @@ namespace Model.Types.Interfaces
 		IUser User { get; }
 		List<IMessageCommand> MessageCommands { get;}
 		IMessage ReplyToMessage { get; }
+		CommandMessage ReplyToCommandMessage { get; }
 		IResource Resource { get; set; }
 	}
 

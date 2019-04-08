@@ -1,5 +1,7 @@
-﻿using Model.Types.Interfaces;
+﻿using Model.Types.Class;
+using Model.Types.Interfaces;
 using System;
+using System.Collections.Generic;
 
 namespace Model.Logic.Settings
 {
@@ -8,13 +10,14 @@ namespace Model.Logic.Settings
 		string DontExistFile(string ext);
 
 		void SetValue(string name, string value);
-
-		TypeGame SetUri(string uri);
-		Guid ChatGuid { get;  }
-		TypeGame TypeGame { get;  }
-		void Clear();
 		string GetValue(string name, string @default = default(string));
+		Guid ChatGuid { get; }
 
+		TypeGame SetUri(string uri);	
+		TypeGame TypeGame { get;  }
+
+		void Clear();
+		
 		IChatFileWorker FileWorker { get; }
 		ISettingsBraille Braille { get; }
 		ISettingsTest Test { get; }
@@ -22,6 +25,8 @@ namespace Model.Logic.Settings
 		ISettingsGame Game { get;  }
 		ISettingsWeb Web { get; }
 		ISettingsPage Page { get;}
+
+		//List<Answer> Answers { get; }
 	}
 
 	public interface ISettingsBraille
@@ -75,6 +80,9 @@ namespace Model.Logic.Settings
 		bool IsSendVoice { get; set; }
 
 		bool CheckOtherTask { get; set; }
+
+		Guid SectorsMsg { get; set; }
+		Guid AllSectorsMsg { get; set; }
 	}
 
 	public interface ISettingsWeb

@@ -31,4 +31,6 @@ namespace Model.Types.Class
 			Values = new List<string>();
 		}
 	}
+
+
 }

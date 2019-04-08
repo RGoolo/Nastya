@@ -182,7 +182,7 @@ namespace Model.TelegramBot
 					var parseModeEdit = GetParseMod(message.Texter);
 					var textEdit = GetText(message.Texter);
 					if (!string.IsNullOrEmpty(textEdit))
-						senderMsg = await _bot.EditMessageTextAsync(longChatId, message.OnIdMessage.ToInt(), textEdit, parseModeEdit, disableWebPagePreview: true, cancellationToken: _cancellationToken);
+						senderMsg = await _bot.EditMessageTextAsync(longChatId, replaceMsg, textEdit, parseModeEdit, disableWebPagePreview: true, cancellationToken: _cancellationToken);
 					break;
 				case Types.Enums.MessageType.Text:
 					var text = GetText(message.Texter);
@@ -213,7 +213,8 @@ namespace Model.TelegramBot
 						senderMsg = await _bot.SendDocumentAsync(longChatId, file, GetText(message.Texter), GetParseMod(message.Texter), replyToMessageId: replaceMsg, cancellationToken: _cancellationToken);
 					break;
 			}
-			return senderMsg == null ? null : TelegramMessage(senderMsg);
+
+			return senderMsg == null ? null : new NotificationMessage(TelegramMessage(senderMsg), message);
 		}
 
 		private async void DownloadFile(string fileId, IFileToken token, IMessage msg, TypeResource type)

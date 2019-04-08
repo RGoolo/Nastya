@@ -42,7 +42,7 @@ namespace Model.Types.Enums
 		NewHint,
 		NewSpoiler,
 		SendSectors,
-		
+		SendAllSectors,
 	}
 
 	public enum TypeResource

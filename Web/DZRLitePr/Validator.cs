@@ -8,6 +8,8 @@ using Model.Logic.Model;
 using Model.Logic.Settings;
 using Model.Types.Class;
 using static System.Int32;
+using Model.Types.Interfaces;
+using Model.Types.Enums;
 
 namespace Web.DZRLitePr
 {
@@ -22,7 +24,7 @@ namespace Web.DZRLitePr
 		private Page _lastPage;
 
 
-		public override void AfterSendCode(string html, string code, Guid? idMsg)
+		public override void AfterSendCode(string html, IUser user, string code, Guid? idMsg)
 		{
 			Page page = null;
 			page = (Settings.TypeGame & TypeGame.Dummy) == TypeGame.Dummy ? new Page(html, string.Empty) : new Page(html, GetUrl());
@@ -63,7 +65,7 @@ namespace Web.DZRLitePr
 					if (!oldTask.Spoiler.IsComplited && task.Spoiler.IsComplited)
 					{
 						var msg = CommandMessage.GetTextMsg(new Texter($"{task.Alias}\nРазгадан спойлер:\n{task.Spoiler.Text}", true));
-						msg.Notification = Model.Types.Enums.Notification.NewSpoiler;
+						msg.Notification = Notification.NewSpoiler;
 						msgs.Add(msg);
 					}
 						

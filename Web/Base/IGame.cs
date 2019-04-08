@@ -1,4 +1,5 @@
 ﻿using Model.Types.Class;
+using Model.Types.Interfaces;
 using System;
 using System.Collections.Generic;
 using Web.Game.Model;
@@ -11,6 +12,6 @@ namespace Web.Base
 	{ 
 		event SendMsgSyncDel SendMsg;
 		void SetEvent(IEvent iEvent);
-		void SendCode(string code, Guid replaceMsg);
+		void SendCode(string code, IUser user, Guid replaceMsg);
 	}
 }

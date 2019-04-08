@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Xml.Serialization;
 using Model.Logic.Model;
+using Model.Types.Class;
 using Model.Types.Interfaces;
 
 namespace Model.Logic.Settings
@@ -18,6 +19,7 @@ namespace Model.Logic.Settings
 		public string GetValue(string name, string @default = default(string)) => Settings.GetValue(name, @default);
 		public bool GetValueBool(string name, bool @default = default(bool)) => Settings.GetValueBool(name, @default);
 		public long GetValueLong(string name, long @default = default(long)) => Settings.GetValueLong(name, @default);
+		public Guid GetValueGuid(string name, Guid @default = default(Guid)) => Settings.GetValueGuid(name, @default);
 		public Settings Settings { get; }
 		public Guid ChatGuid  => Settings.ChatGuid; 
 		public TypeGame TypeGame => Settings.TypeGame;
@@ -29,6 +31,7 @@ namespace Model.Logic.Settings
 		public ISettingsPage Page { get; }
 
 		public IChatFileWorker FileWorker { get; }
+		//public List<Answer> Answers => Settings.Answers;
 
 		public string DontExistFile(string ext) => DontExistFile(ext, ChatGuid);
 

@@ -141,7 +141,6 @@ namespace Web.DZR
 					return $"⏳ До закрытия уровня: {time}";
 			}
 		}
-
 	}
 }
 /*

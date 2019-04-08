@@ -40,7 +40,7 @@ namespace Web.DZRLite
 				// GetContextSetCode
 
 				case EventTypes.GetLvlInfo:
-					Validator.AfterSendCode("123", "0", null);
+					Validator.AfterSendCode("123", iEvent.User, "0", null);
 					break;
 				case EventTypes.Refresh:
 					Refresh();
@@ -55,11 +55,11 @@ namespace Web.DZRLite
 					break;
 
 				case EventTypes.GetSectors:
-					Validator.AfterSendCode(iEvent.Text, "1", null);
+					Validator.AfterSendCode(iEvent.Text, iEvent.User, "1", null);
 					break;
 
 				case EventTypes.GetAllSectors:
-					Validator.AfterSendCode(iEvent.Text, "2", null);
+					Validator.AfterSendCode(iEvent.Text, iEvent.User, "2", null);
 					break;
 			}
 		}

@@ -5,6 +5,8 @@ using System.Text;
 using Model.Logic.Model;
 using Model.Logic.Settings;
 using Model.Types.Class;
+using Model.Types.Enums;
+using Model.Types.Interfaces;
 using Web.Base;
 using Web.Game.Model;
 
@@ -20,7 +22,7 @@ namespace Web.DL
 
 		}
 
-		public override void AfterSendCode(string html, string code, Guid? idMsg)
+		public override void AfterSendCode(string html, IUser user, string code, Guid? idMsg)
 		{
 			var page = new Page(html);
 			if (page?.LevelId == null || !page.IsReceived.HasValue)
@@ -252,7 +254,7 @@ namespace Web.DL
 			}
 
 			var msg = CommandMessage.GetTextMsg(new Texter(sb.ToString(), true));
-			msg.Notification = Model.Types.Enums.Notification.SendSectors;
+			msg.Notification = Notification.SendSectors;
 			SndMsg(msg);
 		}
 

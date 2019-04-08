@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Model.Types.Class;
+using System;
 using System.Collections.Generic;
 
 namespace Model.Logic.Settings
@@ -40,6 +41,8 @@ namespace Model.Logic.Settings
 		[NonSerialized] readonly Dictionary<string, string> _properties = new Dictionary<string, string>();
 
 		public List<KeyVal> Setting { get; set; }
+
+		//[NonSerialized] public List<Answer> Answers = new List<Answer> ();
 
 		public void Clear()
 		{
@@ -115,6 +118,15 @@ namespace Model.Logic.Settings
 			{
 				if (!_properties.ContainsKey(name)) return @default;
 				return long.TryParse(_properties.GetValueOrDefault(name), out var b) ? b : @default;
+			}
+		}
+
+		public virtual Guid GetValueGuid(string name, Guid @default = default(Guid))
+		{
+			lock (_lock)
+			{
+				if (!_properties.ContainsKey(name)) return @default;
+				return Guid.TryParse(_properties.GetValueOrDefault(name), out var b) ? b : @default;
 			}
 		}
 	}

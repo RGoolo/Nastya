@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Model.Types.Interfaces;
+using System;
 
 namespace Web.Game.Model
 {
@@ -29,6 +30,7 @@ namespace Web.Game.Model
 		EventTypes EventType { get; }
 		string Text { get; }
 		Guid IdMsg { get; }
+		IUser User { get; }
 	}
 
 	public class SimpleEvent : IEvent
@@ -36,11 +38,14 @@ namespace Web.Game.Model
 		public string Text { get; set; }
 		public EventTypes EventType { get; set; }
 		public Guid IdMsg { get; }
-		public SimpleEvent(EventTypes eventType, string text = "", Guid? idMsg = null)
+		public IUser User { get; }
+
+		public SimpleEvent(EventTypes eventType, IUser user, string text = "", Guid? idMsg = null)
 		{
 			Text = text;
 			EventType = eventType;
 			IdMsg = idMsg.GetValueOrDefault();
+			User = user;
 		}
 
 	}

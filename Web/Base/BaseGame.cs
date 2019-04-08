@@ -12,6 +12,7 @@ using Model.Logic.Settings;
 using System.Linq;
 using Model.Types.Class;
 using Web.Game;
+using Model.Types.Interfaces;
 
 namespace Web.Base
 {
@@ -87,8 +88,9 @@ namespace Web.Base
 					break;
 
 				case EventTypes.SendCode:
-					var page = GetPage(PostHttpWebRequest(Validator.GetUrl(), Validator.GetContextSetCode(iEvent.Text)));
-					Validator.AfterSendCode(page, iEvent.Text, iEvent.IdMsg);
+					var strcontext = Validator.GetContextSetCode(iEvent.Text);
+					var page = GetPage(PostHttpWebRequest(Validator.GetUrl(), strcontext));
+					Validator.AfterSendCode(page, iEvent.User, iEvent.Text, iEvent.IdMsg);
 					break;
 
 				case EventTypes.SendSpoiler:
@@ -97,7 +99,7 @@ namespace Web.Base
 						throw new GameException("Не найти спойлер.");
 
 					var page2 = GetPage(PostHttpWebRequest(Validator.GetUrl(), context));
-					Validator.AfterSendCode(page2, iEvent.Text, iEvent.IdMsg);
+					Validator.AfterSendCode(page2, iEvent.User, iEvent.Text, iEvent.IdMsg);
 					break;
 
 				default:
@@ -155,7 +157,7 @@ namespace Web.Base
 		{
 			//Много паранойи
 			if (_queue.IsEmpty)
-				_queue.Enqueue(new SimpleEvent(EventTypes.Refresh));
+				_queue.Enqueue(new SimpleEvent(EventTypes.Refresh, null));
 		}
 
 		protected virtual void Stop()
@@ -261,13 +263,13 @@ namespace Web.Base
 		}
 
 		public void Dispose() => Stop();
-		public virtual void SendCode(string str, Guid replaceMsg)
+		public virtual void SendCode(string str, IUser user, Guid replaceMsg)
 		{
 			if (string.IsNullOrEmpty(str))
 				return;
 
 			if (str.StartsWith("."))
-				SetEvent(new SimpleEvent(EventTypes.SendCode, str.Substring(1), replaceMsg));
+				SetEvent(new SimpleEvent(EventTypes.SendCode, user, str.Substring(1), replaceMsg));
 		}
 
 		public void SendCode(string v, object p)

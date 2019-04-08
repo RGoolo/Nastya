@@ -21,6 +21,10 @@ namespace Model.Dummy
 	
 		public IResource Resource { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
+		public CommandMessage AnswerOn => null;
+
+		public CommandMessage ReplyToCommandMessage => null;
+
 		public Message(Guid botId, Guid? replayToMsgId = null, string text = null)
 		{
 			TypeMessage = MessageType.Text; 
