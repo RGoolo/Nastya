@@ -77,10 +77,10 @@ namespace Model.Logic.Settings
 		{
 			lock (_lock)
 			{
-				if (_properties.ContainsKey(name))
-					_properties.Remove(name);
+				if (_properties.ContainsKey(name.ToLower()))
+					_properties.Remove(name.ToLower());
 
-				_properties.Add(name, value);
+				_properties.Add(name.ToLower(), value);
 			}
 		}
 

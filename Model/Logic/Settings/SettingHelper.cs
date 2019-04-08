@@ -15,9 +15,9 @@ namespace Model.Logic.Settings
 		private static string Path => @"D:\botseting\";
 		public static Dictionary<string, string> paths = new Dictionary<string, string>();
 
-		public string GetValue(string name, string @default = default(string)) => Settings.GetValue(name, @default);
-		public bool GetValueBool(string name, bool @default = default(bool)) => Settings.GetValueBool(name, @default);
-		public long GetValueLong(string name, long @default = default(long)) => Settings.GetValueLong(name, @default);
+		public string GetValue(string name, string @default = default(string)) => Settings.GetValue(name.ToLower(), @default);
+		public bool GetValueBool(string name, bool @default = default(bool)) => Settings.GetValueBool(name.ToLower(), @default);
+		public long GetValueLong(string name, long @default = default(long)) => Settings.GetValueLong(name.ToLower(), @default);
 		public Settings Settings { get; }
 		public Guid ChatGuid  => Settings.ChatGuid; 
 		public TypeGame TypeGame => Settings.TypeGame;
@@ -50,7 +50,7 @@ namespace Model.Logic.Settings
 		//http://demo.en.cx/gameengines/encounter/play/26569
 		public void SetValue(string name, string value)
 		{
-			Settings.SetValue(name, value);
+			Settings.SetValue(name.ToLower(), value);
 			Save();
 		}
 
