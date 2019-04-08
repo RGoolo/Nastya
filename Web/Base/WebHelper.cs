@@ -39,7 +39,7 @@ namespace Web.Base
 		{
 			List<LinkStruct> result = new List<LinkStruct>();
 
-			foreach (Match match in Regex.Matches(str, "<[(img)][^>]*>"))
+			foreach (Match match in Regex.Matches(str, "<(img)[^>]*>"))
 			{
 				var start = match.Value.LastIndexOf("/") + 1;
 				var end = match.Value.IndexOf("\"", start);

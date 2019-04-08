@@ -28,7 +28,7 @@ namespace Web.DL
 			if (page?.LevelId == null || !page.IsReceived.HasValue)
 				throw new GameException("Сервер вернул некорректное значение.");
 
-			SendTexttMsg(page.IsReceived.Value ? "+" : "-" + " " + (code), idMsg);
+			SendTexttMsg(page.IsReceived.Value ? $"✅{code}: принят" : $"❌{code}: не принят", idMsg);
 
 			SetNewPage(page);
 		}
@@ -73,12 +73,11 @@ namespace Web.DL
 				maxDt = dt2;
 				minDt = dt1;
 			}
-			
-			if (maxDt.Minute > minutes && maxDt.Hour == 0)
-				if (minDt.Minute < minutes)
-					return true;
 
-			return false;
+			var difTime = new DateTime();
+			difTime.AddMinutes(minutes);
+
+			return ((maxDt - difTime).TotalMinutes > minutes && (minDt - difTime).TotalMinutes <= minutes);				
 		}
 
 		private void SendDiffTime(Page page)
@@ -86,11 +85,10 @@ namespace Web.DL
 			var msg = new List<CommandMessage>();
 	
 			if (IsBorderValue (page.TimeToEnd , _lastPage.TimeToEnd, 5))
-				msg.Add(CommandMessage.GetTextMsg($"! Осталось меньше 5 минут"));
+				msg.Add(CommandMessage.GetTextMsg($"⏳ Осталось меньше 5 минут"));
 
 			if (IsBorderValue(page.TimeToEnd, _lastPage.TimeToEnd, 1))
-				msg.Add(CommandMessage.GetTextMsg($"! Осталось меньше минуты"));
-
+				msg.Add(CommandMessage.GetTextMsg($"⏳ Осталось меньше минуты"));
 
 			for (var i = 0; i < page.Hints.Count; ++i)
 			{
@@ -100,11 +98,11 @@ namespace Web.DL
 					if (hint == null)
 						continue;
 
-					if (IsBorderValue(page.Hints[i].TimeTo, hint.TimeTo, 5))
-						msg.Add(CommandMessage.GetTextMsg($"{hint.Name} Откроется через {hint.TimeTo.ToString(TimeFormat)}"));
+					if (IsBorderValue(page.Hints[i].TimeToEnd, hint.TimeToEnd, 5))
+						msg.Add(CommandMessage.GetTextMsg($"⏳ {hint.Name} Откроется через {hint.TimeToEnd.ToString(TimeFormat)}"));
 
-					if (IsBorderValue(page.Hints[i].TimeTo, hint.TimeTo, 1))
-						msg.Add(CommandMessage.GetTextMsg($"{hint.Name} Откроется через {hint.TimeTo.ToString(TimeFormat)}"));
+					//if (IsBorderValue(page.Hints[i].TimeTo, hint.TimeTo, 1))
+					//	msg.Add(CommandMessage.GetTextMsg($"⏳ {hint.Name} Откроется через {hint.TimeTo.ToString(TimeFormat)}"));
 		}
 			}
 			if (msg.Any())
@@ -152,7 +150,7 @@ namespace Web.DL
 			var msg = new List<CommandMessage>();
 
 			StringBuilder sb = new StringBuilder();
-			sb.Append(!isNewlvl ? "❤️ Текущий уровень ❤️\n" : "❤️ Следующий уровень ❤️\n");
+			sb.Append(!isNewlvl ? "📖 Текущий уровень" : "📖 Следующий уровень \n");
 
 			if (page.Levels.Any())
 			{
@@ -165,7 +163,6 @@ namespace Web.DL
 				sb.Append($"Времени для автоперехода: " + page.TimeToEnd.ToString(TimeFormat) + "\n");
 
 			sb.Append(page.LevelTitle + "\n" + page.Task + "\n");
-			
 			if (page.Links.Count > 0)
 			{
 				sb.Append("В задании есть следующие ссылки: \n");
@@ -191,7 +188,7 @@ namespace Web.DL
 				{
 					sb.Append(hint.IsReady
 						? $"\n{hint.Name}: {hint.Text}\n"
-						: $"\n{hint.Name} откроется через: {hint.TimeTo.ToString(TimeFormat)}\n");
+						: $"\n{hint.Name} откроется через: {hint.TimeToEnd.ToString(TimeFormat)}\n");
 				}
 			}
 
