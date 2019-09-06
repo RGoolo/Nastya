@@ -2,213 +2,226 @@
 using Model.Types.Interfaces;
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
-using System.Text.RegularExpressions;
+using System.Net.Mime;
+using System.Runtime.InteropServices;
+using System.Text;
+using Model.Logic.Yandex;
 
 namespace Model.Logic.Coordinates
 {
-	//ToDo: сложно получилось, надо бы разбить на 2 класса.
-	public class CoordinatesFactory
-	{
-		public CoordinatesFactory(IFileWorker fileWorker, string googleToken)
-		{
-			FileWorker = fileWorker;
-			FactoryMaps = new FactoryMaps(googleToken, fileWorker);
-			//FactoryMaps = new FactoryMaps
-		}
+    public class PointsFactory
+    {
+        private SettingsPoints _settings;
+        private readonly string _creds;
+        private readonly IFileWorker _fileWorker;
+        private GooglePointProvider GooglePlacesProvider;
+        private readonly YandexPointProvider _yandexPlacesProvider;
+        private List<IPointProvider<Coordinate>> CoordinatesProvider;
+        private List<IPointProvider<Place>> PlacesProvider;
+        private ICoordinateWorker coordinateWorker;
 
-		public static string YandexUrl = @"https://yandex.ru/maps/?{1}mode=routes&rtext={0}&z=12";
-
-		public string YandexName { get; set; } = "[Я]";
-		public string GoogleName { get; set; } = "[G]";
-		public string YandexPointNameMe { get; set; } = "[Y маршрут от меня]";
-		public string GooglePointNameMe { get; set; } = "[G маршрут от меня]";
-		public string YandexPointName { get; set; } = "[Y маршрут]";
-		public string GooglePointName { get; set; } = "[G маршрут]";
-		public IFileWorker FileWorker { get; }
-		private FactoryMaps FactoryMaps { get; }
-
-		public static string YandexCity = @"ll={0}&";
-		private string GetUrlYa(string text, bool fromMe = false) =>
-			City != null ? 
-			string.Format(YandexUrl, (fromMe ? "~" : "") + text, string.Format(YandexCity, City)) 
-			: string.Format(YandexUrl, text, string.Empty);
-		public Coordinate City;
-
-		public static string GetUrl(string link, string name) => $"<a href=\"{link}\">{name}</a>";
-
-		private string GetUrlLink(Maps maps, string yaCoord, bool withInfo = false) => 
-			(withInfo? GetPlace(yaCoord): string.Empty) 
-			+ GetUrl(GetUrlYa(yaCoord), YandexName) + " " + GetUrl(maps.ToString(false), GoogleName);
-
-		public string GetUrlLink(Coordinate coord, bool withInfo) => GetUrlLink(FactoryMaps.GetMap(coord), $@"{coord.Latitude},{coord.Longitude}", withInfo);
-		public string GetUrlLink(string coord, bool withInfo) => GetUrlLink(FactoryMaps.GetMap(coord), coord, withInfo);
-		public string GetUrlLink(Coordinate coord) => GetUrlLink(coord, false);
-		public string GetUrlLink(string coord) => GetUrlLink(coord, false);
-
-		private string GetPoints(string maps, string yaPoint, bool fromMe = true) => GetUrl(maps.ToString(), fromMe ? GooglePointNameMe : GooglePointName) + " " + GetUrl(GetUrlYa(yaPoint, fromMe), fromMe ? YandexPointNameMe : YandexPointName);
-		private string GetPoints(string maps, IEnumerable<string> yaPoints, bool fromMe = true) => GetPoints(maps, yaPoints.Aggregate((x, y) => x + "~" + y), fromMe);
-
-		public string GetPlace(string str) => Yandex.YandexGeocoder.Geocode(str)?.FirstOrDefault()?.GeocoderMetaData.Text ?? string.Empty + " ";
-		public Coordinate GetCoord(string str)
-		{
-			var point = Yandex.YandexGeocoder.Geocode(str)?.FirstOrDefault()?.Point;
-			return point == null ? null : new Coordinate(point.Value, str); ;
-		}
-		
-		public IEnumerable<Coordinate> GetTextCoord(string t)
-		{
-			var result = new List<Coordinate>();
-			var split = t.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.RemoveEmptyEntries);
-			if (split != null)
-				result.AddRange(split.Select(GetCoord));
-			return result;
-		}
-
-		private readonly Func<string, string[]> _splitString = x => x.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.RemoveEmptyEntries);
-
-		public string GetPointes(string str)
-		{
-			return GetPointes(str,
-				GetCoords,
-				FactoryMaps.GetMap,
-				(x) => x.OriginText);
-		}
-
-		public string GetTextPointes(string str)
-		{
-			return GetPointes(str,
-				_splitString,
-				FactoryMaps.GetMap,
-				(x) => x);
-		}
-
-		private string GetPointes<T>(string text, 
-			Func<string, IEnumerable<T>> getCoords, 
-			Func<IEnumerable<T>, Maps> createMap, 
-			Func<T, string> toString )
-		{
-			var coords = getCoords(text).ToList();
-			if (!coords.Any())
-				return text;
-			var map = createMap(coords);
-			return GetPoints(map.ToString(false), coords.Select(toString)) + Environment.NewLine + GetPoints(map.ToString(true), coords.Select(toString), false);
-		}
-
-		public string ReplaceCoords<T>(string text,
-			Func<string, IEnumerable<T>> getCoords,
-			Func<IEnumerable<T>, Maps> createMap,
-			Func<T, string> toString,
-			Func<T, string> getUrlsLink
-			)
-		{
-			var dic = new Dictionary<string, string>();
-			var coords = getCoords(text);
-			if (!coords.Any())
-				return text;
-
-			coords.ToList().ForEach(x => dic.TryAdd(toString(x), getUrlsLink(x)));
-
-			if (coords.Count() > 1)
-			{
-				var maps = createMap(coords);
-				dic.ToList().ForEach(x => text = text.Replace(x.Key, x.Key + x.Value));
-				var yaPoints = coords.Select(toString);
-				text += Environment.NewLine + GetPoints(maps.ToString(false), yaPoints);
-				text += Environment.NewLine + GetPoints(maps.ToString(true), yaPoints, false);
-			}
-			return text;
-		}
-
-		public string ReplaceCoords(string str)
-		{
-			return ReplaceCoords(str,
-				GetCoords,
-				FactoryMaps.GetMap,
-				(x) => x.OriginText,
-				GetUrlLink);
-		}
-
-		public string ReplaceTextCoords(string str)
-		{
-			return ReplaceCoords(str, _splitString, FactoryMaps.GetMap, (x) => x, GetUrlLink);
-		}
-
-		public void GetPicture(string str, IFileToken file) => FactoryMaps.SaveImg(file, new Maps(GetCoords(str)));
-		public void GetPictureText(string str, IFileToken file) => FactoryMaps.SaveImg(file, new Maps(_splitString(str)));
-
-		public static IEnumerable<Coordinate> GetCoords(string text)
-		{
-			//ToDo: remake logic!
-			foreach (var coord in GetDegreeCoords(text))
-				yield return coord;
-			foreach (var coord in GetDegreeMinSecCoords(text))
-				yield return coord;
-		}
-
-		public static IEnumerable<Coordinate> GetDegreeCoords(string text)
-		{
-			const string patternDigital = @"-?\d{1,2}\.\d{2,16}";
-			const string n = "(N|n|н|Н)";
-			const string s = "(?<firstMinus>S|s)";
-			const string e = "(E|e|Е|е)";
-			const string w = "(?<secondMinus>W|w)";
-			var kod1 = $"(?<firstCode>(?<firstDigital>{patternDigital})({n}|{s})?)";
-			var kod2 = $"(?<secondCode>(?<secondDigital>{patternDigital})({e}|{w})?)";
-			var pattern = @"(^|\D)" + kod1 + @"(\s|\.|,){1,3}" + kod2;
-
-
-            foreach (Match match in Regex.Matches(text, pattern))
-            {
-                var firstMinus = match.Groups["firstMinus"].Success ? -1 : 1;
-                var secondMinus = match.Groups["secondMinus"].Success ? -1 : 1;
-
-                yield return new Coordinate(Parse(match.Groups["firstDigital"].Value) * firstMinus, Parse(match.Groups["secondDigital"].Value) * secondMinus, match.Value.Trim());
-            }
-    	}
-
-        private static float Parse(string str) =>string.IsNullOrEmpty(str) ? 0 : float.Parse(str, NumberStyles.Float, CultureInfo.InvariantCulture); 
-
-
-		public static IEnumerable<Coordinate> GetDegreeMinSecCoords(string text)
+        public PointsFactory(SettingsPoints settings, string creds, IFileWorker fileWorker)
         {
-            const string firstDegree = @"(?<firstDegree>\d{1,2})";
-            const string firstMinutes = @"(?<firstMinutes>\d{1,2})";
-            const string firstSeconds = @"(?<firstSeconds>\d{1,2})(\W?\.(?<firstMilliSeconds>\d{1,8})?)";
+            _settings = settings;
+            _creds = creds;
+            _fileWorker = fileWorker;
+            GooglePlacesProvider = new GooglePointProvider(settings, creds);
+            _yandexPlacesProvider = new YandexPointProvider(settings);
 
-            const string secondDegree = @"(?<secondDegree>\d{1,2})";
-            const string secondMinutes = @"(?<secondMinutes>\d{1,2})";
-            const string secondSeconds = @"(?<secondSeconds>\d{1,2})(\W?\.(?<secondMilliSeconds>\d{1,8})?)";
+            CoordinatesProvider = new List<IPointProvider<Coordinate>>() {GooglePlacesProvider, _yandexPlacesProvider};
+            PlacesProvider = new List<IPointProvider<Place>>() { GooglePlacesProvider, _yandexPlacesProvider };
+        }
 
-            var firstDigitalCode = ($@"(?<firstMinus>-)?{firstDegree}\W{firstMinutes}\W{firstSeconds}\W?");
-            var secondDigitalCode = ($@"(?<secondMinus>-)?{secondDegree}\W{secondMinutes}\W{secondSeconds}\W?");
 
-            const string separator = @"(\s|,|\.){0,3}";
-			const string n = "(N|n|н|Н)?";
-            const string s = "(?<firstMinus>S|s)";
-            const string e = "(E|e|Е|е)?";
-			const string w = "(?<secondMinus>W|w)";
+        public PointWorker<Coordinate> GetCoordinates(string text) 
+        {
+            return new CoordinatesWorker(CoordinatesProvider.Where(x => x.Use).ToList(), text, coordinateWorker);
+        }
 
-			var kod1 = $"({n}|{s})?{firstDigitalCode}({n}|{s})?";
-			var kod2 = $"({e}|{w})?{secondDigitalCode}({e}|{w})?";
-			var pattern = kod1 + separator + kod2;
+        public PointWorker<Place> GetPlaces(string text)
+        {
+            return new PlacesWorker(PlacesProvider.Where(x => x.Use).ToList(), text, coordinateWorker);
+        }
 
-			foreach (Match match in Regex.Matches(text, pattern))
+        public Coordinate GetCoordinate(string str) => _yandexPlacesProvider.GetCoordinate(str);
+
+        /*public Coordinate GetCoordinate(string str)
+        {
+            //var point = Yandex.YandexGeocoder.Geocode(str)?.FirstOrDefault()?.Point;
+            //return point == null ? null : new Coordinate(point.Value, str); ;
+        }
+
+        public string GetPlace(string str) => Yandex.YandexGeocoder.Geocode(str)?.FirstOrDefault()?.GeocoderMetaData.Text ?? string.Empty + " ";
+        public void GetPicture(string str, IFileToken file) => _factoryMaps.SaveImg(file, new Maps(CoordinatesChecker.GetCoords(str)));
+        public void GetPictureText(string str, IFileToken file) => _factoryMaps.SaveImg(file, new Maps(_splitString(str)));*/
+    }
+
+    public enum TypePoints
+    {
+        FromMe, OnlyPoint
+    }
+
+    public class GooglePointProvider : IPointProvider<Place>, IPointProvider<Coordinate>
+    {
+        private static string GetUrl(string link, string name) => $"<a href=\"{link}\">{name}</a>";
+
+        private static string _startLink = @"https://www.google.com/maps/dir/?api=1";
+        public TravelMode TravelMode = TravelMode.driving;
+        //public List<Point> WayPoints = new List<string>();
+
+        public GooglePointProvider(SettingsPoints settings, string cred)
+        {
+            _settings = settings;
+            _cred = cred;
+        }
+
+        private SettingsPoints _settings;
+        private readonly string _cred;
+
+        public bool Use => _settings.Google.LinkFor;
+
+        public string GetUrl(Coordinate place) => GetPrivateUrl(place);
+
+        public string GetUrl(List<Coordinate> places, TypePoints type) => GetPrivateUrl(places, type);
+
+
+        public string GetUrl(Place place) => GetPrivateUrl(place);
+
+        public string GetUrl(List<Place> places, TypePoints type) => GetPrivateUrl(places, type);
+
+
+        private string GetPrivateUrl<T>(T point) where T : Point
+        {
+            return _startLink + $"&destination={point}";
+        }
+
+        private string GetPrivateUrl<T>(List<T> points, TypePoints type) where T : Point
+        {
+            StringBuilder sb = new StringBuilder(_startLink);
+            var origin = type == TypePoints.FromMe;
+            if (origin)
+                sb.Append($"&origin={points.First()}");
+
+            sb.Append($"&destination={points.Last()}");
+
+            if (points.Count > 1)
             {
-                var firstCode = FromDegree(match.Groups["firstDegree"].Value, match.Groups["firstMinutes"].Value,
-                    match.Groups["firstSeconds"].Value, match.Groups["firstMilliSeconds"].Value, match.Groups["firstMinus"].Success);
+                var points1 = points.Select(x => x.ToString()).SkipLast(origin ? 1 : 0).Aggregate((x, y) => x + "%7C" + y);
+                sb.Append($"&waypoints={points1}");
+            }
+            return sb.ToString();
+        }
+    }
 
-                var secondCode = FromDegree(match.Groups["secondDegree"].Value, match.Groups["secondMinutes"].Value,
-                    match.Groups["secondSeconds"].Value, match.Groups["secondMilliSeconds"].Value, match.Groups["secondMinus"].Success);
+    public class YandexPointProvider : IPointProvider<Place>, IPointProvider<Coordinate>
+    {
+        public static string yandexCity = @"ll={0}&";
+        public static string yandexUrl = @"https://yandex.ru/maps/?{1}mode=routes&rtext={0}&z=12";
 
-                yield return new Coordinate(firstCode, secondCode, match.Value.Trim());
-			}
-		}
+        public Coordinate GetCoordinate(string str)
+        {
+            var point = Yandex.YandexGeocoder.Geocode(str)?.FirstOrDefault()?.Point;
+            return point == null ? null : new Coordinate(point.Value, str); ;
+        }
 
-        private static float FromDegree(string i, string j, string k, string l, bool minus) =>
-            FromDegree(Parse(i), Parse(j), Parse(k) + Parse((string.IsNullOrEmpty(l) ? "" : $".{l}")), minus ? -1 : 1);
 
-        private static float FromDegree(float i, float j, float k, int minus) => (i + j / 60 + k / 60 / 60) * (minus);
+        public YandexPointProvider(SettingsPoints settings)
+        {
+            _settings = settings;
+        }
+
+        private readonly SettingsPoints _settings;
+
+        public bool Use => _settings.Yandex.LinkFor;
+
+        public string GetUrl(Coordinate place) => GetPrivateUrl(place);
+
+        public string GetUrl(List<Coordinate> places, TypePoints type) => GetPrivateUrl(places, type);
+
+        public string GetUrl(Place place) => GetPrivateUrl(place);
+
+        public string GetUrl(List<Place> places, TypePoints type) => GetPrivateUrl(places, type);
+
+        private string GetPrivateUrl<T>(T point) where T : Point => GetPrivateUrl(point.ToString(), TypePoints.FromMe);
+
+        public string GetPrivateUrl<T>(List<T> places, TypePoints type) where T : Point => GetPrivateUrl(string.Join("~", places.Select(x => x.ToString())), type);
+
+        public string GetPrivateUrl(string text, TypePoints type)
+        {
+            text = (type == TypePoints.FromMe ? "~" : "") + text;
+
+            return string.Format(yandexUrl, text,
+                _settings.City != null
+                    ? string.Format(yandexCity, _settings.City)
+                    : string.Empty);
+        }
+    }
+
+    public interface IPointProvider<T> where T : Point
+    {
+        bool Use { get; }
+        string GetUrl(T place);
+        string GetUrl(List<T> places, TypePoints type);
+    }
+
+    public interface ICoordinateWorker
+    {
+        string GetMaps(List<Point> coordinates);
+    }
+
+    public class PlacesWorker : PointWorker<Place>
+    {
+        public PlacesWorker(List<IPointProvider<Place>> providers, string text, ICoordinateWorker coordinateWorker) : base(providers, text, coordinateWorker)
+        {
+
+        }
+
+        protected override List<Place> GetPoints() => RegExPoints.GetPlaces(Text).ToList();
+    }
+
+    public class CoordinatesWorker : PointWorker<Coordinate>
+    {
+        public CoordinatesWorker(List<IPointProvider<Coordinate>> providers, string text, ICoordinateWorker coordinateWorker) : base(providers, text, coordinateWorker)
+        {
+
+        }
+
+        protected override List<Coordinate> GetPoints() => RegExPoints.GetCoords(Text).ToList();
+    }
+
+    public abstract class PointWorker<T> where T : Point
+    {
+        internal readonly List<IPointProvider<T>> Providers;
+        internal readonly string Text;
+        internal readonly ICoordinateWorker CoordinateWorker;
+        private List<T> _points;
+
+        protected abstract List<T> GetPoints();
+
+        protected PointWorker(List<IPointProvider<T>> providers, string text, ICoordinateWorker coordinateWorker)
+        {
+            Providers = providers;
+            Text = text;
+            CoordinateWorker = coordinateWorker;
+        }
+
+        public List<T> Points => _points ?? (_points = GetPoints());
+
+        public string ReplacePoints()
+        {
+            if (Providers.Count == 0 || Points.Count == 0) return Text;
+            
+            var points = Points;
+            points.ForEach(coordinate => coordinate.Urls = string.Join(string.Empty, Providers.Select(x => x.GetUrl(coordinate))));
+
+            if (points.Count > 1)
+                points.Last().Urls += string.Join(String.Empty, Providers.Select(x => x.GetUrl(points, TypePoints.FromMe)))
+                                           + string.Join(String.Empty, Providers.Select(x => x.GetUrl(points, TypePoints.OnlyPoint)));
+
+            var result = new StringBuilder(Text);
+            Points.ForEach(coordinate => result.Replace(coordinate.OriginText, coordinate.OriginText + coordinate.Urls));
+            return result.ToString();
+        }
     }
 }

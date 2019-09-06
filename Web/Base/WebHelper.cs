@@ -101,13 +101,14 @@ namespace Web.Base
 			var textTask = RemoveImg(buffText, false, _defaulUri);
 
 			buffText = textTask.Item1;
+            
+            
+			var coords = RegExPoints.GetCoords(buffText).ToList();
 
-			var coords = CoordinatesFactory.GetCoords(buffText).ToList();
+			var cord = new PointsFactory( new SettingsPoints(), new NetworkCredential(string.Empty, SecurityEnvironment.GetPassword("google_map")).Password, SettingsHelper.FileWorker);
 
-			var cord = new CoordinatesFactory(SettingsHelper.FileWorker, new NetworkCredential(string.Empty, SecurityEnvironment.GetPassword("google_map")).Password);
-
-			foreach (var coord in coords)
-				buffText = buffText.Replace(coord.OriginText, cord.GetUrlLink(coord));
+			/*foreach (var coord in coords)
+				buffText = buffText.Replace(coord.OriginText, cord.GetUrlLin(coord));*/
 
 			foreach (var img in textTask.Item2.Where(x => x.TypeUrl == WebHelper.TypeUrl.Img))
 				buffText = buffText.Replace(img.Name, $"<a href=\"{img.Url}\">[{img.Name}]</a>");
@@ -116,7 +117,7 @@ namespace Web.Base
 
 			foreach (var coord in coords)
 				result.Add(CommandMessage.GetCoordMsg(coord));
-			
+	
 
 			result.AddRange(textTask.Item2.Where(x => x.TypeUrl == WebHelper.TypeUrl.Img).Select(x => WithUrls(x)));
 			return result;

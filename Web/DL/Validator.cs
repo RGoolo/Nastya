@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Model.Logic.Coordinates;
 using Model.Logic.Model;
 using Model.Logic.Settings;
 using Model.Types.Class;
@@ -204,8 +205,7 @@ namespace Web.DL
 			 
 			msg.Add(CommandMessage.GetTextMsg(new Texter(text, true)));
 
-
-			var currentCoords = Model.Logic.Coordinates.CoordinatesFactory.GetCoords(sb.ToString()).ToList();
+			var currentCoords = RegExPoints.GetCoords(sb.ToString()).ToList();
 			foreach (var x in currentCoords)
 				msg.Add(CommandMessage.GetCoordMsg(x));
 

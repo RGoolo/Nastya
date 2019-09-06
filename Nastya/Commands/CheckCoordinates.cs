@@ -21,63 +21,73 @@ namespace Nastya.Commands
 		{
 			//ToDo chat key
 			var cred = new NetworkCredential(string.Empty, SecurityEnvironment.GetPassword("google_map")).Password;
-			_coordinates = new CoordinatesFactory(FileWorker, cred);
+            _settings = new SettingsPoints();
+            _coordinates = new PointsFactory(_settings, cred, FileWorker);
 		}
 
-		private CoordinatesFactory _coordinates;
+        private SettingsPoints _settings;
+        private PointsFactory _coordinates;
 		
 		[Command(nameof(NameYLink), "Имя ссылки на Yandex карты.")]
 		public string NameYLink {
-			get => _coordinates.YandexName;
-			set => _coordinates.YandexName = value; }
+			get => _settings.Yandex.Name;
+			set => _settings.Yandex.Name = value; }
 
 		[Command(nameof(NameGLink), "Имя ссылки на Google карты.")]
 		public string NameGLink {
-			get => _coordinates.GoogleName;
-			set => _coordinates.GoogleName = value; }
+			get => _settings.Google.Name;
+			set => _settings.Google.Name = value; }
 
 		[Command(nameof(NameYPoints), "Имя ссылки на Yandex маршрут от меня.")]
 		public string NameYPoints {
-			get => _coordinates.YandexPointNameMe;
-			set => _coordinates.YandexPointNameMe = value; }
+			get => _settings.Yandex.PointName;
+			set => _settings.Yandex.PointName = value; }
 
 		[Command(nameof(NameGPoints), "Имя ссылки на Google маршрут от меня.")]
 		public string NameGPoints {
-			get => _coordinates.GooglePointNameMe;
-			set => _coordinates.GooglePointNameMe = value; }
+			get => _settings.Google.PointName;
+			set => _settings.Google.PointName = value; }
 
 		[Command(nameof(NameYPointsMe), "Имя ссылки на Yandex маршрут.")]
 		public string NameYPointsMe {
-			get => _coordinates.YandexPointNameMe;
-			set => _coordinates.YandexPointNameMe = value; }
+			get => _settings.Yandex.PointNameMe;
+			set => _settings.Yandex.PointNameMe = value; }
 
 		[Command(nameof(NameGPointsMe), "Имя ссылки на Google точки.")]
 		public string NameGPointsMe {
-			get => _coordinates.GooglePointNameMe;
-			set => _coordinates.GooglePointNameMe = value; }
+			get => _settings.Google.PointNameMe;
+			set => _settings.Google.PointNameMe = value; }
 
-		[Command(nameof(CheckCoord), "Проверять сообщения на координаты.")]
-		public bool CheckCoord { get; set; }
+		[Command(nameof(CheckCoordintate), "Проверять сообщения на координаты.")]
+		public bool CheckCoordintate { get; set; }
 
 		[Command(nameof(AddYandex), "Добавлять в координаты ссылку на yandex map.")]
-		public bool AddYandex { get; set; }
+		public bool AddYandex {
+            get => _settings.Yandex.LinkFor;
+            set => _settings.Yandex.LinkFor = value; }
 
-		/*	[Command(nameof(Dontaddkml), "Не добавляет kml файл к сообщениям на координаты.", "{F8F5407E-64A7-483A-82C6-FA26740ABB48}")]
+        /*	[Command(nameof(Dontaddkml), "Не добавляет kml файл к сообщениям на координаты.", "{F8F5407E-64A7-483A-82C6-FA26740ABB48}")]
 		public bool Dontaddkml{ get; set; }*/
 
-		[Command(nameof(AddGoogle), "Добавлять в координаты ссылку на google map.")]
-		public bool AddGoogle { get; set; }
+        [Command(nameof(AddGoogle), "Добавлять в координаты ссылку на google map.")]
+		public bool AddGoogle {
+            get => _settings.Google.LinkFor;
+            set => _settings.Google.LinkFor = value; }
 
-		[Command(nameof(AddPicture), "Добавлять картинку координат, при построении маршрутов")]
-		public bool AddPicture { get; set; } = true;
+        [Command(nameof(AddPicture), "Добавлять картинку координат, при построении маршрутов")]
+		public bool AddPicture
+        {
+            get => _settings.AddPicture;
+            set => _settings.AddPicture = value;
+        }
 
-		[Command(Const.Game.City, "Установить город, для карт.")]
+        [Command(Const.Game.City, "Установить город, для карт.")]
 		public string City {
-			get => _coordinates.City.ToString();
-			set => _coordinates.City = _coordinates.GetCoord(value); }
+			get => _settings.City.ToString();
+			set => _settings.City = _coordinates.GetCoordinate(value); }
 
 		//private Coordinates _coord = new CheckCoordinates();
-		[CommandOnMsg(nameof(CheckCoord), MessageType.Text, typeUser: TypeUser.User)]
+		/*[CommandOnMsg(nameof(CheckCoordintate), MessageType.Text, typeUser: TypeUser.User)]
 		public TransactionCommandMessage GettAllCoordinates(IMessage msg)
 		{
 			var result = new List<CommandMessage>();
@@ -89,17 +99,17 @@ namespace Nastya.Commands
 		
 		[Command(nameof(Coords), "Скинуть в чат координаты из координат сообщения.")]
 		public TransactionCommandMessage Coords(IMessage msg) => 
-			GetCoord(msg, nameof(Coords), CoordinatesFactory.GetCoords);
+			GetCoordinate(msg, nameof(Coords), CoordinatesFactory.GetCoords);
 
-		[Command(nameof(CoordsT), "Скинуть в чат координаты из координаты.")]
+		[Command(nameof(CoordsT), "Скинуть в чат координаты из текста.")]
 		public TransactionCommandMessage CoordsT(IMessage msg) =>
-			GetCoord(msg, null, _coordinates.GetTextCoord);
+			GetCoordinate(msg, null, _coordinates.GetTextCoord);
 
-		[Command(nameof(Route), "Построить маршрут по координатам.")]
+		[Command(nameof(Route), "Построить маршрут по координатам из текста.")]
 		public CommandMessage Route(IMessage msg) =>  
 			GetCommand(msg, null, _coordinates.GetPointes, !AddPicture);
 
-		[Command(nameof(CreateMap), "Построить маршрут по строкам.")]
+		[Command(nameof(CreateMap), "Построить маршрут, где каждая строка пункт назначения.")]
 		public CommandMessage CreateMap(IMessage msg) =>
 			GetCommand(msg, null , _coordinates.GetTextPointes, AddPicture);
 
@@ -132,13 +142,13 @@ namespace Nastya.Commands
 			}
 			else
 			{
-				CommandMessage.GetTextMsg(new Texter(func(text), true));
+                result = CommandMessage.GetTextMsg(new Texter(func(text), true));
 			}
 			result.OnIdMessage = msg.MessageId;
 			return result;
 		}
 
-		private TransactionCommandMessage GetCoord(IMessage msg, string fName, Func<string, IEnumerable<Coordinate>> func)
+		private TransactionCommandMessage GetCoordinate(IMessage msg, string fName, Func<string, IEnumerable<Coordinate>> func)
 		{
 			var text = GetText(msg, fName);
 			var result = new List<CommandMessage>();
@@ -151,7 +161,7 @@ namespace Nastya.Commands
 				result.Add(CommandMessage.GetCoordMsg(x));
 			});
 			return new  TransactionCommandMessage(result);
-		}
+		}*/
 
 	}
 }

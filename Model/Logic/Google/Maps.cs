@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace Model.Logic.Google
 {
@@ -35,13 +36,12 @@ namespace Model.Logic.Google
 		}
 		
 
-		public void SaveImg(IFileToken file, Maps maps)
+		public async Task SaveImg(IFileToken file, Maps maps)
 		{
 			var request = WebRequest.Create(GetUrlImg(maps));
-			using (var response = request.GetResponse())
+			using (var response = await request.GetResponseAsync())
 			using (var stream = response.GetResponseStream())
-
-			using (var fileStream = _fileWorker.WriteStream(file))
+            using (var fileStream = _fileWorker.WriteStream(file))
 				stream.CopyTo(fileStream);
 		}
 
@@ -67,7 +67,6 @@ namespace Model.Logic.Google
 
 	public class Marker
 	{
-
 		private const string url = "&markers=color:{0}%7Clabel:{1}%7C{2}";
 		public string Color { get; set; } = "green";
 		public string Label { get; set; } = "point";

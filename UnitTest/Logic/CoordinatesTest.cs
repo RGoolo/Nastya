@@ -13,7 +13,7 @@ namespace UnitTest.Logic
 		[MemberData(nameof(OneCoordinate))]
 		public void OneCoordinateTest(string coords, float latitude, float longtitude)
         {
-            var coordinate = CoordinatesFactory.GetCoords(coords).ToList();
+            var coordinate = RegExPoints.GetCoords(coords).ToList();
             Assert.Single(coordinate);
             Assert.Equal(coordinate[0].Latitude, latitude);
             Assert.Equal(coordinate[0].Longitude, longtitude);
@@ -36,7 +36,7 @@ namespace UnitTest.Logic
         [MemberData(nameof(CountCoordinate))]
         public void CountCoordinateTest(string coords, int count)
         {
-            var coordinate = CoordinatesFactory.GetCoords(coords).ToList();
+            var coordinate = RegExPoints.GetCoords(coords);
         //    Assert.Equal(coordinate.Count,count);
         }
         public static IEnumerable<object[]> CountCoordinate()
