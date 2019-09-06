@@ -21,10 +21,10 @@ namespace Nastya.Commands
 		{
 			//ToDo chat key
 			var cred = new NetworkCredential(string.Empty, SecurityEnvironment.GetPassword("google_map")).Password;
-			_coordinates = new Coordinates(FileWorker, cred);
+			_coordinates = new CoordinatesFactory(FileWorker, cred);
 		}
 
-		private Coordinates _coordinates;
+		private CoordinatesFactory _coordinates;
 		
 		[Command(nameof(NameYLink), "Имя ссылки на Yandex карты.")]
 		public string NameYLink {
@@ -81,7 +81,7 @@ namespace Nastya.Commands
 		public TransactionCommandMessage GettAllCoordinates(IMessage msg)
 		{
 			var result = new List<CommandMessage>();
-			return new TransactionCommandMessage(Coordinates.GetCoords(msg.Text).Select(CommandMessageWithDescription).ToList());
+			return new TransactionCommandMessage(CoordinatesFactory.GetCoords(msg.Text).Select(CommandMessageWithDescription).ToList());
 		}
 
 		private CommandMessage CommandMessageWithDescription(Coordinate coord) => 
@@ -89,7 +89,7 @@ namespace Nastya.Commands
 		
 		[Command(nameof(Coords), "Скинуть в чат координаты из координат сообщения.")]
 		public TransactionCommandMessage Coords(IMessage msg) => 
-			GetCoord(msg, nameof(Coords), Coordinates.GetCoords);
+			GetCoord(msg, nameof(Coords), CoordinatesFactory.GetCoords);
 
 		[Command(nameof(CoordsT), "Скинуть в чат координаты из координаты.")]
 		public TransactionCommandMessage CoordsT(IMessage msg) =>

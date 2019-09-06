@@ -102,9 +102,9 @@ namespace Web.Base
 
 			buffText = textTask.Item1;
 
-			var coords = Coordinates.GetCoords(buffText).ToList();
+			var coords = CoordinatesFactory.GetCoords(buffText).ToList();
 
-			var cord = new Coordinates(SettingsHelper.FileWorker, new NetworkCredential(string.Empty, SecurityEnvironment.GetPassword("google_map")).Password);
+			var cord = new CoordinatesFactory(SettingsHelper.FileWorker, new NetworkCredential(string.Empty, SecurityEnvironment.GetPassword("google_map")).Password);
 
 			foreach (var coord in coords)
 				buffText = buffText.Replace(coord.OriginText, cord.GetUrlLink(coord));

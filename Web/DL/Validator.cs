@@ -205,7 +205,7 @@ namespace Web.DL
 			msg.Add(CommandMessage.GetTextMsg(new Texter(text, true)));
 
 
-			var currentCoords = Model.Logic.Coordinates.Coordinates.GetCoords(sb.ToString()).ToList();
+			var currentCoords = Model.Logic.Coordinates.CoordinatesFactory.GetCoords(sb.ToString()).ToList();
 			foreach (var x in currentCoords)
 				msg.Add(CommandMessage.GetCoordMsg(x));
 

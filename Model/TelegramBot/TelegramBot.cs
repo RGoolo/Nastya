@@ -157,7 +157,6 @@ namespace Model.TelegramBot
 
 		protected TelegramMessage TelegramMessage(Message msg) =>  new TelegramMessage(msg, GetTypeUser(msg));
 
-		
 		public static string GetText(Texter text)
 		{
 			if (!text.Html) return text.ToString();

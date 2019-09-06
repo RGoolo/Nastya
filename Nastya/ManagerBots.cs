@@ -60,11 +60,11 @@ namespace Nastya
 			_bots = new Dictionary<Guid, IBot>
 			{
 				[AdminBot] = new DummyBot(AdminBot),
-				[telegId] = new TelegramBot(GetBotToken(), telegId)
+                /*[telegId] = new TelegramBot(GetBotToken(), telegId)
 				{
 					Id = telegId,
-				},
-			};
+				},*/
+            };
 			FillBots();
 		}
 

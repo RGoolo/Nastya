@@ -6,7 +6,7 @@ namespace Model.Services
 {
 	public static class Kml
 	{
-		public static string GetKml(IEnumerable<Coordinates> coords)
+		public static string GetKml(IEnumerable<CoordinatesFactory> coords)
 		{
 			throw new Exception();
 		}
