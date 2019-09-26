@@ -21,6 +21,12 @@ namespace Model.Types.Class
 
 		public static void SetPassword(SecureString securityString, string key) =>
 			Environment.SetEnvironmentVariable(Prefix + key, new NetworkCredential(string.Empty, securityString).Password, EnvironmentVariableTarget.User);
-		
+
+		public static void SetPassword(string securityString, string key) =>
+			Environment.SetEnvironmentVariable(Prefix + key, securityString, EnvironmentVariableTarget.User);
+
+		public static string GetTextPassword(string key) => Environment.GetEnvironmentVariable(Prefix + key, EnvironmentVariableTarget.User);
+
+
 	}
 }

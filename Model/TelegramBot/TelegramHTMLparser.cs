@@ -1,25 +1,21 @@
-﻿using System.Text.RegularExpressions;
+﻿using Model.Types.Class;
+using System.Text.RegularExpressions;
 
 namespace Model.TelegramBot
 {
-    public class TelegramHTML
-    {
-		public string RemoveAllTag(string str)
+	public class TelegramHTML
+	{
+		public static string RemoveAllTag(string str)
 		{
 			return Regex.Replace(str, "<[^>]+>", string.Empty);
 		}
 
-		public string RemoteTag(string str)
+		public static string RemoteTag(Texter text)
 		{
-			/*var result = Regex.Replace(str, "<br>|<p>","\n");
-			// ToDo
-			// Лишняя операция, но не составить Regex что бы не удалял <\a> 
-			result = result.Replace()*/
-			var aaa =  Regex.Replace(Regex.Replace(str.Replace("<br>", "\n").Replace("<p>", "\n").Replace("</a>", "<a>"), "<[^((i)|(a))][^>]*>", string.Empty), "\n{2,}", "\n");
-			//return Regex.Replace(aaa, "&", "&amp;");
-			return Regex.Replace(aaa, "<a>", "</a>");
+			if (!text.Html) return text.ToString();
 
-			//return null;
+			const string pattern = "(</[^abi][^>]*>)|(<[^abi/][^>]*>)|(</(\\w){2,}>)|(<a[^ ][^>]*>)|(<(b|i)[^>]+>)";
+			return new Regex(pattern).Replace(text.ToString(), string.Empty);
 		}
 	}
 }

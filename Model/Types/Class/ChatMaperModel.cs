@@ -36,16 +36,16 @@ namespace Model.Types.Class
 
 	public class MaperMethodOnAllMsg : MaperMethodInfo, IPay
 	{
-		private CommandOnMsgAttribute _commandOnMsg { get; }
+		private CommandOnMsgAttribute CommandOnMsg { get; }
 
 		public MaperMethodOnAllMsg(MethodInfo methodInfo,  object instance) : base(methodInfo, instance)
 		{
-			_commandOnMsg = methodInfo.GetCustomAttribute<CommandOnMsgAttribute>(true);
+			CommandOnMsg = methodInfo.GetCustomAttribute<CommandOnMsgAttribute>(true);
 		}
 
 		public object Invoke(IMessage msg) => Invoke(msg, null);
 
-		public override bool СheckUsage(IMessage msg) => (_commandOnMsg.TypeMessages & msg.TypeMessage) == msg.TypeMessage && base.СheckUsage(msg);
+		public override bool СheckUsage(IMessage msg) => (CommandOnMsg.TypeMessages & msg.TypeMessage) == msg.TypeMessage && base.СheckUsage(msg);
 	}
 
 	public class MaperMethodInfo : BaseMaperMethodInfo, IPay
@@ -72,16 +72,17 @@ namespace Model.Types.Class
 			{
 				return InvokeMethodWithCastParam(msg, msgCommand);
 			}
-			catch
+			catch(Exception ex)
 			{
-				throw new MessageException(msg, $"Не удалось вызвать метод.");
+				Console.WriteLine(ex.Message + Environment.NewLine + ex.StackTrace + ex.InnerException?.Message + ex.InnerException?.StackTrace);
+				throw new MessageException(msg, $"Не удалось выполнить метод." );
 			}
 		}
 
 		private object InvokeMethodWithCastParam(IMessage msg, IMessageCommand msgCommand)
 		{
 			var parametrs = new List<object>();
-			int i = 0;
+			var i = 0;
 
 			foreach (var param in _methodInfo.GetParameters())
 			{
@@ -101,11 +102,9 @@ namespace Model.Types.Class
 				{
 					if (i < msgCommand.Values.Count())
 					{
-						if (param.IsOptional)
-							parametrs.Add(Type.Missing);	
-						else
-							//ToDo: error?
-							parametrs.Add(GetValuesWithEnum(param.ParameterType, msgCommand.Values[i]));
+						parametrs.Add(param.IsOptional
+							? Type.Missing
+							: GetValuesWithEnum(param.ParameterType, msgCommand.Values[i]));
 					}
 					else
 						parametrs.Add(GetDefault(param.ParameterType));

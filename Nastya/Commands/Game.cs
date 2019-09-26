@@ -12,7 +12,7 @@ namespace Nastya.Commands
 {
 	public static class HelpText
 	{
-		public const string CustomHelp = "При первом запуске скопируйте сообщение со своими данными, команды можно менять местами.\n" +       
+		public const string CustomHelp = "При первом запуске скопируйте сообщение со своими данными, команды можно менять местами.\n" +	   
 					"/" + Const.Game.Uri + " http://classic.dzzzr.ru/demo/\n" +
 					"/" + Const.Game.Login + " login\n" +
 					"/" + Const.Game.Password + " \"password\"\n" +
@@ -22,10 +22,8 @@ namespace Nastya.Commands
 
 	[CustomHelp(HelpText.CustomHelp)]
 	[CommandClass("Game", "Дозор дедлайн", Model.Types.Enums.TypeUser.User)]
-	public class Game1 : BaseCommand
+	public class Game1 : BaseCommand, ISendSyncMsgs
 	{
-		public override event SendMsgDel SendMsg;
-
 		[Command(Const.Game.Send, "Отправляет коды из чата. Если начать предложение с \"!\" будет спойлер")]
 		public bool IsSendCoord { get; set; }
 
@@ -58,15 +56,18 @@ namespace Nastya.Commands
 		[Command(Const.Game.Start, "Коннектится к сайту")]
 		public void Start(IUser user)
 		{
-			GetGame()?.SetEvent(new SimpleEvent(EventTypes.StartGame, user));
-			GameIsStart = true;
+			GetGame()?.Start();
+			//GameIsStart = true;
 		}
 
 		[CheckProperty(nameof(GameIsStart))]
 		[Command(Const.Game.Stop, "Заканчивает игру")]
 		public void Stop(IUser user)
 		{
-			GetGame()?.SetEvent(new SimpleEvent(EventTypes.StopGame, user));
+			if (!GameIsStart)
+				return;
+
+			GetGame()?.Stop();
 			GameIsStart = false;
 			_game = null;
 		}
@@ -155,21 +156,21 @@ namespace Nastya.Commands
 			if (_game != null)
 				return _game;
 
-			_game = GameFactory.NewGame(SettingHelper, SettingHelper.TypeGame);
+			_game = GameFactory.NewGame(SettingHelper, this);
 
 			if (_game != null)
 			{
-				_game.SendMsg += _game_SendMsg;
 				GameIsStart = true;
 			}
 			return _game;
 		}
 
-		private void _game_SendMsg(IEnumerable<CommandMessage> messages, Guid chatId)
+		public void SendSync(IEnumerable<CommandMessage> messages)
 		{
 			var transaction = new TransactionCommandMessage(messages.ToList());
-			SendMsg?.Invoke(transaction);
+			SendMsg.SendMsg(transaction);
 		}
+
 
 		private void DeleteGame(IUser user)
 		{
@@ -177,7 +178,7 @@ namespace Nastya.Commands
 				return;
 
 			//привет, параноя
-			_game.SetEvent(new SimpleEvent(EventTypes.StopGame, user));
+			GetGame()?.Stop();
 			_game.Dispose();
 			_game = null;
 		}
@@ -194,16 +195,31 @@ namespace Nastya.Commands
 
 		public bool CheckSystemMsg => true;
 
+	
+
 		[CommandOnMsg(nameof(CheckSystemMsg), Model.Types.Enums.MessageType.SystemMessage, Model.Types.Enums.TypeUser.User)]
 		public void CheckSystem(Model.Types.Interfaces.IMessage msg)
 		{
-			if (msg.ReplyToCommandMessage?.Notification == Model.Types.Enums.Notification.SendAllSectors)
-				SettingHelper.Game.AllSectorsMsg = msg.MessageId;
+			if (msg.ReplyToCommandMessage == null)
+				return;
 
-			if (msg.ReplyToCommandMessage?.Notification == Model.Types.Enums.Notification.SendSectors)
-				SettingHelper.Game.SectorsMsg = msg.MessageId;
+			switch(msg.ReplyToCommandMessage.Notification)
+			{
+				case Model.Types.Enums.Notification.SendAllSectors:
+					SettingHelper.Game.AllSectorsMsg = msg.MessageId;
+					break;
+				case Model.Types.Enums.Notification.SendSectors:
+					SettingHelper.Game.SectorsMsg = msg.MessageId;
+					break;
+				case Model.Types.Enums.Notification.GameStarted:
+					GameIsStart = true;
+					break;
+				case Model.Types.Enums.Notification.GameStoped:
+					Stop(msg.User);
+					break;
+			};
 		}
 
+	
 	}
-
 }

@@ -15,7 +15,7 @@ namespace Model.Logic.Google
 
 		private static string Link(string url, string name) => $"<a href=\"{url}\">{name}</a>";
 
-		private static Image GetImg(IChatFileWorker worker, IFileToken file)
+		private static Image GetImg(IFileWorker worker, IFileToken file)
 		{
 			switch (file.Type)
 			{

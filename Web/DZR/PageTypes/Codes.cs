@@ -28,14 +28,14 @@ namespace Web.DZR
 		}
 
 		private Code NewCode(string code, int count, Dictionary<int, Answer> ans) 
-			=> new Code(WebHelper.RemoveTag(code).Trim(), code.Contains("span"), count, ans.ContainsKey(count) ? ans[count] : null);
+			=> new Code(WebHelper.RemoveAllTag(code).Trim(), code.Contains("span"), count, ans.ContainsKey(count) ? ans[count] : null);
 
-		public string Text(bool onlyNotAccepted = false, string splitter = "    ")
+		public string Text(bool onlyNotAccepted = false, string splitter = "	")
 		{
 			return Text(this.Values.Where(x => !onlyNotAccepted || !x.Accepted), splitter);
 		}
 
-		private string Text(IEnumerable<Code> codes, string splitter = "    ", bool useAnswer = false)
+		private string Text(IEnumerable<Code> codes, string splitter = "	", bool useAnswer = false)
 		{
 			var sb = new StringBuilder();
 			sb.Append(Name + ":\n");
@@ -47,7 +47,7 @@ namespace Web.DZR
 
 		public IEnumerable<Code> AcceptedCode => this.Values.Where(x => x.Accepted);
 
-		public string DiffText(IEnumerable<Code> newAccepteds, string splitter = "    ")
+		public string DiffText(IEnumerable<Code> newAccepteds, string splitter = "	")
 		{
 			if (!newAccepteds.Any())
 				return null;

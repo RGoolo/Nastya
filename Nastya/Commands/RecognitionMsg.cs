@@ -12,8 +12,6 @@ namespace Nastya.Commands
 	[CommandClass("VisionMsg", "Распознаем текст", TypeUser.User)]
 	public class RecognitionMsg : BaseCommand
 	{
-		public override event SendMsgDel SendMsg;
-
 		public enum TypeEnum
 		{
 			Text, Web, Logo, Landmark, Doc,
@@ -65,7 +63,7 @@ namespace Nastya.Commands
 
 			var command = CommandMessage.GetTextMsg(new Texter(text));
 			var transaction = new TransactionCommandMessage(command);
-			SendMsg?.Invoke(transaction);
+			SendMsg.SendMsg(transaction);
 		}
 	}
 }

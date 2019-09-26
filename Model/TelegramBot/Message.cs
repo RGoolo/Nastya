@@ -65,7 +65,17 @@ namespace Model.TelegramBot
 			User = new User(msg.From, typeUser);
 			var entityValues = Message.EntityValues;
 			if (entityValues != null)
-				MessageCommands = _сreatedCommands.CreateCommands(Message.Text, entityValues.Select(x => x.Substring(1)).Select(x => x.Contains("@") ? (x.Split('@')[0]) : x).ToList());
+			{
+				try
+				{
+					MessageCommands = _сreatedCommands.CreateCommands(Message.Text, entityValues.Select(x => x.Substring(1)).Select(x => x.Contains("@") ? (x.Split('@')[0]) : x)
+							.ToList());
+				}
+				catch
+				{
+
+				}
+			}
 		}
 
 	}

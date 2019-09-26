@@ -5,9 +5,9 @@ using System.Linq;
 // ToDo remove
 namespace Model.Sociation
 {
-    public class ClassSoc
-    {
-	    readonly Dictionary<string, SortedSet<string>> _allSoc = new Dictionary<string, SortedSet<string>>();
+	public class ClassSoc
+	{
+		readonly Dictionary<string, SortedSet<string>> _allSoc = new Dictionary<string, SortedSet<string>>();
 
 		public ClassSoc()
 		{

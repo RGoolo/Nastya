@@ -4,17 +4,17 @@ using System.Text;
 
 namespace Web.DZR
 {
-	public partial class Page
+	public partial class DzrPage
 	{
 		public string GetAnswerText(string code)
 		{
 			switch (AnswerType)
 			{
-				case AnswerType.Notcorrect:
+				case AnswerType.NotCorrect:
 					return $"❌{code}: не принят";
 				case AnswerType.Correct:
 					return $"✅{code}: принят";
-				case AnswerType.Repited:
+				case AnswerType.Repeated:
 					return $"🔄{code}: отправлен повторно";
 				default:
 					return $"⚠️{code}: не стандартный ответ: {SysMessage}";

@@ -16,7 +16,7 @@ using System.Text.RegularExpressions;
 
 namespace Model.TelegramBot
 {
-	internal static class WebProxyExtension
+	/*internal static class WebProxyExtension
 	{
 		//private const string webProxyurl = "144.217.161.149:8080"; //90.187.45.5:8123";
 
@@ -44,9 +44,9 @@ namespace Model.TelegramBot
 			"51.75.75.193:3128",
 			"212.182.25.89:3128",
 		};
-	}
+	}*/
 
-	public class TelegramBot : BaseConcurrentBot
+	public class TelegramBot : IConcurentBot
 	{
 		private class Resource : IResource
 		{
@@ -61,6 +61,7 @@ namespace Model.TelegramBot
 		}
 
 		private readonly SecureString _token;
+		protected readonly Logger _log;
 		private readonly CancellationToken _cancellationToken = default(CancellationToken);
 		private const int UPDATETIMESTam_Minutes = 5;
 		private const int MyUserId = 62779148;
@@ -74,14 +75,23 @@ namespace Model.TelegramBot
 		private IChatFileWorker _chatFileWorker(Guid chatId) => SettingsHelper.GetSetting(chatId).FileWorker;
 		private IFileWorker _fileWorker => SettingsHelper.FileWorker;
 
-		public TelegramBot(SecureString token, Guid id) : base(TypeBot.Telegram, id)
+		public TypeBot TypeBot => TypeBot.Telegram;
+
+		public Logger Log => _log;
+
+		public Guid Id { get; }
+
+		public TelegramBot(SecureString token, Guid id)
 		{
-			_loger.WriteTrace(".ctor");
+			Id = id;
+			_log = new Logger(id.ToString());
+			_log.WriteTrace(".ctor");
 			var cred = new NetworkCredential(string.Empty, token).Password;
-			_bot = new Telegram.Bot.TelegramBotClient(cred, WebProxyExtension.Create());
+			_bot = new Telegram.Bot.TelegramBotClient(cred);//, WebProxyExtension.Create());
 			//ToDo: SetWebHook 
 			//ToDo: GetMeAsync
 			_token = token;
+
 		}
 
 		private TypeUser GetTypeUser(bool isAdmin, Message msg)
@@ -97,27 +107,30 @@ namespace Model.TelegramBot
 			return userType;
 		}
 
-		protected override void PreCycle()
+		public void PreCycle()
 		{
 			_bot.SetWebhookAsync(string.Empty);
-			_loger.WriteTrace($"{nameof(_bot.SetWebhookAsync)} successfully");
+			_log.WriteTrace($"{nameof(_bot.SetWebhookAsync)} successfully");
 			 _offset = 0;
 		}
 
-		protected override void RunCycle()
+		public List<IMessage> RunCycle()
 		{
 			var updates = _bot.GetUpdatesAsync(_offset, 1).Result;
+			var msgs = new List<IMessage>();
 
 			foreach (var update in updates)
 			{
 				if (update.Type == UpdateType.Message)
-					EnqueueMessage(TelegramMessage(update.Message));
+					msgs.Add(TelegramMessage(update.Message));
 
 				if ((update.Id + 1) > _offset)
 					_offset = update.Id + 1;
 
-				_loger.WriteTrace(nameof(_offset) + update.Id);
+				_log.WriteTrace(nameof(_offset) + update.Id);
 			}
+
+			return msgs;
 		}
 
 		private TypeUser GetTypeUser(Message msg)
@@ -135,7 +148,7 @@ namespace Model.TelegramBot
 			//ToDo: DateTime.Now - _chatAdministations[msg.Chat.Id].timeStemp) > second
 			if (!_chatAdministations.ContainsKey(msg.Chat.Id) || (DateTime.Now - _chatAdministations[msg.Chat.Id].timeStemp).Minutes > UPDATETIMESTam_Minutes)
 			{
-				var admins = _bot.GetChatAdministratorsAsync(msg.Chat.Id, cancellationToken: _cancellationToken).Result;
+				var admins = _bot.GetChatAdministratorsAsync(msg.Chat.Id, _cancellationToken).Result;
 
 				var chatAdmins = new ChatAdministrations();
 				chatAdmins.UserIds.AddRange(admins.Select(x => x.User.Id));
@@ -149,149 +162,152 @@ namespace Model.TelegramBot
 			return GetTypeUser(_chatAdministations[msg.Chat.Id].UserIds.Contains(msg.From.Id), msg);
 		}
 
-		public override void Dispose()
+		public void Dispose()
 		{
 			//ToDo: _cancellationToken
-			throw new NotImplementedException();
+			//throw new NotImplementedException();
 		}
 
 		protected TelegramMessage TelegramMessage(Message msg) =>  new TelegramMessage(msg, GetTypeUser(msg));
 
-		public static string GetText(Texter text)
+		public static (string text, ParseMode mode) GetText(Texter text) => (TelegramHTML.RemoteTag(text), GetParseMod(text));
+
+		private static ParseMode GetParseMod(Texter text) => text.Html ? ParseMode.Html : ParseMode.Default;
+
+		public async Task<IMessage> Message(CommandMessage message, Guid chatId)
 		{
-			if (!text.Html) return text.ToString();
-			const string pattern = "(</[^abi][^>]*>)|(<[^abi/][^>]*>)|(</(\\w){2,}>)|(<a[^ ][^>]*>)|(<(b|i)[^>]+>)";
-			return new Regex(pattern).Replace(text.ToString(), string.Empty);
-			//ToDo: conver text to messages
-		}
+			_log.WriteTrace(
+				$"{nameof(message.TypeMessage)}:{message.TypeMessage} message:{message.Texter?.Text}  type:{message.Texter?.Html}");
 
-		private ParseMode GetParseMod(Texter text) => text.Html ? ParseMode.Html : ParseMode.Default;
+			var longChatId = chatId.ToLong();
+			if (longChatId != 62779148)
+				return null;
 
-		public override async Task<IMessage> Message(CommandMessage message, Guid chatId)
-		{
-			long longChatId = chatId.ToLong();
-
+			(var text, var mode) = GetText(message.Texter);
 			var replaceMsg = message.OnIdMessage.ToInt();
-
 			Message senderMsg = null;
 
 			switch (message.TypeMessage)
 			{
 				case Types.Enums.MessageType.Edit:
-					var parseModeEdit = GetParseMod(message.Texter);
-					var textEdit = GetText(message.Texter);
-					if (!string.IsNullOrEmpty(textEdit))
-						senderMsg = await _bot.EditMessageTextAsync(longChatId, replaceMsg, textEdit, parseModeEdit, disableWebPagePreview: true, cancellationToken: _cancellationToken);
+
+					if (!string.IsNullOrEmpty(text))
+						senderMsg = await _bot.EditMessageTextAsync(longChatId, replaceMsg, text, mode,
+							true, cancellationToken: _cancellationToken);
 					break;
 				case Types.Enums.MessageType.Text:
-					var text = GetText(message.Texter);
 					if (!string.IsNullOrEmpty(text))
-						senderMsg = await _bot.SendTextMessageAsync(longChatId, text, GetParseMod(message.Texter), replyToMessageId: replaceMsg, disableWebPagePreview: true, cancellationToken: _cancellationToken); 
+						senderMsg = await _bot.SendTextMessageAsync(longChatId, text, GetParseMod(message.Texter),
+							replyToMessageId: replaceMsg, disableWebPagePreview: true,
+							cancellationToken: _cancellationToken);
 					break;
 				case Types.Enums.MessageType.Coordinates:
-					senderMsg = await _bot.SendLocationAsync(longChatId, message.Coord.Latitude, message.Coord.Longitude, replyToMessageId: replaceMsg, cancellationToken: _cancellationToken);
+					_log.WriteTrace($"{message.Coordinate.Latitude}:{message.Coordinate.Longitude} replyToMessageId:{replaceMsg} longChatId:{longChatId}");
+
+					senderMsg = await _bot.SendVenueAsync(longChatId, message.Coordinate.Latitude,
+						message.Coordinate.Longitude, "title", "adress", replyToMessageId: replaceMsg,
+						cancellationToken: _cancellationToken);
 					break;
 				case Types.Enums.MessageType.Photo:
-					//var lstindex = message.FileToken.LastIndexOf("/");
-					//var number = message.FileToken.Substring(lstindex + 1, 2);
-
-					//todo: remove, test, linux
 					if (message.FileToken.Type == Types.Enums.FileType.Local)
 					{
-						using (var stream = _fileWorker.ReadStream(message.FileToken))
-							senderMsg = await _bot.SendPhotoAsync(longChatId, stream, message.Texter.ToString(), GetParseMod(message.Texter), replyToMessageId: replaceMsg, cancellationToken: _cancellationToken);
+						using var stream = _fileWorker.ReadStream(message.FileToken);
+						senderMsg = await _bot.SendPhotoAsync(longChatId, stream, text, mode,
+							replyToMessageId: replaceMsg, cancellationToken: _cancellationToken);
 					}
 					else
 					{
 						var photo = new InputOnlineFile(message.FileToken.Url);
-						senderMsg = await _bot.SendPhotoAsync(longChatId, photo, GetText(message.Texter), GetParseMod(message.Texter), replyToMessageId: replaceMsg, cancellationToken: _cancellationToken);
+						senderMsg = await _bot.SendPhotoAsync(longChatId, photo, "", GetParseMod(message.Texter),
+							replyToMessageId: replaceMsg, cancellationToken: _cancellationToken);
 					}
+
 					break;
 				case Types.Enums.MessageType.Document:
 					using (var file = _fileWorker.ReadStream(message.FileToken))
-						senderMsg = await _bot.SendDocumentAsync(longChatId, file, GetText(message.Texter), GetParseMod(message.Texter), replyToMessageId: replaceMsg, cancellationToken: _cancellationToken);
+						senderMsg = await _bot.SendDocumentAsync(longChatId, file, text,
+							mode, replyToMessageId: replaceMsg,
+							cancellationToken: _cancellationToken);
 					break;
 			}
 
 			return senderMsg == null ? null : new NotificationMessage(TelegramMessage(senderMsg), message);
 		}
 
-		private async void DownloadFile(string fileId, IFileToken token, IMessage msg, TypeResource type)
+		private async Task<IMessage> DownloadFileAsync(string fileId, IFileToken token, IMessage msg, TypeResource type)
 		{
 			try
 			{
-				var tFile = await _bot.GetFileAsync(fileId, cancellationToken: _cancellationToken);
+				var tFile = await _bot.GetFileAsync(fileId, _cancellationToken);
 				
 				using (var file = _fileWorker.WriteStream(token))
 				{
-					var a = _bot.DownloadFileAsync(tFile.FilePath, file, cancellationToken: _cancellationToken);
-					a.Wait();
+					var a = _bot.DownloadFileAsync(tFile.FilePath, file, _cancellationToken);
+					a.Wait(_cancellationToken);
 				}
 
 				msg.Resource = new Resource(token, type);
-				_messagesQueue.Enqueue(msg);
+				return msg;
 			}
 			catch (Exception ex)
 			{
-				_loger.WriteError("Error downloading: " + ex.Message);
+				_log.WriteError("Error downloading: " + ex.Message);
 			}
+			return null;
 		}
 
-		protected override void DownloadFile(IMessage msg)
+		public async Task<IMessage> DownloadFileAsync(IMessage msg)
 		{
-			DownloadFile(msg, msg);
+			return await DownloadFileAsync(msg, msg);
 		}
 
-		protected void DownloadFile(IMessage msg, IMessage resourceMsg)
+		protected Task<IMessage> DownloadFileAsync(IMessage msg, IMessage resourceMsg)
 		{
 			if (resourceMsg == null)
-				return;
+				return null;
 
 			switch (resourceMsg.TypeMessage)
 			{
 				case Types.Enums.MessageType.Photo:
-					DownloadPhotoAsync(msg, resourceMsg);
-					break;
+					return DownloadPhotoAsync(msg, resourceMsg);
 				case Types.Enums.MessageType.Voice:
-					DownloadVoiceAsync(msg, resourceMsg);
-					break;
+					return DownloadVoiceAsync(msg, resourceMsg);
 				default:
-					DownloadFile(msg, msg.ReplyToMessage);
-					break;
-			}
+					return DownloadFileAsync(msg, msg.ReplyToMessage);
+				}
 		}
 
-		protected void DownloadVoiceAsync(IMessage msg, IMessage resourceMsg)
+		protected Task<IMessage> DownloadVoiceAsync(IMessage msg, IMessage resourceMsg)
 		{
 			var tMsg = (resourceMsg as TelegramMessage)?.Message;
 			if (tMsg == null)
-				return;
+				return null;
 
 			//var filePath = SettingHelper.DontExistFile("ogg", resourceMsg.ChatId);
 			var fileToken = _chatFileWorker(msg.ChatId).NewFileTokenByExt(".ogg");
-			DownloadFile(tMsg.Voice.FileId, fileToken, msg, TypeResource.Voice);
+			return DownloadFileAsync(tMsg.Voice.FileId, fileToken, msg, TypeResource.Voice);
 		}
 
-		protected void DownloadPhotoAsync(IMessage msg, IMessage resourceMsg)
+		protected Task<IMessage> DownloadPhotoAsync(IMessage msg, IMessage resourceMsg)
 		{
 			var tMsg = (resourceMsg as TelegramMessage)?.Message;
 			if (tMsg == null)
-				return;
+				return null;
 
 			//var filePath = SettingHelper.DontExistFile("jpg", resourceMsg.ChatId);
 			var fileToken = _chatFileWorker(msg.ChatId).NewFileTokenByExt(".jpg");
-			DownloadFile(tMsg.Photo[tMsg.Photo.Length - 1].FileId, fileToken, msg, TypeResource.Photo);
+			return DownloadFileAsync(tMsg.Photo[tMsg.Photo.Length - 1].FileId, fileToken, msg, TypeResource.Photo);
 		}
 
-		protected override void OnError(Exception ex)
+		public void OnError(Exception ex)
 		{
 			//Временное, настроить VPN!;
-			_loger.WriteTrace(nameof(OnError));
+			_log.WriteTrace(nameof(OnError));
 			var cred = new NetworkCredential(string.Empty, _token).Password;
-			_bot = new Telegram.Bot.TelegramBotClient(cred, WebProxyExtension.Create());
+			//_bot = new Telegram.Bot.TelegramBotClient(cred, WebProxyExtension.Create());
 
 			_bot.SetWebhookAsync(string.Empty);
-			_loger.WriteTrace($"{nameof(_bot.SetWebhookAsync)} successfully");
+			_log.WriteTrace($"{nameof(_bot.SetWebhookAsync)} successfully");
 		}
 	}
 }

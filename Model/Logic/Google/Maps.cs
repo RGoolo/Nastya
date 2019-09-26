@@ -1,9 +1,10 @@
-﻿using Model.Types.Interfaces;
+﻿using Model.Logic.Coordinates;
+using Model.Types.Interfaces;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace Model.Logic.Google
 {
@@ -23,28 +24,31 @@ namespace Model.Logic.Google
 		private string _googleToken { get; }
 		private string Key => $"key={_googleToken}";
 
-		public FactoryMaps(string googleToken, IFileWorker fileWorker)
+		public FactoryMaps(string googleToken, IFileWorker fileWorker) //
 		{
+			
 			_googleToken = googleToken;
 			_fileWorker = fileWorker;
 		}
 
-		protected string GetUrlImg(Maps maps)
+		protected string GetUrlImg(IEnumerable<Point> points)
 		{
 			var i = 0;
-			return _startImg + "&" + string.Join("&", maps.WayPoints.Select(x => new Marker(x, (++i).ToString()).ToString())) + "&" + Key;
+			return _startImg + "&" + string.Join("&", points.Select(x => new Marker(x, (++i).ToString()).ToString())) + "&" + Key;
 		}
-		
 
-		public async Task SaveImg(IFileToken file, Maps maps)
+		public void SaveImg(IFileToken file, IEnumerable<Point> points)
 		{
-			var request = WebRequest.Create(GetUrlImg(maps));
-			using (var response = await request.GetResponseAsync())
+			var urlImg = GetUrlImg(points);
+			Console.WriteLine(urlImg);
+			Console.WriteLine("file:" + file.FileName);
+			var request = WebRequest.Create(urlImg);
+			using (var response = request.GetResponse())
 			using (var stream = response.GetResponseStream())
-            using (var fileStream = _fileWorker.WriteStream(file))
+
+			using (var fileStream = _fileWorker.WriteStream(file))
 				stream.CopyTo(fileStream);
 		}
-
 
 		public static Maps GetMap(Coordinates.Coordinate coord)
 		{
@@ -67,13 +71,14 @@ namespace Model.Logic.Google
 
 	public class Marker
 	{
+
 		private const string url = "&markers=color:{0}%7Clabel:{1}%7C{2}";
 		public string Color { get; set; } = "green";
 		public string Label { get; set; } = "point";
-		public string Point { get;}
+		public Point Point { get;}
 
 
-		public Marker(string point, string label)
+		public Marker(Point point, string label)
 		{
 			Point = point;
 			Label = label;

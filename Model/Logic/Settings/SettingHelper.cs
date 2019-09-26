@@ -13,13 +13,14 @@ namespace Model.Logic.Settings
 	public class SettingHelper : ISettings, ISettingValues
 	{
 		private readonly object _lockobj = new object();
-		private static string Path => @"D:\botseting\";
+		private static string Path => @"botseting";
+
 		public static Dictionary<string, string> paths = new Dictionary<string, string>();
 
-		public string GetValue(string name, string @default = default(string)) => Settings.GetValue(name, @default);
-		public bool GetValueBool(string name, bool @default = default(bool)) => Settings.GetValueBool(name, @default);
-		public long GetValueLong(string name, long @default = default(long)) => Settings.GetValueLong(name, @default);
-		public Guid GetValueGuid(string name, Guid @default = default(Guid)) => Settings.GetValueGuid(name, @default);
+		public string GetValue(string name, string @default = default(string)) => Settings.GetValue(name.ToLower(), @default);
+		public bool GetValueBool(string name, bool @default = default(bool)) => Settings.GetValueBool(name.ToLower(), @default);
+		public long GetValueLong(string name, long @default = default(long)) => Settings.GetValueLong(name.ToLower(), @default);
+		public Guid GetValueGuid(string name, Guid @default = default(Guid)) => Settings.GetValueGuid(name.ToLower(), @default);
 		public Settings Settings { get; }
 		public Guid ChatGuid  => Settings.ChatGuid; 
 		public TypeGame TypeGame => Settings.TypeGame;
@@ -59,7 +60,8 @@ namespace Model.Logic.Settings
 
 		public SettingHelper(Guid chatId)
 		{
-			var file = $"{Path}\\{chatId}\\{chatId}.xml";
+			var file = System.IO.Path.Combine(Path, chatId.ToString(), chatId + ".xml");
+
 			if (!File.Exists(file))
 			{
 				Settings = new Settings(chatId);
@@ -231,8 +233,8 @@ namespace Model.Logic.Settings
 		{
 			string chatId = Settings.ChatGuid.ToString();
 
-			var directory = $"{Path}\\{chatId}";
-			var file = $"{directory}\\{chatId}.xml";
+			var directory = System.IO.Path.Combine(Path,chatId);
+			var file = System.IO.Path.Combine(directory,chatId +".xml");
 
 			Settings.Clear();
 
@@ -248,8 +250,8 @@ namespace Model.Logic.Settings
 		{
 			string chatId =  Settings.ChatGuid.ToString();
 
-			var directory = $"{Path}\\{chatId}";
-			var file = $"{directory}\\{chatId}.xml";
+			var directory = System.IO.Path.Combine(Path, chatId.ToString());
+			var file = System.IO.Path.Combine(directory, chatId + ".xml");
 
 			Settings.SetList();
 			lock (_lockobj)

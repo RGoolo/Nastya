@@ -14,9 +14,9 @@ namespace Nastya
 	public class BotChatMaper
 	{
 		public Guid Bot { get; set; }
-		public ChatMaper ChatMaper { get; set; }
+		public ChatMapper ChatMaper { get; set; }
 
-		public BotChatMaper(Guid bot, ChatMaper chatMaper)
+		public BotChatMaper(Guid bot, ChatMapper chatMaper)
 		{
 			Bot = bot;
 			ChatMaper = chatMaper;
@@ -37,7 +37,11 @@ namespace Nastya
 		{
 			var token = SecurityEnvironment.GetPassword("bot_token");
 			if (token != null)
-				return token;
+			{
+				Console.WriteLine("Use old telegram bot token?");
+				if (string.Equals(Console.ReadLine(), "y", StringComparison.OrdinalIgnoreCase))
+					return token;
+			}
 
 			Console.WriteLine("Write telegram bot token:");
 			token = new SecureString();
@@ -59,12 +63,13 @@ namespace Nastya
 
 			_bots = new Dictionary<Guid, IBot>
 			{
-				[AdminBot] = new DummyBot(AdminBot),
-                /*[telegId] = new TelegramBot(GetBotToken(), telegId)
-				{
-					Id = telegId,
-				},*/
-            };
+				[AdminBot] = new ConcurrentBot(new DummyBot(AdminBot)),
+			};
+
+			Console.WriteLine("Start telegram bot?");
+			if (Console.ReadLine() == "y")
+				_bots.Add(telegId, new ConcurrentBot(new TelegramBot(GetBotToken(), telegId)));
+			
 			FillBots();
 		}
 
@@ -88,7 +93,7 @@ namespace Nastya
 
 			if (!_chats.ContainsKey(msg.ChatId))
 			{
-				var chatMapper = new ChatMaper(_bots[botId].TypeBot, msg.ChatId);
+				var chatMapper = new ChatMapper(_bots[botId].TypeBot, msg.ChatId);
 				_chats.Add(msg.ChatId, new BotChatMaper(botId, chatMapper));
 			}
 			try

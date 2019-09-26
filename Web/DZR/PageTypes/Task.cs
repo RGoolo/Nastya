@@ -6,7 +6,6 @@ using Web.Base;
 
 namespace Web.DZR
 {
-
 	public class Task
 	{
 		private string _code_ = "_code_";
@@ -64,7 +63,7 @@ namespace Web.DZR
 
 		private void SetTask(HtmlNode nodeTitle, HtmlNode node)
 		{
-			TitleText = WebHelper.RemoveTag(nodeTitle.InnerHtml).Trim();
+			TitleText = WebHelper.RemoveAllTag(nodeTitle.InnerHtml).Trim();
 			var levelNumberEnd = nodeTitle.InnerHtml.IndexOf("<!--levelNumberEnd-->");
 			if (levelNumberEnd != -1)
 			{

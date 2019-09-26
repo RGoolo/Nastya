@@ -13,11 +13,11 @@ namespace UnitTest
 		
 		[Theory]
 		[MemberData(nameof(TypeUsers))]
-		public void CoordTest(string input, string output)
+		public void TexterTest(string input, string output)
 		{
 			//var 
 			var texter = new Texter(input, true);
-			var str = TelegramBot.GetText(texter);
+			(var str, var model) = TelegramBot.GetText(texter);
 			Assert.Equal(str, output);
 
 		}

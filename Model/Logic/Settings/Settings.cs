@@ -19,6 +19,15 @@ namespace Model.Logic.Settings
 		DzzzrLitePrequel = Dzzzr | Prequel | Lite,
 	}
 
+	public static class TyperGame
+	{
+		public static bool IsDummy(this TypeGame type)
+		{
+			return (type & TypeGame.Dummy) != TypeGame.Unknown;
+		}
+	}
+
+
 	[Serializable]
 	public class KeyVal
 	{

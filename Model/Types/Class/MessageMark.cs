@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Model.Logic.Coordinates;
@@ -9,37 +10,32 @@ using Model.Types.Interfaces;
 namespace Model.Types.Class
 {
 
-	public class TransactionCommandMessage
+	public class TransactionCommandMessage : IEnumerable<CommandMessage>
 	{
-		public List<CommandMessage> Messages;
-		public CommandMessage Message;
+		private readonly List<CommandMessage> _messages;
+
 		public Guid ChatId { get; set; }
-		public List<Guid> PrepareCommands { get; set; }
-
-		public TransactionCommandMessage(string message)
-		{
-			Message = CommandMessage.GetTextMsg(message);
-		}
-
-		public TransactionCommandMessage(Texter message)
-		{
-			Message = CommandMessage.GetTextMsg(message);
-		}
+		
 
 		public TransactionCommandMessage(CommandMessage message)
 		{
-			Message = message;
+			_messages = new List<CommandMessage>{message};
 		}
 
 		public TransactionCommandMessage(List<CommandMessage> messages)
 		{
-			Messages = messages;
+			_messages = messages;
 		}
 
 		public TransactionCommandMessage(IEnumerable<CommandMessage> messages)
 		{
-			Messages = messages.ToList();	
+			_messages = messages.ToList();	
 		}
+
+		public IEnumerator<CommandMessage> GetEnumerator() => _messages.GetEnumerator();
+
+		IEnumerator IEnumerable.GetEnumerator() => _messages.GetEnumerator();
+		
 	}
 
 	public class CommandMessage
@@ -50,9 +46,8 @@ namespace Model.Types.Class
 
 		public Guid OnIdMessage { get; set; }
 		public Texter Texter { get; set; }
-		public Coordinate Coord { get; set; }
+		public Coordinate Coordinate { get; set; }
 		public IFileToken FileToken { get; set; }
-		
 		public Notification Notification { get; set; }
 		public Guid EditMsg { get; set; }
 
@@ -73,7 +68,7 @@ namespace Model.Types.Class
 			=> new CommandMessage(systemType, obj);
 
 		public static CommandMessage GetTextMsg(string text)
-			=> new CommandMessage(MessageType.Text) { Texter = new Texter(text)};
+			=> new CommandMessage(MessageType.Text) { Texter = new Texter(text) };
 
 		public static CommandMessage GetTextMsg(Texter texter)
 			=> new CommandMessage(MessageType.Text) { Texter = texter };
@@ -82,13 +77,16 @@ namespace Model.Types.Class
 			=> GetEditMsg(new Texter(text));
 
 		public static CommandMessage GetEditMsg(Texter texter)
-			=> new CommandMessage(MessageType.Edit) { Texter = texter};	
+			=> new CommandMessage(MessageType.Edit) { Texter = texter };
 
 		public static CommandMessage GetPhototMsg(IFileToken token, Texter text)
-			=> new CommandMessage(MessageType.Photo) { Texter = text };
+			=> new CommandMessage(MessageType.Photo) { Texter = text, FileToken = token };
 
 		public static CommandMessage GetPhototMsg(IFileToken token, string text)
 			=> GetPhototMsg(token, new Texter(text));
+
+		public static CommandMessage GetHTMLPhototMsg(IFileToken token, string text)
+			=> GetPhototMsg(token, new Texter(text, true));
 
 		public static CommandMessage GetPhototMsg(string url, Texter text)
 			=> GetPhototMsg(new UrlFileToken(url), text); 
@@ -97,8 +95,7 @@ namespace Model.Types.Class
 			=> new CommandMessage(MessageType.Document) { Texter = new Texter(text) };
 
 		public static CommandMessage GetCoordMsg(Coordinate coord, string text = null)
-			=> new CommandMessage(MessageType.Coordinates) { Texter = new Texter(text)};
-
+			=> new CommandMessage(MessageType.Coordinates) { Texter = new Texter(text), Coordinate = coord};
 
 		public static CommandMessage GetInfoMsg(string text) => GetTextMsg(text);
 		public static CommandMessage GetWarningMsg(string text) => GetInfoMsg(text);

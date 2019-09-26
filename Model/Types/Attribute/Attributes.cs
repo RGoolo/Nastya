@@ -111,5 +111,14 @@ namespace Model.Types.Attribute
 			BoolPropertyName = boolPropertyName;
 		}
 	}
+
+	[AttributeUsage(AttributeTargets.Method | AttributeTargets.Property)]
+	public class ShortHelpAttribute : System.Attribute
+	{
+		public ShortHelpAttribute()
+		{
+
+		}
+	}
 }
 

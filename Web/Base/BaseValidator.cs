@@ -7,9 +7,12 @@ using Model.Types.Interfaces;
 
 namespace Web.Base
 {
-	public abstract class BaseValidator
+	public class BaseValidator //: IWebValidator
 	{
-		public ISettings Settings { get; protected set; }
+		
+
+
+	/*	public ISettings Settings { get; protected set; }
 		public GameController Controller { get; }
 
 		public event SendLightMsgDel SendMsg;
@@ -45,12 +48,13 @@ namespace Web.Base
 		}
 
 
-		public abstract void AfterSendCode(string html, IUser user, string code, Guid? idMsg);
-		public abstract void SetNewPage(string html);
+		//public abstract void AfterSendCode(string html, IUser user, string code, Guid? idMsg);
+		//public abstract void SetNewPage(string html);
 
-		public abstract string LogInContext();// => $@"socialAssign=0&Login={Settings.GetValue(Const.Game.Login)}&Password={Const.Game.Password}&EnButton1=Sign+In&ddlNetwork=1";
-		public abstract string LogInUrl();//=> $@"{_setting.Site()}Login.aspx";
+		//public abstract string LogInContext();// => $@"socialAssign=0&Login={Settings.GetValue(Const.Game.Login)}&Password={Const.Game.Password}&EnButton1=Sign+In&ddlNetwork=1";
+		//public abstract string LogInUrl();//=> $@"{_setting.Site()}Login.aspx";
 
-		public virtual void SendEvent(IEvent iEvent) { }
+		public virtual void SendEvent(IEvent iEvent) { }*/
+
 	}
 }

@@ -4,8 +4,8 @@ using System.Text;
 
 namespace Model.Types.Class
 {
-    public class Texter
-    {
+	public class Texter
+	{
 		public bool Html { get; set; } = false;
 		public string Text { get; set; }
 

@@ -76,7 +76,7 @@ namespace Model.Types.Interfaces
 
 	public class LocalFileWorker : IChatFileWorker
 	{
-		private static string LocalPath => @"D:\botseting\";
+		private static string LocalPath => @"botseting";
 
 		private Guid _chatId;
 		private string _directory => Path.Combine(LocalPath, _chatId.ToString());
@@ -116,8 +116,12 @@ namespace Model.Types.Interfaces
 
 		public FileStream WriteStream(IFileToken token)
 		{
+
 			if (token is LocalFileToken localToken)
+			{
+				Console.WriteLine("localToken.FilePath:" + localToken.FilePath);
 				return new FileStream(localToken.FilePath, FileMode.Create);
+			}
 
 			throw new NotImplementedException();
 		}

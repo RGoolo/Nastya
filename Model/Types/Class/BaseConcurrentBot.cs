@@ -8,45 +8,35 @@ using System.Threading.Tasks;
 
 namespace Model.Types.Class
 {
-	public abstract class BaseConcurrentBot : IBot
+	public class ConcurrentBot : IBot
 	{
-		protected ConcurrentQueue<TransactionCommandMessage> _toSendQueue = new ConcurrentQueue<TransactionCommandMessage>();
-		protected ConcurrentQueue<IMessage> _downloadResourceQueue = new ConcurrentQueue<IMessage>();
-		protected ConcurrentQueue<IMessage> _messagesQueue = new ConcurrentQueue<IMessage>();
+		private ConcurrentQueue<TransactionCommandMessage> _toSendQueue = new ConcurrentQueue<TransactionCommandMessage>();
+		private ConcurrentQueue<IMessage> _downloadResourceQueue = new ConcurrentQueue<IMessage>();
+		private ConcurrentQueue<IMessage> _messagesQueue = new ConcurrentQueue<IMessage>();
 
-		public TypeBot TypeBot { get; }
-		public Guid Id { get; set; }
-		public abstract void Dispose();
+		private IConcurentBot _bot { get; }
+		public TypeBot TypeBot => _bot.TypeBot;
+		public Guid Id => _bot.Id;
 
-		protected readonly Logger _loger;
-		private object _lockerSendMsg = new object();
+		private readonly Logger _log;
+		//private object _lockerSendMsg = new object();
 
-		protected BaseConcurrentBot(TypeBot typeBot, Guid id)
+		public ConcurrentBot(IConcurentBot bot)
 		{
-			Id = id;
-			TypeBot = typeBot;
-			_loger = new Logger($"{id} {typeBot}");
+			_bot = bot;
+			_log = bot.Log; 
 		}
 
-		protected abstract void RunCycle();
-		public abstract Task<IMessage> Message(CommandMessage message, Guid chatId);
-		protected virtual void PreCycle() { /*empty*/ }
-		protected abstract void DownloadFile(IMessage msg);
-		protected virtual void OnError(Exception ex)
+		protected async Task Cycle()
 		{
-
-		}
-
-		protected void Cycle()
-		{
-			_loger.WriteTrace(nameof(Cycle));
+			_log.WriteTrace(nameof(Cycle));
 			try
 			{
-				PreCycle();
+				_bot.PreCycle();
 			}
 			catch (Exception ex)
 			{
-				_loger.WriteError(ex.Message + ex.StackTrace);
+				_log.WriteError(ex.Message + ex.StackTrace);
 				return;
 			}
 
@@ -54,26 +44,30 @@ namespace Model.Types.Class
 			{
 				try
 				{
-					RunCycle();
-					Messages();
+					foreach(var msg in _bot.RunCycle())
+						_messagesQueue.Enqueue(msg);
+					await Messages();
 					DownloadResources();
 				}
 				catch (System.Net.Http.HttpRequestException ex)
 				{
-					_loger.WriteError(ex.Message);
-					Thread.Sleep(1000);
+					_log.WriteError(ex.Message);
+					//Thread.Sleep(1000);
 				}
 				catch (Exception ex)
 				{
 					//ToDo hey!
 					try
 					{
-						OnError(ex);
+						_bot.OnError(ex);
 					}
-					catch { }
+					catch
+					{
+						// ignored
+					}
 
-					_loger.WriteError(ex.Message + ex.StackTrace);
-					Thread.Sleep(1000);
+					_log.WriteError(ex.Message + ex.StackTrace);
+					//Thread.Sleep(1000);
 				}
 			}
 		}
@@ -124,44 +118,41 @@ namespace Model.Types.Class
 
 				try
 				{
-					await MessagesSyncAsync(msg);
+					MessagesSyncAsync(msg);
 				}
 				catch (Exception e)
 				{
+					_log.WriteError("!!!!!!!!!!!!!!!!!");
+					_log.WriteError(e.Message + Environment.NewLine + e.StackTrace);
 					_toSendQueue.Enqueue(msg);
-					_loger.WriteError(e.Message);
+					_log.WriteError(e.Message);
 					throw;
 				}
 			}
 		}
 
-		private async Task MessagesSyncAsync(TransactionCommandMessage tMessage)
+		private void MessagesSyncAsync(TransactionCommandMessage tMessage)
 		{
-			if (tMessage.Message != null)
-				//lock (_lockerSendMsg) I am lucky!
-			{
-				var a = await Message(tMessage.Message, tMessage.ChatId);
-				AfterSendMessage(tMessage.Message, a);
-			}
-
-			if (tMessage.Messages != null)
-			{
-				foreach (var msg in tMessage.Messages.ToList())
-					//lock (_lockerSendMsg) I am lucky!
-				{
-					var b = Message(msg, tMessage.ChatId);
-					tMessage.Messages.Remove(msg);
-					AfterSendMessage(msg, b.Result);
-				}
-			}
-		
+			foreach (var msg in tMessage)
+				_bot.Message(msg, tMessage.ChatId);
 		}
 
-		protected void DownloadResources()
+		protected async void DownloadResources()
 		{
 			while (!_downloadResourceQueue.IsEmpty)
+			{
 				if (_downloadResourceQueue.TryDequeue(out var msg))
-					DownloadFile(msg);
+				{
+					var mesg = await _bot.DownloadFileAsync(msg);
+					if (mesg != null)
+						_messagesQueue.Enqueue(mesg);
+				}
+			}
+		}
+
+		public void Dispose()
+		{
+			_bot?.Dispose();
 		}
 	}
 }

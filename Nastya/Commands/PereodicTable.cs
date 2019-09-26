@@ -5,8 +5,8 @@ using Model.Types.Attribute;
 namespace Nastya.Commands
 {
 	[CommandClass(nameof(HelpCommand), "Таблица менделлева:", Model.Types.Enums.TypeUser.User)]
-	public class PereodicTableCommand     
-    {
+	public class PereodicTableCommand	 
+	{
 		private readonly PeriodicTable _pereodicTable = new PeriodicTable();
 
 		[Command(nameof(Men), "Переводит строку в символы елементов.", Model.Types.Enums.TypeUser.User)]

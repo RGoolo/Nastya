@@ -43,6 +43,8 @@ namespace Model.Types.Enums
 		NewSpoiler,
 		SendSectors,
 		SendAllSectors,
+		GameStarted,
+		GameStoped,
 	}
 
 	public enum TypeResource

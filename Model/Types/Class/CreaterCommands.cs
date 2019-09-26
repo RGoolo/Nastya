@@ -1,4 +1,5 @@
-﻿using Model.Types.Interfaces;
+﻿using System;
+using Model.Types.Interfaces;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -26,7 +27,7 @@ namespace Model.Types.Class
 
 		public List<string> GetCommands(string str)
 		{
-			
+			Console.WriteLine(str);
 			string @params = $"((\\s|^){StartSpliterPattern}(?'{NameGroup}'(\\w|\\d|_)+))*";
 			var command = new List<string>();
 			foreach (Match match in Regex.Matches(str, @params))
@@ -44,6 +45,8 @@ namespace Model.Types.Class
 
 		public List<IMessageCommand> CreateCommands(string text, List<string> commands)
 		{
+			Console.WriteLine("-----------");
+			Console.WriteLine(text, string.Join("\n", commands));
 			if (string.IsNullOrEmpty(text))
 				return null;
 

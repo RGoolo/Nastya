@@ -39,6 +39,5 @@ namespace Web.DZR
 			else
 				return $"{Count}❌{Name}";
 		}
-
 	}
 }
