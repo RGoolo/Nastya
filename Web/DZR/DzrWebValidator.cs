@@ -22,9 +22,12 @@ namespace Web.DZR
 		{
 			_settings = settings;
 			Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
-			Response = new Response(true);
 			
-			Response.Encoding = Encoding.GetEncoding(1251);
+			Response = new Response(true)
+			{
+				Encoding = Encoding.GetEncoding(1251)
+			};
+
 		}
 
 		public DzrPage SendCode(string code, Task task) => GetNextPage(Response.PostHttpWebRequest(GetUrl(), GetContextSetCode(code, task)));
@@ -32,12 +35,10 @@ namespace Web.DZR
 		public DzrPage LogIn()
 		{
 			var requestLogIn = Response.PostHttpWebRequest(LogInUrl(), LogInContext()); //.GetResponse();
-			Console.WriteLine(GetNextPage(requestLogIn).Html);
-			Console.WriteLine(GetNextPage().Html);
+			GetNextPage(requestLogIn);
 			return GetNextPage();
 		}
 
-	
 		private DzrPage GetNextPage(HttpWebRequest request) => GetNextPage(Response.GetNextResponse(request));
 
 		private DzrPage GetNextPage(HttpWebResponse page) => new DzrPage(GetPage(Response.GetNextResponse(GetUrl())), GetUrl());

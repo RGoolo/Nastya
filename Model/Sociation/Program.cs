@@ -25,7 +25,6 @@ namespace Model.Sociation
 			{
 				Console.WriteLine(ex.Message);
 			}
-			Console.ReadLine();
 		}
 
 		private static void Start()
@@ -186,7 +185,6 @@ namespace Model.Sociation
 				}
 			}
 			Console.WriteLine("finish");
-			Console.ReadLine();
 		}
 	}
 }

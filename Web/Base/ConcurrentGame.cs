@@ -10,6 +10,7 @@ using System.Collections.Concurrent;
 using Model.Logic.Model;
 using Model.Logic.Settings;
 using System.Linq;
+using System.Net.NetworkInformation;
 using Model.Types.Class;
 using Web.Game;
 using Model.Types.Interfaces;
@@ -104,6 +105,7 @@ namespace Web.Base
 		{
 			try
 			{
+
 				if (!_controller.Settings.TypeGame.IsDummy())
 					_controller.LogIn();
 
@@ -123,14 +125,17 @@ namespace Web.Base
 				SendSimpleMsg(msg);
 
 				_gameIsStarted = true;
-				Task.Run(Cycle, _token);
+				//Task.Run(Cycle, _token);
 
 				_refreshTimer.Start();
 			}
-			catch
+			catch(Exception ex)
 			{
+				_gameIsStarted = false;
 				var msgError = CommandMessage.GetTextMsg("Произошла ошибка подключения.");
 				SendSimpleMsg(msgError);
+				SendSimpleMsg(ex.Message);
+
 				return false;
 				//ToDo: log;
 			}

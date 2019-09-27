@@ -51,9 +51,11 @@ namespace Web.Game
 			return result;
 		}
 
-		public static HttpWebRequest PostHttpWebRequest(string url, string context, CookieContainer cookies)
+		public static HttpWebRequest PostHttpWebRequest(string url, string context, CookieContainer cookies, bool autoGzip)
 		{
 			var request = (HttpWebRequest)WebRequest.Create(url);
+			if (autoGzip)
+				request.AutomaticDecompression = DecompressionMethods.GZip;
 
 			byte[] s = Encoding.UTF8.GetBytes(context);
 			request.CookieContainer = cookies;
@@ -61,16 +63,17 @@ namespace Web.Game
 			request.Method = "POST";
 			request.ContentLength = s.Length;
 			request.CookieContainer = cookies;
-
 			using (var stream = request.GetRequestStream())
 				stream.Write(s, 0, s.Length);
-
 			return request;
 		}
 
-		public static HttpWebRequest GetWebRequest(string url, CookieContainer cookies)
+		public static HttpWebRequest GetWebRequest(string url, CookieContainer cookies, bool autoGzip)
 		{
 			HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
+			if (autoGzip)
+				request.AutomaticDecompression = DecompressionMethods.GZip;
+
 			request.CookieContainer = cookies;
 			request.ContentType = "application/x-www-form-urlencoded";
 			request.Method = "GET";

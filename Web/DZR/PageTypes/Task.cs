@@ -1,4 +1,5 @@
-﻿using HtmlAgilityPack;
+﻿using System;
+using HtmlAgilityPack;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -90,7 +91,10 @@ namespace Web.DZR
 
 		private void SetCodes(HtmlNode node)
 		{
-			int end = node.InnerHtml.LastIndexOf("Коды сложности");
+			int end = node.InnerHtml.LastIndexOf("Коды сложности", StringComparison.InvariantCulture);
+
+			if (end == -1) return;
+
 			var split = node.InnerHtml.Substring(end).Split("<br>");
 			if (split.Length < 3)
 				return;

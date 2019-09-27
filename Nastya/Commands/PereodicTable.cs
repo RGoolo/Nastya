@@ -16,7 +16,7 @@ namespace Nastya.Commands
 		public string MenDig(string[] elems) => string.Join(" ", _pereodicTable.GetElements(elems).Select(x => x.Equals(default(Element)) ? "-" : x.AtomicNumber.ToString()));
 
 		[Command(nameof(Elements), "Полностью найденые элементы выводит.",  Model.Types.Enums.TypeUser.User)]
-		public string Elements(string[] elems) => string.Join(" ", _pereodicTable.GetElements(elems).Select(x => x.Equals(default(Element)) ? "-" : x.ToString()));
+		public string Elements(string[] elems) => string.Join("\n\n", _pereodicTable.GetElements(elems).Select(x => x.Equals(default(Element)) ? "-" : x.ToString()));
 
 		[Command(nameof(Element), "Выводит элемент таблицы.", Model.Types.Enums.TypeUser.User)]
 		public string Element(string elem) => _pereodicTable.GetElement(elem).ToString();

@@ -36,27 +36,26 @@ namespace Web.DZR
 		private string CommentBeforeSystemMsg;
 		public Tasks Tasks;
 		public DateTime? TimeToEnd;
-		//public string TaskText;
-
+		
 		protected HtmlDocument htmlDocument;
 	
-		private readonly string _defaulUrl;
+		private readonly string _defaultUrl;
 
 		public DzrPage(string html, string DefaultUrl)
 		{
 			Html = html;
 			if (string.IsNullOrEmpty(html))
 			{
+			
 				Type = PageType.NotFound;
 				return;
 			}
 
-			_defaulUrl = DefaultUrl;
+			_defaultUrl = DefaultUrl;
 
 			html = html.Trim();
 			htmlDocument = new HtmlDocument {OptionDefaultStreamEncoding = Encoding.GetEncoding(1251)};
 			htmlDocument.LoadHtml(html);
-
 			SetSysMessage();
 			SetAnswerType();
 
@@ -165,7 +164,7 @@ namespace Web.DZR
 			var nodes = htmlDocument.DocumentNode.SelectNodes("//div[(@class='title' or @class='zad' or @class='codeform') and (not(../@class) or ../@class!='zad')]");
 			if (nodes == null) return;
 
-			Tasks = new Tasks(nodes, _defaulUrl);
+			Tasks = new Tasks(nodes, _defaultUrl);
 		}
 	
 		public enum TypeNode

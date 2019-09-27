@@ -177,7 +177,7 @@ namespace Model.TelegramBot
 		public async Task<IMessage> Message(CommandMessage message, Guid chatId)
 		{
 			_log.WriteTrace(
-				$"{nameof(message.TypeMessage)}:{message.TypeMessage} message:{message.Texter?.Text}  type:{message.Texter?.Html}");
+				$"{nameof(message.TypeMessage)}:{message.TypeMessage} type:{message.Texter?.Html} message:{ message.Texter?.Text}");
 
 			var longChatId = chatId.ToLong();
 			if (longChatId != 62779148)
