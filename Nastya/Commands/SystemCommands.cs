@@ -15,5 +15,11 @@ namespace Nastya.Commands
 			SettingsHelper.GetSetting(ChatId).Clear();
 			return "Настройки сброшены";
 		}
+
+		[Command(nameof(Me), "Очистить настройки.")]
+		public string Me()
+		{
+			return ChatId.ToString();
+		}
 	}
 }

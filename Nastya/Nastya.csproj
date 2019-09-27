@@ -2,14 +2,14 @@
 
   <PropertyGroup>
 	<OutputType>Exe</OutputType>
-	<TargetFramework>netcoreapp2.2</TargetFramework>
+	<TargetFramework>netcoreapp3.0</TargetFramework>
 	<LangVersion>preview</LangVersion>
   </PropertyGroup>
 
   <ItemGroup>
-	<PackageReference Include="Google.Apis.Speech.v1" Version="1.40.3.1702" />
+	<PackageReference Include="Google.Apis.Speech.v1" Version="1.41.1.1723" />
 	<PackageReference Include="Google.Cloud.Speech.V1" Version="1.2.0" />
-	<PackageReference Include="Npgsql" Version="4.0.9" />
+	<PackageReference Include="Npgsql" Version="4.1.0" />
 	<PackageReference Include="Telegram.Bot" Version="15.0.0" />
   </ItemGroup>
 

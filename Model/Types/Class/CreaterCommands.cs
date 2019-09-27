@@ -32,7 +32,7 @@ namespace Model.Types.Class
 			var command = new List<string>();
 			foreach (Match match in Regex.Matches(str, @params))
 			{
-				var groupParam = match.Groups.FirstOrDefault(x => x.Name == NameGroup)?.Captures; //.Select(x => x.Value.Replace("\"", string.Empty));
+				var groupParam = match.Groups.FirstOrDefault<Group>(x => x.Name == NameGroup)?.Captures; //.Select(x => x.Value.Replace("\"", string.Empty));
 				if (groupParam != null)
 					foreach (var x in groupParam)
 					{
@@ -46,9 +46,10 @@ namespace Model.Types.Class
 		public List<IMessageCommand> CreateCommands(string text, List<string> commands)
 		{
 			Console.WriteLine("-----------");
-			Console.WriteLine(text, string.Join("\n", commands));
 			if (string.IsNullOrEmpty(text))
 				return null;
+
+			Console.WriteLine(text, string.Join("\n", commands));
 
 			var result = new List<IMessageCommand>();
 			foreach (var command in commands)
@@ -82,7 +83,7 @@ namespace Model.Types.Class
 
 					foreach (Match match in Regex.Matches(text, paramsPattern))
 					{
-						var groupParam = match.Groups.FirstOrDefault(x => x.Name == NameGroup)?.Captures.Select(x => x.Value.Replace("\"", string.Empty)).ToArray();
+						var groupParam = match.Groups.FirstOrDefault<Group>(x => x.Name == NameGroup)?.Captures.Select(x => x.Value.Replace("\"", string.Empty)).ToArray();
 						comms.AddRange(groupParam);
 						result.Add(new MessageCommand(name, comms));
 					}
