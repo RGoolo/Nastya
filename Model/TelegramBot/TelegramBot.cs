@@ -170,9 +170,19 @@ namespace Model.TelegramBot
 
 		protected TelegramMessage TelegramMessage(Message msg) =>  new TelegramMessage(msg, GetTypeUser(msg));
 
-		public static (string text, ParseMode mode) GetText(Texter text) => (TelegramHTML.RemoteTag(text), GetParseMod(text));
+		public static (string text, ParseMode mode) GetText(Texter text)
+		{
+			try
+			{
+				return (TelegramHTML.RemoteTag(text), GetParseMod(text));
+			}
+			catch (Exception e)
+			{
+				return (text?.Text, ParseMode.Default);
+			}
+		}
 
-		private static ParseMode GetParseMod(Texter text) => text.Html ? ParseMode.Html : ParseMode.Default;
+		private static ParseMode GetParseMod(Texter text) => text?.Html == true ? ParseMode.Html : ParseMode.Default;
 
 		public async Task<IMessage> Message(CommandMessage message, Guid chatId)
 		{
@@ -197,7 +207,7 @@ namespace Model.TelegramBot
 					break;
 				case Types.Enums.MessageType.Text:
 					if (!string.IsNullOrEmpty(text))
-						senderMsg = await _bot.SendTextMessageAsync(longChatId, text, GetParseMod(message.Texter),
+						senderMsg = await _bot.SendTextMessageAsync(longChatId, text, mode,
 							replyToMessageId: replaceMsg, disableWebPagePreview: true,
 							cancellationToken: _cancellationToken);
 					break;
@@ -211,7 +221,7 @@ namespace Model.TelegramBot
 				case Types.Enums.MessageType.Photo:
 					if (message.FileToken.Type == Types.Enums.FileType.Local)
 					{
-						using var stream = _fileWorker.ReadStream(message.FileToken);
+						await using var stream = _fileWorker.ReadStream(message.FileToken);
 						senderMsg = await _bot.SendPhotoAsync(longChatId, stream, text, mode,
 							replyToMessageId: replaceMsg, cancellationToken: _cancellationToken);
 					}

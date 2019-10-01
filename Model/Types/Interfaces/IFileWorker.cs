@@ -60,7 +60,7 @@ namespace Model.Types.Interfaces
 		IFileToken NewFileTokenByExt(string ext);
 		IFileToken NewFileToken(string fileName);
 		IFileToken GetExistFileByName(string name);
-
+		IFileToken GetExistFileByPath(string fullName);
 		IFileToken SaveFile(FileStream stream);
 	}
 
@@ -137,6 +137,12 @@ namespace Model.Types.Interfaces
 			//(ext), _chatId);
 		}
 
+		public IFileToken NewFileTokenByPath(string fileName)
+		{
+			return new LocalFileToken(fileName, _chatId);
+			//(ext), _chatId);
+		}
+
 		public IFileToken SaveFile(FileStream stream)
 		{
 			throw new NotImplementedException();
@@ -147,9 +153,14 @@ namespace Model.Types.Interfaces
 			throw new NotImplementedException();
 		}
 
-		public IFileToken GetExistFileByName(string name)
+		public IFileToken GetExistFileByName(string fileName)
 		{
-			throw new NotImplementedException();
+			return new LocalFileToken(Path.Combine(_directory, fileName), _chatId);
+		}
+
+		public IFileToken GetExistFileByPath(string fullName)
+		{
+			return new LocalFileToken(fullName, _chatId);
 		}
 	}
 }

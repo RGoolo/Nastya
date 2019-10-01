@@ -49,6 +49,7 @@ namespace Model.Types.Class
 		public Coordinate Coordinate { get; set; }
 		public IFileToken FileToken { get; set; }
 		public Notification Notification { get; set; }
+		public object NotificationObject { get; set; }
 		public Guid EditMsg { get; set; }
 
 		//public CommandMessage() { }

@@ -59,8 +59,11 @@ namespace Model.Dummy
 
 		public async Task<IMessage> Message(CommandMessage message, Guid chatId)
 		{
+			
 			switch (message.TypeMessage)
 			{
+					case MessageType.SystemMessage:
+					return null;
 				case MessageType.Text:
 					Console.WriteLine(message.Texter);
 					break;
@@ -71,7 +74,8 @@ namespace Model.Dummy
 					Console.WriteLine($"{message.FileToken}");
 					break;
 			}
-			return new Message(Id, null, nameof(Message));
+			
+			return new Message(Id, message);
 		}
 
 		protected  void DownloadFile(IMessage msg)

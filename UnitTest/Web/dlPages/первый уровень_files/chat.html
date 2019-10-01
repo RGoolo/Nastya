@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<!-- saved from url=(0088)http://chat.en.cx/chat.php?channel=66775_168964_3d308dc5ddaa4eeac5981774e03cf09446c47996 -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<link rel="stylesheet" type="text/css" href="./gameEngine2.css">
+<style type="text/css">
+html, body {height: 100%;}
+</style>
+
+<script type="text/javascript" src="./saved_resource"></script>
+<script type="text/javascript" src="./jquery.min.js(1).Без названия"></script>
+<script type="text/javascript" src="./jquery.mousewheel.js.Без названия"></script>
+<script type="text/javascript" src="./jquery.jscrollpane.min.js.Без названия"></script>
+<script type="text/javascript">
+        $(function()
+        {
+                $('.pane').each(
+                function()
+                {
+                        $(this).jScrollPane({showArrows: true, hideFocus: true, mouseWheelSpeed: 40, arrowButtonSpeed: 200, maintainPosition: true,
+                                                enableKeyboardNavigation: false, stickToRight: true, autoReinitialise: true, stickToBottom: true});
+                        var api = $(this).data('jsp');
+                        var throttleTimeout;
+                        $(window).bind('resize',
+                                function()
+                                {
+                                        if ($.browser.msie) {
+                                                if (!throttleTimeout) {
+                                                        throttleTimeout = setTimeout(function() { api.reinitialise(); throttleTimeout = null; }, 50);
+                                                }
+                                        } else { api.reinitialise(); }
+                                }
+                        );
+                }
+        )
+        }
+);
+</script>
+
+<script type="text/javascript">
+$(function(){
+        $(".chatframe").data('jsp').scrollTo(0,9999);
+});
+</script>
+
+<script type="text/javascript">
+
+var realplexor = new Dklab_Realplexor(
+                "http://chat.en.cx/?1569611079",  // URL of engine
+                "encx_" // namespace
+);
+var load = true;
+
+$(document).ready(function() {
+        function addListen(id) {
+                var n = $("#board");
+                n[0].identifier = id;
+                n[0].callback = function(result, id, cursor) {
+                        var line = document.createElement("p");
+                        line.innerHTML = result;// result.date + ' ' + result.login + ': ' + result.msg;
+                        n.append(line);
+                        //n.append(line);
+                        if (!load)
+                                $(".chatframe").data('jsp').scrollTo(0,9999);
+                }
+                realplexor.setCursor(id, 0);
+                realplexor.subscribe(id, n[0].callback);
+                realplexor.execute();
+        }
+
+        addListen("66775_168964_3d308dc5ddaa4eeac5981774e03cf09446c47996");
+        setTimeout(function() {$(".chatframe").data('jsp').scrollTo(0,9999); load = false;}, 1500);
+
+});
+</script>
+</head>
+
+<body class="pane chatframe" style="overflow: hidden; padding: 0px; width: 276px;">
+
+
+
+
+<div class="jspContainer" style="width: 276px; height: 343px;"><div class="jspPane" style="padding: 0px; top: 0px; width: 276px;"><div id="board"></div></div></div><div><iframe id="mpl1569611389991" onload="Dklab_Realplexor._iframeLoaded(&quot;mpl1569611389991&quot;)" src="./saved_resource.html" style="position:absolute; width:200px; height: 200px; left: -1000px; visibility:hidden"></iframe></div></body></html>

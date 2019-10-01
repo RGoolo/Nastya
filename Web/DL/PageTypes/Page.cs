@@ -28,6 +28,8 @@ namespace Web.DL
 
 	public class DLPage
 	{
+		public string Html { get; set; }
+
 		/// <summary>
 		/// Сколько времени до конца задания.
 		/// </summary>

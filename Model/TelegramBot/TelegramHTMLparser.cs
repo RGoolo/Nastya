@@ -12,6 +12,9 @@ namespace Model.TelegramBot
 
 		public static string RemoteTag(Texter text)
 		{
+			if (text == null)
+				return null;
+
 			if (!text.Html) return text.ToString();
 
 			const string pattern = "(</[^abi][^>]*>)|(<[^abi/][^>]*>)|(</(\\w){2,}>)|(<a[^ ][^>]*>)|(<(b|i)[^>]+>)";

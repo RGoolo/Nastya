@@ -14,32 +14,39 @@ namespace Web.DL
 	public static class PageConstructor
 	{
 
-		public static DLPage GetNewPage(HttpWebResponse webResponse, Func<HttpWebResponse, string> func )
+		public static DLPage GetNewPage(HttpWebResponse webResponse, Func<HttpWebResponse, string> func)
 		{
 			var page = new DLPage();
-			if (webResponse.ResponseUri.AbsolutePath.StartsWith("/login.aspx", StringComparison.InvariantCultureIgnoreCase))
+			if (webResponse.ResponseUri.AbsolutePath.StartsWith("/login.aspx",
+				StringComparison.InvariantCultureIgnoreCase))
 			{
 				page.Type = TypePage.ErrorAuthentication;
 				return page;
 			}
 
 			var html = func(webResponse);
+			return FillPage(html);
+		}
 
+		public static DLPage GetNewPage(string html) => FillPage(html);
+
+		private static DLPage FillPage(string html)
+		{
+			var page = new DLPage {Html = html};
 			var htmlDocument = new HtmlDocument();
 			htmlDocument.LoadHtml(html.Trim());
 			
 			var document = htmlDocument.DocumentNode;
 			var contentBlock = document.SelectSingleNode("//div[@class='content']");
-	
-
+			
 			page.Type = PageType(contentBlock, htmlDocument.DocumentNode);
-
-			if (page.Type != TypePage.InProcess)
+			
+			if (page.Type != TypePage.InProcess && page.Type != TypePage.NotStarted)
 				return page;
 
 			page.LevelTitle = LevelTitle(contentBlock);
-			page.TimeToEnd = TimeToEnd(document);
-			page.Task = Task(document);
+			page.TimeToEnd = TimeToEnd(document, page.Type);
+			page.Task = Task(document, page.Type);
 			page.CodeType = SetIsCodeReceived(document);
 			page.LevelId = LevelId(document);
 			page.LevelNumber = LevelNumber(document);
@@ -56,10 +63,16 @@ namespace Web.DL
 			if (error != null && error.InnerText == "Неправильный логин или пароль")
 				return TypePage.ErrorAuthentication;
 			
-			//<div class="goback"><i></i><a href="/GameDetails.aspx?gid=64571">Вернуться</a></div>
+			var gameStarted = document.SelectSingleNode("//span[@id='Panel_TimerHolder']"); 
+		
+				//<div class="goback"><i></i><a href="/GameDetails.aspx?gid=64571">Вернуться</a></div>
 			var goback = document.SelectSingleNode("//div[@class='goback']");
 			if (goback != null && goback.InnerText == "Вернуться")
-				return TypePage.Finished;
+			{
+				return gameStarted != null && gameStarted.InnerText.Contains("Игра начнется через")
+					? TypePage.NotStarted
+					: TypePage.Finished;
+			}
 
 			if (contentBlock == null)
 				return TypePage.Unknown;
@@ -73,14 +86,17 @@ namespace Web.DL
 		private static List<Link> Levels(HtmlNode documentNode) => documentNode.SelectNodes("//h3[@class='section level']/li/div/a[@class!='block']")
 			?.Select(x => new Link(x)).ToList() ?? new List<Link>();
 
-		private static DateTime? TimeToEnd(HtmlNode documentNode)
+		private static DateTime? TimeToEnd(HtmlNode documentNode, TypePage pageType)
 		{
-			var firstTimer = documentNode.SelectSingleNode("//h3[@class='timer']")?.ParentNode;
+			var classTimer = (pageType == TypePage.NotStarted) ? "//span[@id='Panel_TimerHolder']" : "//h3[@class='timer']";
+		
+			var firstTimer =  documentNode.SelectSingleNode(classTimer)?.ParentNode;
 			var regexTimer = new Regex("\"StartCounter\":(\\d+)");
+			if (firstTimer == null) return null;
 
 			try
 			{
-				var match = regexTimer.Matches(firstTimer.InnerText).First() as Match;
+				var match = regexTimer.Matches(firstTimer.InnerHtml).First() as Match;
 				return new DateTime().AddSeconds(int.Parse(match.Groups[1].Value));
 			}
 			catch { };
@@ -97,7 +113,7 @@ namespace Web.DL
 
 				try
 				{
-					var match = regexTimer.Matches(hint.InnerText).First() as Match;
+					var match = regexTimer.Matches(hint.InnerHtml).First() as Match;
 					var timeToEnd = new DateTime().AddSeconds(int.Parse(match.Groups[1].Value));
 
 					return new Hint(hint.FirstChild.InnerText, null, timeToEnd);
@@ -173,8 +189,8 @@ namespace Web.DL
 			//<h3 class="color_bonus"> 
 			var mainDiv = documentNode.SelectSingleNode("//h3[@class='color_bonus' or @class='color_correct']")?.ParentNode;
 
-			var bonusesNode = mainDiv?.ChildNodes.Where(x => x.Attributes.Any(y => (y.Value == "color_bonus" || y.Value == "color_correct") && y.Name == "class") || x.Name == "p");
-			return bonusesNode?.Select(x => new Bonus(x.InnerHtml, null)).ToList() ?? new List<Bonus>();
+			var bonusesNodes = mainDiv?.ChildNodes.Where(x =>  (x.Attributes.Any(y => (y.Value == "color_bonus" || y.Value == "color_correct") && y.Name == "class") && x.Name == "h3")).ToList();
+			return bonusesNodes?.Select(x => new Bonus(x)).ToList() ?? new List<Bonus>();
 		}
 
 		private static TypeCode SetIsCodeReceived(HtmlNode documentNode)
@@ -201,15 +217,15 @@ namespace Web.DL
 
 		private static string LevelTitle(HtmlNode contentBlock) => contentBlock.SelectSingleNode("h2[1]")?.InnerText;
 
-		private static string Task(HtmlNode documentNode)
+		private static string Task(HtmlNode documentNode, TypePage pageType)
 		{
-			var mainDiv = documentNode.SelectNodes("//h3")?.FirstOrDefault(x => x.InnerText == "Задание" || x.InnerText == "Task");
+			var mainDiv = (pageType == TypePage.NotStarted) ? documentNode.SelectSingleNode("//span[@id='Panel_TimerHolder']") : documentNode.SelectNodes("//h3")?.FirstOrDefault(x => x.InnerText == "Задание" || x.InnerText == "Task")?.NextSibling?.NextSibling;
 
-			if (mainDiv?.NextSibling?.NextSibling == null)
+			if (mainDiv == null)
 				return null;
 
 			var sb = new StringBuilder();
-			foreach (var node in mainDiv.NextSibling.NextSibling.ChildNodes.Where(x => x.Name != "script"))
+			foreach (var node in mainDiv.ChildNodes.Where(x => x.Name != "script"))
 				sb.Append(node.InnerHtml);
 
 			return sb.ToString();

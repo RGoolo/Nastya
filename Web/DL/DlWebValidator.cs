@@ -25,7 +25,6 @@ namespace Web.DL
 		private string Login() => _settings.Game.Login;
 		private string Password() => _settings.Game.Password;
 
-
 		private string LogInContext() => $@"socialAssign=0&Login={Login()}&Password={Password()}&EnButton1=Sign+In&ddlNetwork=1";
 
 		private string GetUrl()
@@ -59,8 +58,6 @@ namespace Web.DL
 				return null;
 
 			return GetNextPage();
-			
-
 		}
 
 		private DLPage GetNextPage(HttpWebRequest request) => GetNextPage(Response.GetNextResponse(request));

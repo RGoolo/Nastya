@@ -19,6 +19,7 @@
   </ItemGroup>
 
   <ItemGroup>
+	<PackageReference Include="Google.Apis.Sheets.v4" Version="1.41.1.1721" />
 	<PackageReference Include="Google.Cloud.Speech.V1" Version="1.2.0" />
 	<PackageReference Include="Google.Cloud.Vision.V1" Version="1.6.0" />
 	<PackageReference Include="Telegram.Bot" Version="15.0.0" />

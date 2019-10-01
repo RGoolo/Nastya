@@ -64,10 +64,8 @@ namespace Nastya
 				result.AddRange(InvokeMethods(message));
 			}
 
-			var msgs = result.SelectMany(x => x).Where(x => x.Notification != Notification.None);
-			foreach (var rMessage in msgs)
-				_messages.Push(rMessage);
-
+			
+			
 			return result;
 		}
 

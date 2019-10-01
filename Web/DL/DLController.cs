@@ -49,35 +49,35 @@ namespace Web.DL
 			{
 				case EventTypes.GetLvlInfo:
 				case EventTypes.GetAllInfo:
-					_pageController.SendNewLevelInfo(_pageController._lastPage);
+					_pageController.SendNewLevelInfo(_pageController.GetCurrentPage);
 					break;
 				case EventTypes.GetBonus:
-					_pageController.SendBonus(_pageController._lastPage, false);
+					_pageController.SendBonus(_pageController.GetCurrentPage, false);
 					break;
 				case EventTypes.GetAllBonus:
-					_pageController.SendBonus(_pageController._lastPage, true);
+					_pageController.SendBonus(_pageController.GetCurrentPage, true);
 					break;
 
 				case EventTypes.GetAllSectors:
-					_pageController.SendSectors(_pageController._lastPage);
+					_pageController.SendSectors(_pageController.GetCurrentPage);
 					break;
 				case EventTypes.GetSectors:
-					_pageController.SendSectors(_pageController._lastPage, true);
+					_pageController.SendSectors(_pageController.GetCurrentPage, true);
 					break;
 
 				case EventTypes.GetTimeForEnd:
-					_pageController.SendMsg($"Времени до автоперехода: {_pageController._lastPage.TimeToEnd?.ToString(PageController.TimeFormat)}");
+					_pageController.SendMsg($"Времени до автоперехода: {_pageController.GetCurrentPage.TimeToEnd?.ToString(PageController.TimeFormat)}");
 					break;
 
 				case EventTypes.SendCode:
-					_pageController.AfterSendCode(_webValidator.SendCode(iEvent.Text, _pageController._lastPage), iEvent);
+					_pageController.AfterSendCode(_webValidator.SendCode(iEvent.Text, _pageController.GetCurrentPage), iEvent);
 					break;
 			}
 		}
 
 		public void LogIn() => _pageController.SetNewPage(_webValidator.LogIn());
 
-		public bool IsLogOut() => _webValidator.IsLogOut(_pageController._lastPage);
+		public bool IsLogOut() => _webValidator.IsLogOut(_pageController.GetCurrentPage);
 
 		public List<IEvent> GetCode(string str, IUser user, Guid replaceMsg)
 		{

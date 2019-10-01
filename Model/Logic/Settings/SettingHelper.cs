@@ -66,8 +66,8 @@ namespace Model.Logic.Settings
 			{
 				Settings = new Settings(chatId);
 				Save();
-				return;
 			}
+
 			lock (_lockobj)
 			{
 				XmlSerializer formatter = new XmlSerializer(typeof(Settings));
@@ -78,7 +78,6 @@ namespace Model.Logic.Settings
 			}
 
 			FileWorker = new LocalFileWorker(chatId);
-
 			Braille = new BrailleSettings(this);
 			Test = new TestSettings(this);
 			Coordinates = new CoordinatesSettings(this);
@@ -86,6 +85,8 @@ namespace Model.Logic.Settings
 			Web = new WebSettings(this);
 			Page = new PageSettings(this);
 		}
+
+		
 
 		private bool StartWith(StringBuilder sb, string str, bool replace = false)
 		{

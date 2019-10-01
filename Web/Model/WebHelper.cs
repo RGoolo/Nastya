@@ -1,4 +1,5 @@
-﻿using Model.Logic.Coordinates;
+﻿using System;
+using Model.Logic.Coordinates;
 using Model.Logic.Google;
 using Model.Logic.Settings;
 using Model.Logic.Yandex;
@@ -25,6 +26,7 @@ namespace Web.Base
 			return Regex.Replace(str, "(\t|\r|\n)+", replaceOn);
 		}
 
+		[Obsolete]
 		public static string RemoteTagToTelegram(string str)
 		{
 			/*var result = Regex.Replace(str, "<br>|<p>","\n");

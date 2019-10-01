@@ -15,7 +15,7 @@ namespace Web.DL.PageTypes
 	public class PageController
 	{
 		private readonly ISendMsgDl _sendMsgDl;
-		public DLPage _lastPage;
+		private DLPage _lastPage;
 		private ISettings Setting;
 		public const string TimeFormat = "HH:mm:ss";
 
@@ -127,7 +127,8 @@ namespace Web.DL.PageTypes
 			var msg = new List<CommandMessage>();
 
 			StringBuilder sb = new StringBuilder();
-			sb.Append(!isNewlvl ? "📖 Текущий уровень" : "📖 Следующий уровень \n");
+			sb.AppendLine(!isNewlvl ? "📖 Текущий уровень" : $"📖 Новый уровень #{Setting.Web.GameNumber}");
+
 
 			if (page.Levels.Any())
 			{
@@ -153,7 +154,7 @@ namespace Web.DL.PageTypes
 
 			if (page.Bonuses.Any())
 			{
-				var isReady = page.Bonuses.Where(x => x.IsReady).Count();
+				var isReady = page.Bonuses.Count(x => x.IsReady);
 				sb.Append($"на уровне закрыто {isReady}(/{Const.Game.Bonus}) из {page.Bonuses.Count()}(/{Const.Game.AllBonus})\n");
 				//page.Bonuses.ForEach(x => sb.Append(x.IsReady + x.Name + "\n" + x.Text + "\n"));
 				//sb.Append($"На уровне осталось закрыть: {page.Sectors.SectorsRemain}(/sectors) из {page.Sectors.CountSectors}(/allsectors).\n");
@@ -169,7 +170,21 @@ namespace Web.DL.PageTypes
 				}
 			}
 
-			var textTask = WebHelper.RemoveImg(WebHelper.RemoteTagToTelegram(sb.ToString()));
+			var message = CommandMessage.GetTextMsg(new Texter(sb.ToString(), true));
+			//msg.Add(message);
+			
+			if (isNewlvl)
+			{
+				//var messages = new SystemMess
+				//
+				message.Notification = Notification.NewLevel;
+				message.NotificationObject = new DLPage[]{_lastPage, page};
+			}
+
+			msg.Add(message);
+
+			/*
+			 var textTask = WebHelper.RemoveImg(WebHelper.RemoteTagToTelegram(sb.ToString()));
 
 			var text = textTask.Item1 + "\n";
 			foreach (var img in textTask.Item2)
@@ -184,6 +199,7 @@ namespace Web.DL.PageTypes
 			var currentCoords = RegExPoints.GetCoords(sb.ToString()).ToList();
 			foreach (var x in currentCoords)
 				msg.Add(CommandMessage.GetCoordMsg(x));
+								*/
 
 			/*if (page.ImageUrls.Any())
 			{
@@ -219,7 +235,6 @@ namespace Web.DL.PageTypes
 			return ((maxDt - difTime).TotalMinutes > minutes && (minDt - difTime).TotalMinutes <= minutes);
 		}
 
-
 		public void SendBonus(DLPage page, bool isAll = false)
 		{
 			var msg = new List<CommandMessage>();
@@ -228,7 +243,7 @@ namespace Web.DL.PageTypes
 			if (!page.Bonuses.Any())
 				sb.Append("Нет бонусов");
 			else
-				page.Bonuses.Where(x => isAll || !x.IsReady).ToList().ForEach(x => sb.Append(x.Name + "\n" + (string.IsNullOrEmpty(x.Text) ? ("\n") : (x.Text + "\n\n"))));
+				page.Bonuses.Where(x => isAll || !x.IsReady).ToList().ForEach(x => sb.Append(x.Name + ": " + x.Title + "\n" + (string.IsNullOrEmpty(x.Text) ? ("\n") : (x.Text + "\n\n"))));
 
 			msg.Add(CommandMessage.GetTextMsg(sb.ToString() == "" ? "Все бонусы закрыты." : sb.ToString()));
 			SendMsg(msg);
@@ -256,7 +271,6 @@ namespace Web.DL.PageTypes
 			SendMsg(msg);
 		}
 
-
+		public DLPage GetCurrentPage => _lastPage;
 	}
-
 }

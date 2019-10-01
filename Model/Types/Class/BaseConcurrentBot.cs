@@ -118,7 +118,7 @@ namespace Model.Types.Class
 
 				try
 				{
-					MessagesSyncAsync(msg);
+					await MessagesSyncAsync(msg);
 				}
 				catch (Exception e)
 				{
@@ -131,10 +131,14 @@ namespace Model.Types.Class
 			}
 		}
 
-		private void MessagesSyncAsync(TransactionCommandMessage tMessage)
+		private async Task MessagesSyncAsync(TransactionCommandMessage tMessage)
 		{
 			foreach (var msg in tMessage)
-				_bot.Message(msg, tMessage.ChatId);
+			{
+				var botMsg = await _bot.Message(msg, tMessage.ChatId);
+				if (botMsg != null) _messagesQueue.Enqueue(botMsg);
+			}
+				
 		}
 
 		protected async void DownloadResources()

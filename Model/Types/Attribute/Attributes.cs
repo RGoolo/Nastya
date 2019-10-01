@@ -49,6 +49,7 @@ namespace Model.Types.Attribute
 		}
 	}
 
+
 	[AttributeUsage(AttributeTargets.Method)]
 	public class CommandSystenAttribute : MessageAttribute, ICheckAttribute, ITypeUserAttribute
 	{

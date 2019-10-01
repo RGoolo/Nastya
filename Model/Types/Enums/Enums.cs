@@ -39,6 +39,7 @@ namespace Model.Types.Enums
 	{
 		None = 0,
 		NewLevel,
+		PrevieLvl,
 		NewHint,
 		NewSpoiler,
 		SendSectors,

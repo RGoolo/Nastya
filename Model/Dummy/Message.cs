@@ -23,7 +23,8 @@ namespace Model.Dummy
 
 		public CommandMessage AnswerOn => null;
 
-		public CommandMessage ReplyToCommandMessage => null;
+		public CommandMessage ReplyToCommandMessage { get;  }
+
 
 		public Message(Guid botId, Guid? replayToMsgId = null, string text = null)
 		{
@@ -34,8 +35,21 @@ namespace Model.Dummy
 			FillCommands();
 		}
 
+		public Message(Guid botId, CommandMessage message)
+		{
+			TypeMessage = MessageType.SystemMessage;
+			BotId = botId;
+			ReplyToCommandMessage = message;
+			//MessageId = replayToMsgId.GetValueOrDefault();
+
+			MessageCommands = new List<IMessageCommand>();
+		}
+
 		private void FillCommands()
 		{
+			if (string.IsNullOrEmpty(Text))
+				return;
+			
 			var cc = new CreaterCommands(new string[] { "/","-"});
 			MessageCommands = cc.CreateCommands(Text, cc.GetCommands(Text));
 		}
