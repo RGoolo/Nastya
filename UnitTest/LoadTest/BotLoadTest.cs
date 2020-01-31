@@ -1,22 +1,24 @@
 ﻿using Model.Dummy;
 using System;
 using System.Collections.Generic;
+using Model.BotTypes.Class;
+using Model.BotTypes.Class.Ids;
 using Xunit;
 
 namespace UnitTest.LoadTest
 {
 	public  class BotLoadTest
 	{
-		private Dictionary<Guid, DummyBot> _bots;
+		private Dictionary<IBotId, DummyBot> _bots;
 
 		[Fact]
 		public void LoadTest()
 		{
 			var dt = DateTime.Now;
-			_bots = new Dictionary<Guid, DummyBot>();
+			_bots = new Dictionary<IBotId, DummyBot>();
 			for (int i = 0; i < 100; i++)
 			{
-				var guid = Guid.NewGuid();
+				var guid = new BotGuid(Guid.NewGuid());
 				_bots.Add(guid, new DummyBot(guid));
 			}
 			FillBots();

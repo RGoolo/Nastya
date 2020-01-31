@@ -1,14 +1,12 @@
-﻿using Model.Logic.Settings;
-using Model.Types.Attribute;
-using Model.Types.Class;
-using Model.Types.Enums;
-using Telegram.Bot.Types;
+﻿using Model.BotTypes.Attribute;
+using Model.BotTypes.Class;
+using Model.BotTypes.Enums;
 using Web.DL;
 
 namespace Nastya.Commands
 {
 	
-	[CommandClass(nameof(SheetsCommands), "Всякое барахло для тестов. ToDo: Убрать это из хелпа!", Model.Types.Enums.TypeUser.User)]
+	[CommandClass(nameof(SheetsCommands), "Всякое барахло для тестов. ToDo: Убрать это из хелпа!", TypeUser.User)]
 	public class TestCommand
 	{
 
@@ -26,7 +24,7 @@ namespace Nastya.Commands
 			dlPage2.Html = "test html 2";
 
 
-			var message = CommandMessage.GetTextMsg(new Texter(name, true));
+			var message = MessageToBot.GetTextMsg(new Texter(name, true));
 			message.Notification = Notification.NewLevel;
 			message.NotificationObject = new[] {dlPage, dlPage2};
 			return new TransactionCommandMessage(message);

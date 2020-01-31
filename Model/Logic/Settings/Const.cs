@@ -20,6 +20,21 @@
 			public const string ShowYandex = "showya";
 		}
 
+		public static class DzrGame
+		{
+			public const string Prefix = "prefix";
+			public const string CheckOtherTask = "checkotask";
+
+			public const string PasswordAu = "passwordAu";
+			public const string LoginAu = "LoginAu";
+		}
+
+		public static class DlGame
+		{
+			public const string Sturm = "Sturm";
+			public const string TimeFormat = "TimeFormat";
+		}
+
 		public static class Game
 		{
 			public const string Start = "startgame";
@@ -32,7 +47,7 @@
 
 			public const string Login = "login";
 			public const string Password = "password";
-			public const string Uri = "uri";
+			public const string Site = "site";
 
 			public const string Coord = "coord";
 
@@ -42,17 +57,14 @@
 			public const string AllBonus = "allBonus";
 			public const string Bonus = "bonus";
 
-
 			public const string GameIsStart = "GameIsStart";
 
 			public const string Level = "level";
-			public const string Sturm = "Sturm";
-			public const string Prefix = "prefix";
+			public const string CopyFromPM = "copyFromPM";
 
 			public const string IsSendImg = "sendwitchimg";
 			public const string IsSendVoice = "sendwitchvoice";
 
-			public const string CheckOtherTask = "checkotask";
 			public const string City = "city";
 
 			public const string SectorsMsg = "SectorsMsg";
@@ -61,12 +73,9 @@
 
 		public static class Web
 		{
-			public const string Domen = "Domen";
-			public const string GameNumber = "GameNumber";
-			public const string BodyRequest = "BodyRequest";
-
-			public const string PasswordAu = "PasswordAu";
-			public const string LoginAu = "LoginAu";
+			public const string Domen = "domen";
+			public const string GameNumber = "gameNumber";
+			public const string BodyRequest = "bodyRequest";
 		}
 
 		public static class Page

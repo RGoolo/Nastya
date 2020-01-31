@@ -1,15 +1,10 @@
-﻿using System;
-using Google.Cloud.Vision.V1;
-using Model.Logic;
-using Model.Logic.Braille;
-
-namespace Model.Logic.Braille
+﻿namespace Model.Logic.Braille
 {
-    internal class AlphaBetRu : AlphaBet
-    {
-        public override string Name => "ru";
+	internal class AlphaBetRu : AlphaBet
+	{
+		public override string Name => "ru";
 
-        protected override string LazyFileBraille => @"⠁	А
+		protected override string LazyFileBraille => @"⠁	А
 ⠃	Б
 ⠺	В
 ⠛	Г
@@ -42,15 +37,15 @@ namespace Model.Logic.Braille
 ⠪	Э
 ⠳	Ю
 ⠫	Я";
-    }
+	}
 
-    internal class AlphaBetEn : AlphaBet
-    {
+	internal class AlphaBetEn : AlphaBet
+	{
 
 
-        public override string Name => "en";
+		public override string Name => "en";
 
-        protected override string LazyFileBraille => @"⠁	A
+		protected override string LazyFileBraille => @"⠁	A
 ⠃	B
 ⠉	C
 ⠙	D
@@ -83,15 +78,14 @@ namespace Model.Logic.Braille
 ⠆	;
 ⠤	-";
 	}
-}
 
-internal class AlphaBetDigital : AlphaBet
-{
+	internal class AlphaBetDigital : AlphaBet
+	{
 
 
-    public override string Name => "digital";
+		public override string Name => "digital";
 
-    protected override string LazyFileBraille => @"⠁	1
+		protected override string LazyFileBraille => @"⠁	1
 ⠃	2
 ⠉	3
 ⠙	4
@@ -101,5 +95,5 @@ internal class AlphaBetDigital : AlphaBet
 ⠓	8
 ⠊	9
 ⠚	0";
+	}
 }
-

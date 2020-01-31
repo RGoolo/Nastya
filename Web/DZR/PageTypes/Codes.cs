@@ -1,7 +1,7 @@
-﻿using Model.Types.Class;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Model.BotTypes.Class;
 using Web.Base;
 
 namespace Web.DZR

@@ -1,11 +1,10 @@
 ﻿using HtmlAgilityPack;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
+using Model.Logger;
 using Web.Base;
 using Web.DL.PageTypes;
 
@@ -13,18 +12,9 @@ namespace Web.DL
 {
 	public static class PageConstructor
 	{
-
-		public static DLPage GetNewPage(HttpWebResponse webResponse, Func<HttpWebResponse, string> func)
+		public static DLPage CreateNewPage(string html)
 		{
-			var page = new DLPage();
-			if (webResponse.ResponseUri.AbsolutePath.StartsWith("/login.aspx",
-				StringComparison.InvariantCultureIgnoreCase))
-			{
-				page.Type = TypePage.ErrorAuthentication;
-				return page;
-			}
-
-			var html = func(webResponse);
+			// var page = new DLPage();
 			return FillPage(html);
 		}
 
@@ -46,7 +36,7 @@ namespace Web.DL
 
 			page.LevelTitle = LevelTitle(contentBlock);
 			page.TimeToEnd = TimeToEnd(document, page.Type);
-			page.Task = Task(document, page.Type);
+			page.Body = Task(document, page.Type);
 			page.CodeType = SetIsCodeReceived(document);
 			page.LevelId = LevelId(document);
 			page.LevelNumber = LevelNumber(document);
@@ -66,14 +56,19 @@ namespace Web.DL
 			var gameStarted = document.SelectSingleNode("//span[@id='Panel_TimerHolder']"); 
 		
 				//<div class="goback"><i></i><a href="/GameDetails.aspx?gid=64571">Вернуться</a></div>
-			var goback = document.SelectSingleNode("//div[@class='goback']");
-			if (goback != null && goback.InnerText == "Вернуться")
+			var goBack = document.SelectSingleNode("//div[@class='goback']");
+			if (goBack != null && goBack.InnerText == "Вернуться")
 			{
 				return gameStarted != null && gameStarted.InnerText.Contains("Игра начнется через")
 					? TypePage.NotStarted
 					: TypePage.Finished;
 			}
 
+			//<center class="gameCongratulation">
+			var gameCongratulation = document.SelectSingleNode("//center[@class='gameCongratulation']");
+			if (gameCongratulation != null)
+				return TypePage.Finished;
+				
 			if (contentBlock == null)
 				return TypePage.Unknown;
 
@@ -99,7 +94,10 @@ namespace Web.DL
 				var match = regexTimer.Matches(firstTimer.InnerHtml).First() as Match;
 				return new DateTime().AddSeconds(int.Parse(match.Groups[1].Value));
 			}
-			catch { };
+			catch (Exception ex)
+			{
+				 Logger.CreateLogger(nameof(PageConstructor)).Error(ex); 
+			};
 			return null;
 		}
 
@@ -107,29 +105,35 @@ namespace Web.DL
 
 		private static Hint GetHint(HtmlNode hint)
 		{
-			if (hint.ChildNodes.Any())
+			if (!hint.ChildNodes.Any()) return null;
+
+			var regexTimer = new Regex("\"StartCounter\":(\\d+)");
+
+			try
 			{
-				var regexTimer = new Regex("\"StartCounter\":(\\d+)");
+				var match = regexTimer.Matches(hint.InnerHtml).First() as Match;
+				var timeToEnd = new DateTime().AddSeconds(int.Parse(match.Groups[1].Value));
 
-				try
-				{
-					var match = regexTimer.Matches(hint.InnerHtml).First() as Match;
-					var timeToEnd = new DateTime().AddSeconds(int.Parse(match.Groups[1].Value));
-
-					return new Hint(hint.FirstChild.InnerText, null, timeToEnd);
-				}
-				catch { };
+				return new Hint(hint.FirstChild.InnerText, null, timeToEnd);
 			}
+			catch (Exception ex)
+			{
+				Logger.CreateLogger(nameof(PageConstructor)).Error(ex);
+			};
 			return null;
 		}
 
-		private static List<Hint> Hints(HtmlNode documentNode)
+		private static Hints Hints(HtmlNode documentNode)
 		{
 			var mainDiv = documentNode.SelectSingleNode("//h3[@class='color_bonus' or @class='color_correct']")?.ParentNode;
 			if (mainDiv == null)
-				return new List<Hint>();
+			{
+				mainDiv = documentNode.SelectSingleNode("//div[@class='spacer']")?.ParentNode;
+				if (mainDiv == null)
+					return new Hints();
+			}
 
-			var hints = new List<Hint>();
+			var hints = new Hints();
 
 			HtmlNode temp = null;
 			foreach (var hint in mainDiv.ChildNodes)
@@ -138,19 +142,23 @@ namespace Web.DL
 				{
 					if (StringComaperStart(hint.InnerText, "Подсказка", "Penalty"))
 					{
-						if (hint.Name == "h3")
-							temp = hint;
-						else if (hint.Name == "span")
+						switch (hint.Name)
 						{
-							var h = GetHint(hint);
-							if (h != null)
-								hints.Add(h);
+							case "h3":
+								temp = hint;
+								break;
+							case "span":
+							{
+								var h = GetHint(hint);
+								if (h != null)
+									hints.Add(h);
+								break;
+							}
+							default:
+								temp = null;
+								break;
 						}
-						else
-							temp = null;
 					}
-					else
-						temp = null;
 
 					continue;
 				}
@@ -182,15 +190,15 @@ namespace Web.DL
 			return hints;
 		}
 
-		private static List<Bonus> Bonuses(HtmlNode documentNode)
+		private static Bonuses Bonuses(HtmlNode documentNode)
 		{
 			//var bonuses = new ();
 
 			//<h3 class="color_bonus"> 
 			var mainDiv = documentNode.SelectSingleNode("//h3[@class='color_bonus' or @class='color_correct']")?.ParentNode;
 
-			var bonusesNodes = mainDiv?.ChildNodes.Where(x =>  (x.Attributes.Any(y => (y.Value == "color_bonus" || y.Value == "color_correct") && y.Name == "class") && x.Name == "h3")).ToList();
-			return bonusesNodes?.Select(x => new Bonus(x)).ToList() ?? new List<Bonus>();
+			var bonusesNodes = mainDiv?.ChildNodes.Where(x =>  (x.Attributes.Any(y => (y.Value == "color_bonus" || y.Value == "color_correct") && y.Name == "class") && x.Name == "h3"));
+			return new Bonuses(bonusesNodes);
 		}
 
 		private static TypeCode SetIsCodeReceived(HtmlNode documentNode)
@@ -219,16 +227,29 @@ namespace Web.DL
 
 		private static string Task(HtmlNode documentNode, TypePage pageType)
 		{
-			var mainDiv = (pageType == TypePage.NotStarted) ? documentNode.SelectSingleNode("//span[@id='Panel_TimerHolder']") : documentNode.SelectNodes("//h3")?.FirstOrDefault(x => x.InnerText == "Задание" || x.InnerText == "Task")?.NextSibling?.NextSibling;
+			var mainDiv = (pageType == TypePage.NotStarted)
+				? documentNode.SelectSingleNode("//span[@id='Panel_TimerHolder']")
+				: documentNode.SelectNodes("//h3")?.FirstOrDefault(x => x.InnerText == "Задание" || x.InnerText == "Task")?.NextSibling;
 
 			if (mainDiv == null)
 				return null;
 
 			var sb = new StringBuilder();
-			foreach (var node in mainDiv.ChildNodes.Where(x => x.Name != "script"))
-				sb.Append(node.InnerHtml);
+			
+			while ((mainDiv = mainDiv?.NextSibling) != null && mainDiv.Name != "div")
+			{
+				if (IsSystemNode(mainDiv))
+					continue;
 
-			return sb.ToString();
+				//foreach (var node in mainDiv.ChildNodes.Where(x => !(IsSystemNode(x))))
+				//sb.AppendLine(node.OuterHtml);
+
+				sb.AppendLine(mainDiv.OuterHtml);
+			}
+
+			return WebHelper.RemoveSpaces(sb.ToString());
 		}
+
+		private static bool IsSystemNode(HtmlNode node) => node.Name == "script" || node.Name == "style";
 	}
 }

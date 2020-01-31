@@ -1,0 +1,13 @@
+﻿using Model.Files.FileTokens;
+using Telegram.Bot.Types.InputFiles;
+
+namespace Model.TelegramBot
+{
+	public static class TelegramFileExtension
+	{ 
+		public static InputOnlineFile GetInputFile(this IFileToken token)
+		{
+			return token.IsLocal() ? new InputOnlineFile(token.ReadStream(), token.FileName) : new InputOnlineFile(token.Location);
+		}
+	}
+}

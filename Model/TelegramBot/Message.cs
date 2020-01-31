@@ -1,22 +1,23 @@
-﻿using Model.Types.Enums;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using Model.Types.Interfaces;
 using System.Linq;
-using Model.Types.Class;
+using Model.BotTypes.Class;
+using Model.BotTypes.Class.Ids;
+using Model.BotTypes.Enums;
+using Model.BotTypes.Interfaces;
+using Model.BotTypes.Interfaces.Messages;
 
 namespace Model.TelegramBot
 {
 
-	public class TelegramMessage : IMessage
+	public class TelegramMessage : IBotMessage
 	{
 		public Telegram.Bot.Types.Message Message { get; }
 		public TypeUser TypeUser { get; }
-		public Guid BotId { get; }
 		public string Text => Message.Text;
 
-		private readonly CreaterCommands _сreatedCommands = new CreaterCommands("/");
-		private IMessage _answerOn;
+		private readonly CreatorCommands _сreatorCommands = new CreatorCommands("/");
+		private IBotMessage _answerOn;
 
 		public MessageType TypeMessage
 		{
@@ -37,39 +38,40 @@ namespace Model.TelegramBot
 				}
 			}
 		}
-		public Guid ChatId => Message.Chat.Id.ToGuid();
+
+		public IChatId ChatId { get; }
 
 		public IUser User { get; }
 
-		public List<IMessageCommand> MessageCommands { get; }
+		public List<IMessageCommand> MessageCommands { get; private set; }
 
-		public Guid MessageId => Message.MessageId.ToGuid();
+		public IMessageId MessageId => new MessageInt(Message.MessageId);
 
-		public IMessage ReplyToMessage => _answerOn ?? (Message.ReplyToMessage == null ? null : (_answerOn = new TelegramMessage(Message.ReplyToMessage, TypeUser)));
+		public IBotMessage ReplyToMessage => _answerOn ?? (Message.ReplyToMessage == null ? null : (_answerOn = new TelegramMessage(Message.ReplyToMessage, TypeUser)));
 
-		//ToDo
-		public bool ContainsResources => false;
-
-		public TypeResource TypeResource => TypeResource.None;
-
-		//public string ResourcePath { get; set; }
 		public IResource Resource { get ; set; }
 
-		public CommandMessage ReplyToCommandMessage => throw new NotImplementedException();
+		public IMessageToBot ReplyToCommandMessage => null; // throw new NotImplementedException(); ToDo
 
 		public TelegramMessage(Telegram.Bot.Types.Message msg, TypeUser typeUser)
 		{
-			//BotId = botId;
+			ChatId = new ChatLong(msg.Chat.Id);
+
 			Message = msg;
 			TypeUser = typeUser;
-			User = new User(msg.From, typeUser);
+			User = new TelegramUser(msg.From, typeUser);
+			TryCreateCommand(msg);
+		}
+
+		private void TryCreateCommand(Telegram.Bot.Types.Message msg)
+		{
 			var entityValues = Message.EntityValues;
 			if (entityValues != null)
 			{
 				try
 				{
-					MessageCommands = _сreatedCommands.CreateCommands(Message.Text, entityValues.Select(x => x.Substring(1)).Select(x => x.Contains("@") ? (x.Split('@')[0]) : x)
-							.ToList());
+					MessageCommands = _сreatorCommands.CreateCommands(Message.Text, entityValues.Select(x => x.Substring(1)).Select(x => x.Contains("@") ? (x.Split('@')[0]) : x)
+						.ToList());
 				}
 				catch
 				{
@@ -79,6 +81,4 @@ namespace Model.TelegramBot
 		}
 
 	}
-
-	
 }

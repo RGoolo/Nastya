@@ -24,6 +24,7 @@
     <ProjectReference Include="..\Model\Model.csproj" />
     <ProjectReference Include="..\Nastya\Nastya.csproj" />
     <ProjectReference Include="..\Web\Web.csproj" />
+    <ProjectReference Include="..\WordService\WordService.csproj" />
   </ItemGroup>
 
 </Project>

@@ -1,13 +1,6 @@
-﻿using System;
-using Google.Cloud.Speech.V1;
-using Model.Logic.Google;
-using Model.Logic.Settings;
-using Model.Types.Class;
-using Xunit;
-
-namespace UnitTest.GoogleApi
+﻿namespace UnitTest.GoogleApi
 {
-	public class Recognition
+	/*public class Recognition
 	{
 		const string TestGuid = "{C86B5F74-120A-4E8A-A888-BC768571DDFA}";
 
@@ -16,14 +9,12 @@ namespace UnitTest.GoogleApi
 		{ 
 			var settings = SettingsHelper.GetSetting(new Guid(TestGuid));
 			settings.Clear();
-			var file = settings.FileWorker.GetExistFileByPath(@"C:\Users\Roman\source\repos\RGoolo\Nastya\UnitTest\sources\test.png");
+			var file = settings.FileChatWorker.GetExistFileByPath(@"C:\Users\Roman\source\repos\RGoolo\Nastya\UnitTest\sources\test.png");
 
-			var text = Vision.GetTextAsync(settings.FileWorker, file).Result;
+			var text = Vision.GetTextAsync(settings.FileChatWorker, file).Result;
 			Console.WriteLine(text);
 			
 			//"C:\Users\Roman\source\repos\RGoolo\Nastya\UnitTest\GoogleApi\test.png"
-
-
 		}
 
 		[Fact]
@@ -31,15 +22,13 @@ namespace UnitTest.GoogleApi
 		{
 			var settings = SettingsHelper.GetSetting(new Guid(TestGuid));
 			settings.Clear();
-			var file = settings.FileWorker.GetExistFileByPath(@"C:\Users\Roman\source\repos\RGoolo\Nastya\UnitTest\sources\test.ogg");
+			var file = settings.FileChatWorker.GetExistFileByPath(@"C:\Users\Roman\source\repos\RGoolo\Nastya\UnitTest\sources\test.ogg");
 
-			var text = Voice.GetText(settings.FileWorker, file).Result;
+			var text = Voice.GetText(settings.FileChatWorker, file).Result;
 			Console.WriteLine(text); //тест распознавания речи
 
 			Assert.Equal(text.Trim().ToLower(), "тест распознавания речи");
 			//"C:\Users\Roman\source\repos\RGoolo\Nastya\UnitTest\GoogleApi\test.png"
-
-
 		}
 		
 		[Fact]
@@ -47,9 +36,9 @@ namespace UnitTest.GoogleApi
 		{
 			var settings = SettingsHelper.GetSetting(new Guid(TestGuid));
 			settings.Clear();
-			var file = settings.FileWorker.GetExistFileByPath(@"C:\Users\Roman\source\repos\RGoolo\Nastya\UnitTest\sources\testSendCode.ogg");
+			var file = settings.FileChatWorker.GetExistFileByPath(@"C:\Users\Roman\source\repos\RGoolo\Nastya\UnitTest\sources\testSendCode.ogg");
 
-			var text = Voice.GetText(settings.FileWorker, file).Result;
+			var text = Voice.GetText(settings.FileChatWorker, file).Result;
 			Console.WriteLine(text); //тест распознавания речи
 
 			//Assert.Equal(text.Trim().ToLower(), "тест распознавания речи");
@@ -57,5 +46,5 @@ namespace UnitTest.GoogleApi
 
 
 		}
-	}
+	}*/
 }

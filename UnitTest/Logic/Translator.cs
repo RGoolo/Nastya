@@ -1,5 +1,5 @@
-﻿using Model.Types.Class;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using Model.BotTypes.Class;
 using Xunit;
 
 namespace UnitTest.Logic
@@ -11,8 +11,8 @@ namespace UnitTest.Logic
 		[MemberData(nameof(Ints))]
 		public void IntToGuid(int count)
 		{
-			var guid = count.ToGuid();
-			Assert.Equal(count.ToString(), guid.ToInt().ToString());
+			var guid = IdsMapper.ToGuid(count);
+			Assert.Equal(count.ToString(), IdsMapper.ToInt(guid).ToString());
 		}
 
 		public static IEnumerable<object[]> Ints()
@@ -26,8 +26,8 @@ namespace UnitTest.Logic
 		[MemberData(nameof(Longs))]
 		public void LongToGuid(long count)
 		{
-			var guid = count.ToGuid();
-			var lon = guid.ToLong();
+			var guid = IdsMapper.ToGuid(count);
+			var lon = IdsMapper.ToLong(guid);
 			Assert.Equal(count.ToString(), lon.ToString());
 		}
 

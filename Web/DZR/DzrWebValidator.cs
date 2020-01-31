@@ -1,57 +1,41 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
+﻿using System.Linq;
 using System.Text;
-using System.Text.RegularExpressions;
-using Model.Logic.Model;
+using System.Threading.Tasks;
+using Model.HttpMessages;
 using Model.Logic.Settings;
-using Model.Types.Interfaces;
-using Web.DL;
-using Web.Game;
+using HttpMessagesFactory = Web.HttpMessages.HttpMessagesFactory;
 
 namespace Web.DZR
 {
 	public class DzrWebValidator
 	{
 		private ISettings _settings { get; }
-		public Response Response { get; }
+		public IHttpMessages messages;
 		private string _url;
 		private readonly string _tempDzrUrl =  new DzrUrl().ToString();
 		public DzrWebValidator(ISettings settings)
 		{
 			_settings = settings;
 			Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
-			
-			Response = new Response(true)
-			{
-				Encoding = Encoding.GetEncoding(1251)
-			};
 
+			messages = HttpMessagesFactory.Dzzzr();
 		}
 
-		public DzrPage SendCode(string code, Task task) => GetNextPage(Response.PostHttpWebRequest(GetUrl(), GetContextSetCode(code, task)));
+		public async Task<DzrPage> SendCode(string code, DzrTask task) => GetNextPage(await messages.GetText(GetUrl(), GetContextSetCode(code, task)));
 
-		public DzrPage LogIn()
+		public async Task<DzrPage> LogIn()
 		{
-			var requestLogIn = Response.PostHttpWebRequest(LogInUrl(), LogInContext()); //.GetResponse();
-			GetNextPage(requestLogIn);
-			return GetNextPage();
+			await messages.Response(LogInUrl(), LogInContext());
+			return await GetNextPage();
 		}
 
-		private DzrPage GetNextPage(HttpWebRequest request) => GetNextPage(Response.GetNextResponse(request));
+		private DzrPage GetNextPage(string html) => new DzrPage(html, GetUrl());
 
-		private DzrPage GetNextPage(HttpWebResponse page) => new DzrPage(GetPage(Response.GetNextResponse(GetUrl())), GetUrl());
+		public async Task<DzrPage> GetNextPage() => new DzrPage(await messages.GetText(GetUrl()), GetUrl());
 
-		public DzrPage GetNextPage() => new DzrPage(GetPage(GetPage()), GetUrl());
-
-		protected string GetPage(HttpWebResponse response) => response == null? null : Response.GetHtmlText(response);
-
-		protected HttpWebResponse GetPage() => Response.GetNextResponse(GetUrl());
-	
 		public bool IsLogOut(DzrPage page) => page == null || page.Type == PageType.NotFound;
 
-		public string GetContextSetCode(string code, Task task) => task?.GetPostForCode(code);
+		public string GetContextSetCode(string code, DzrTask task) => task?.GetPostForCode(code);
 
 		public string LogInContext() => $@"notags=&action=auth&login={_settings.Game.Login}&password={_settings.Game.Password}";
 

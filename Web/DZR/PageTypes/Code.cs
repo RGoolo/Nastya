@@ -1,4 +1,4 @@
-﻿using Model.Types.Class;
+﻿using Model.BotTypes.Class;
 
 namespace Web.DZR
 {

@@ -4,7 +4,7 @@ using HtmlAgilityPack;
 
 namespace Web.DZR.PageTypes
 {
-	public class Tasks : List<Task>
+	public class Tasks : List<DzrTask>
 	{
 		private HtmlNodeCollection nodes;
 
@@ -23,13 +23,13 @@ namespace Web.DZR.PageTypes
 
 				if (node.GetAttributeValue("class", "0") == "codeform")
 				{
-					Add(new Task(sendNodes, defauiltUrl));
+					Add(new DzrTask(sendNodes, defauiltUrl));
 					sendNodes = new List<HtmlNode>();
 				}
 			}
 		}
 
-		public Task Main(string name)
+		public DzrTask Main(string name)
 		{
 			//Settings.Game.Level
 			var task = this.FirstOrDefault(x => x.LvlNumber == name);

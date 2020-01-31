@@ -1,20 +1,19 @@
 ﻿using System;
-using System.Threading.Tasks;
-using Newtonsoft.Json.Bson;
+using ILogger = Model.Logger.ILogger;
 
 namespace Model.Logic.Google
 {
 	public class WorkerSheets
 	{
-		private Sheets _sheets = new Sheets();
+		private Sheets _sheets;// ToDo token = new Sheets();
 		public string SheetToken { get; set; }
+		public ILogger Log = Logger.Logger.CreateLogger(nameof(WorkerSheets));
 
 		public WorkerSheets()
 		{
 
 		}
 
-		//ToDo acync
 		public void CreateSheetsAsync(string pageName)
 		{
 			try
@@ -23,7 +22,7 @@ namespace Model.Logic.Google
 			}
 			catch (Exception e)
 			{
-				Console.WriteLine(e);
+				Log.Error(e);
 			}
 		}
 

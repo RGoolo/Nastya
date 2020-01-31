@@ -1,44 +1,44 @@
-﻿using Model.Types.Enums;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using Model.Types.Interfaces;
-using Model.Types.Class;
+using Model.BotTypes.Class;
+using Model.BotTypes.Class.Ids;
+using Model.BotTypes.Enums;
+using Model.BotTypes.Interfaces;
+using Model.BotTypes.Interfaces.Messages;
 
 namespace Model.Dummy
 {
-	public class Message : IMessage
+	public class Message : IBotMessage
 	{
-		public Guid BotId { get; }
 		public string Text { get; set; }
 		public MessageType TypeMessage { get; }
-		public Guid ChatId => new Guid("BBAF99E5-EF91-4FD4-BA25-4A111A071111");
+		public IChatId ChatId => new ChatGuid("BBAF99E5-EF91-4FD4-BA25-4A111A071111");
 		public List<IMessageCommand> MessageCommands { get; set; }
 		public DummyUser _dUser { get; set; } = new DummyUser();
 		public IUser User => _dUser;
-
-		public Guid MessageId { get; }
-		public IMessage ReplyToMessage => null;
+		public IMessageId MessageId { get; }
+		public IBotMessage ReplyToMessage => null;
 	
 		public IResource Resource { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
-		public CommandMessage AnswerOn => null;
+		public IMessageToBot AnswerOn => null;
 
-		public CommandMessage ReplyToCommandMessage { get;  }
+		public IMessageToBot ReplyToCommandMessage { get;  }
 
 
-		public Message(Guid botId, Guid? replayToMsgId = null, string text = null)
+		public Message(IBotId botId, IMessageId replayToMsgId = null, string text = null)
 		{
 			TypeMessage = MessageType.Text; 
-			BotId = botId;
+			
 			Text = text;
-			MessageId = replayToMsgId.GetValueOrDefault();
+			MessageId = replayToMsgId;
 			FillCommands();
 		}
 
-		public Message(Guid botId, CommandMessage message)
+		public Message(IBotId botId, IMessageToBot message)
 		{
 			TypeMessage = MessageType.SystemMessage;
-			BotId = botId;
+			
 			ReplyToCommandMessage = message;
 			//MessageId = replayToMsgId.GetValueOrDefault();
 
@@ -50,7 +50,7 @@ namespace Model.Dummy
 			if (string.IsNullOrEmpty(Text))
 				return;
 			
-			var cc = new CreaterCommands(new string[] { "/","-"});
+			var cc = new CreatorCommands(new string[] { "/","-"});
 			MessageCommands = cc.CreateCommands(Text, cc.GetCommands(Text));
 		}
 	}

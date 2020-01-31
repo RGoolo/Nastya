@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Net;
-using System.IO;
 using System.Text;
 using System.Timers;
 using System.Threading.Tasks;
@@ -9,12 +7,11 @@ using Web.Game.Model;
 using System.Collections.Concurrent;
 using Model.Logic.Model;
 using Model.Logic.Settings;
-using System.Linq;
-using System.Net.NetworkInformation;
-using Model.Types.Class;
-using Web.Game;
-using Model.Types.Interfaces;
-using Model.Types.Enums;
+using Model.BotTypes.Class;
+using Model.BotTypes.Enums;
+using Model.BotTypes.Interfaces;
+using Model.BotTypes.Interfaces.Messages;
+using Model.Logger;
 
 namespace Web.Base
 {
@@ -22,7 +19,8 @@ namespace Web.Base
 	public class ConcurrentGame : IGame
 	{
 		public event SendMsgsSyncDel SendMsgs;
-		
+
+		ILogger logger = Logger.CreateLogger(nameof(ConcurrentGame));
 		private readonly Timer _refreshTimer;// = new Timer(5000);
 		private readonly ConcurrentQueue<IEvent> _queue = new ConcurrentQueue<IEvent>();
 		
@@ -85,7 +83,7 @@ namespace Web.Base
 		}
 
 		public void SetEvent(IEvent iEvent) => _queue.Enqueue(iEvent);
-
+	
 		public ConcurrentGame(IController concreteGame, ISendSyncMsgs sendSyncMessage)
 		{
 			_controller = concreteGame;
@@ -105,11 +103,9 @@ namespace Web.Base
 		{
 			try
 			{
-
-				if (!_controller.Settings.TypeGame.IsDummy())
-					_controller.LogIn();
-
-				if (_controller.IsLogOut())
+				_controller.LogIn();
+				/*
+				if (_controller.IsLogOut()) //ToDo try  AutorizationExc
 				{
 					var msgError = CommandMessage.GetTextMsg($"Не удалось подключиться. Проверте логин и пароль. login: { _controller.Settings.Game.Login}");
 
@@ -118,9 +114,9 @@ namespace Web.Base
 
 					_gameIsStarted = false;
 					return false;
-				}
+				}*/
 
-				var msg = CommandMessage.GetTextMsg("Успешно подключилась.");
+				var msg = MessageToBot.GetTextMsg("Успешно подключилась.");
 				msg.Notification = Notification.GameStarted;
 				SendSimpleMsg(msg);
 
@@ -129,10 +125,23 @@ namespace Web.Base
 
 				_refreshTimer.Start();
 			}
-			catch(Exception ex)
+			catch (AuthorizationFailedException ex)
 			{
+				logger.Error(ex);
 				_gameIsStarted = false;
-				var msgError = CommandMessage.GetTextMsg("Произошла ошибка подключения.");
+				var msgError = MessageToBot.GetTextMsg(ex.Message);
+				SendSimpleMsg(msgError);
+
+				return false;
+			}
+			catch (Exception ex)
+			{
+				logger.Error(ex);
+				
+				_gameIsStarted = false;
+
+				//ToFo gameException?
+				var msgError = MessageToBot.GetTextMsg("Произошла ошибка подключения.");
 				SendSimpleMsg(msgError);
 				SendSimpleMsg(ex.Message);
 
@@ -143,20 +152,20 @@ namespace Web.Base
 			return true;
 		}
 
-		public void Start()
+		public async Task Start()
 		{
 			if (_gameIsStarted)
 			{
-				var msgError = CommandMessage.GetTextMsg("Игра уже запущена.");
+				var msgError = MessageToBot.GetTextMsg("Игра уже запущена.");
 				SendSimpleMsg(msgError);
 				return;
 			}
 
 			_gameIsStarted = true;
-			Task.Run(Cycle, _token);
+			await Task.Run(Cycle, _token);
 		}
 
-		private void ConcreteGame_SendMsgs(IEnumerable<CommandMessage> messages) => SendSimpleMsg(messages);
+		private void ConcreteGame_SendMsgs(IEnumerable<IMessageToBot> messages) => SendSimpleMsg(messages);
 
 		private void _refreshTimer_Elapsed(object sender, ElapsedEventArgs e)
 		{
@@ -164,16 +173,16 @@ namespace Web.Base
 				_refreshPage = true;
 		}
 
-		protected void SendSimpleMsg(string s, Guid? idmsg = null)
+		protected void SendSimpleMsg(string s, IMessageId idMsg = null)
 		{
-			var msg = CommandMessage.GetTextMsg(s);
-			msg.OnIdMessage = idmsg.GetValueOrDefault();
+			var msg = MessageToBot.GetTextMsg(s);
+			msg.OnIdMessage = idMsg;
 			SendSimpleMsg(msg);
 		}
 
-		protected void SendSimpleMsg(CommandMessage msg) => SendSimpleMsg(new List<CommandMessage>() { msg });
+		protected void SendSimpleMsg(IMessageToBot msg) => SendSimpleMsg(new List<IMessageToBot>() { msg });
 
-		protected void SendSimpleMsg(IEnumerable<CommandMessage> msgs) => _sendSyncMessage.SendSync(msgs);
+		protected void SendSimpleMsg(IEnumerable<IMessageToBot> msgs) => _sendSyncMessage.SendSync(msgs);
 		
 		public void Stop()
 		{
@@ -181,7 +190,7 @@ namespace Web.Base
 			{
 				_gameIsStarted = false;
 
-				var msg = CommandMessage.GetTextMsg("Игра остановилась.");
+				var msg = MessageToBot.GetTextMsg("Перестаю следить за игрой.");
 				msg.Notification = Notification.GameStoped;
 				SendSimpleMsg(msg);
 			}
@@ -189,7 +198,7 @@ namespace Web.Base
 
 		public void Dispose() => Stop();
 
-		public void SendCode(string code, IUser user, Guid replaceMsg)
+		public void SendCode(string code, IUser user, IMessageId replaceMsg)
 		{
 			var iEvents = _controller.GetCode(code, user, replaceMsg);
 			if (iEvents == null)

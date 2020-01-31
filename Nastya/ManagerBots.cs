@@ -1,151 +1,126 @@
 ﻿using System;
 using System.Collections.Generic;
-using Model;
-using Model.Dummy;
-using Model.Types.Class;
-using Model.Types.Interfaces;
-using Model.TelegramBot;
+using System.Linq;
+using System.Threading.Tasks;
 using Model.Logic.Model;
-using Model.Types;
-using System.Security;
+using Model.BotTypes;
+using Model.BotTypes.Class;
+using Model.BotTypes.Class.Ids;
+using Model.BotTypes.Interfaces;
+using Model.BotTypes.Interfaces.Messages;
+using Model.Logger;
+using Nastya.Mappers;
 
 namespace Nastya
 {
-	public class BotChatMaper
+	public class BotChatMapper
 	{
-		public Guid Bot { get; set; }
-		public ChatMapper ChatMaper { get; set; }
+		public IBotId Bot { get; set; }
+		public ChatMapper ChatMapper { get; set; }
 
-		public BotChatMaper(Guid bot, ChatMapper chatMaper)
+		public BotChatMapper(IBotId bot, ChatMapper chatMapper)
 		{
 			Bot = bot;
-			ChatMaper = chatMaper;
+			ChatMapper = chatMapper;
 		}
 	}
 
 	public class ManagerBots : IDisposable
 	{
-		private Dictionary<Guid, IBot> _bots;
-		private Dictionary<Guid, BotChatMaper> _chats = new Dictionary<Guid, BotChatMaper>();
+		private readonly Dictionary<IBotId, IBot> _bots;
+		private readonly Dictionary<IChatId, BotChatMapper> _chats = new Dictionary<IChatId, BotChatMapper>();
+		private readonly Dictionary<IChatId, IMessageCollection> _messages = new Dictionary<IChatId, IMessageCollection>();
 
-		bool cycle = false;
-		Guid AdminBot;
-
-		private Logger _loger = new Logger(nameof(ManagerBots));
-
-		private SecureString GetBotToken()
-		{
-			var token = SecurityEnvironment.GetPassword("bot_token");
-			if (token != null)
-			{
-				Console.WriteLine("Use old telegram bot token?");
-				if (string.Equals(Console.ReadLine(), "y", StringComparison.OrdinalIgnoreCase))
-					return token;
-			}
-
-			Console.WriteLine("Write telegram bot token:");
-			token = new SecureString();
-
-			var key = Console.ReadKey(true);
-			while (key.Key != ConsoleKey.Enter)
-			{
-				token.AppendChar(key.KeyChar);
-				key = Console.ReadKey(true);			
-			}
-			SecurityEnvironment.SetPassword(token, "bot_token");
-			return token;
-		}
+		private readonly ILogger _logger = Logger.CreateLogger(nameof(ManagerBots));
 
 		public ManagerBots()
 		{
-			AdminBot = Guid.NewGuid();
-			var telegId = Guid.NewGuid();
-
-			_bots = new Dictionary<Guid, IBot>
-			{
-				[AdminBot] = new ConcurrentBot(new DummyBot(AdminBot)),
-			};
-
-			Console.WriteLine("Start telegram bot?");
-			if (Console.ReadLine() == "y")
-				_bots.Add(telegId, new ConcurrentBot(new TelegramBot(GetBotToken(), telegId)));
+			var adminBot = new BotGuid(Guid.NewGuid());
+			var bots = BotsFactory.Bots(adminBot);
 			
+			_bots = bots.ToDictionary(x => x.Id, x => x);
 			FillBots();
 		}
 
 		private void FillBots()
 		{
-			_loger.WriteTrace(nameof(FillBots));
+			_logger.Warning(nameof(FillBots));
 			foreach (var bot in _bots.Values)
 			{
-				var _source = new System.Threading.CancellationTokenSource();
-				var _token = _source.Token;
-				bot.StartAsync(_token);
+				var source = new System.Threading.CancellationTokenSource();
+				var token = source.Token;
+				bot.StartAsync(token);
 			}
 		}
 
-		private void Bot_OnMessage(IMessage msg, Guid botId)
+		private void LogAndSendException(IMessageToBot msg, Exception ex, IBotId botId, IChatId chatId, IMessageId msgId)
 		{
-			if (msg.Text == "/q" && AdminBot == botId)
-				cycle = true;
+			_logger.Error(ex);
 
-			_loger.WriteTrace(nameof(Bot_OnMessage) + msg.Text);
+			msg.OnIdMessage = msgId;
+			var tMsg = new TransactionCommandMessage(msg);
 
-			if (!_chats.ContainsKey(msg.ChatId))
+			_bots[botId].SendMessage(chatId, tMsg);
+		}
+
+		private void Bot_OnMessage(IBotMessage msg, IBotId botId)
+		{
+			if (!_chats.TryGetValue(msg.ChatId, out var mapper))
 			{
-				var chatMapper = new ChatMapper(_bots[botId].TypeBot, msg.ChatId);
-				_chats.Add(msg.ChatId, new BotChatMaper(botId, chatMapper));
+
+				var msgColl = new MessageCollection(msg.ChatId, botId);
+
+
+				var chatMapper = new ChatMapper(_bots[botId].TypeBot, msg.ChatId, msgColl);
+				_messages.Add(msg.ChatId, msgColl);
+				mapper = new BotChatMapper(botId, chatMapper);
+				_chats.Add(msg.ChatId, mapper);
 			}
+
 			try
 			{
-				var messages = _chats[msg.ChatId].ChatMaper.OnMessage(msg);
-				messages.ForEach(x => x.ChatId = msg.ChatId);
-				messages.ForEach(x => _bots[botId].SendMessage(x));
+				var messages = mapper.ChatMapper.OnMessage(msg);
+
+				foreach (var iCMsg in messages.SelectMany(x => x))
+					iCMsg.OnIdMessage = msg.MessageId;
+
+				_bots[botId].SendMessages(msg.ChatId, messages);
 			}
 			catch (MessageException mEx)
 			{
 				try
 				{
-					_loger.WriteError(mEx.StackTrace);
-					var messsage = CommandMessage.GetErrorMsg(mEx);
-					messsage.OnIdMessage = mEx.IMessage.MessageId;
-					var tMsg = new TransactionCommandMessage(messsage)
-					{ ChatId = msg.ChatId };
-					_bots[botId].SendMessage(tMsg);
+					var message = MessageToBot.GetErrorMsg(mEx);
+					message.OnIdMessage = mEx.IMessage.MessageId;
+					LogAndSendException(message, mEx, botId, msg.ChatId, msg.MessageId);
 				}
 				catch (Exception ex)
 				{
-					_loger.WriteError(ex.StackTrace);
+					_logger.Error(ex.StackTrace);
 				}
 			}
 			catch (ModelException mEx)
 			{
 				try
 				{
-					_loger.WriteError(mEx.StackTrace);
-					var messsage = CommandMessage.GetErrorMsg(mEx);
-					var tMsg = new TransactionCommandMessage(messsage)
-					{ ChatId = msg.ChatId };
-					_bots[botId].SendMessage(tMsg);
+					var message = MessageToBot.GetErrorMsg(mEx);
+					LogAndSendException(message, mEx, botId, msg.ChatId, msg.MessageId);
 				}
 				catch (Exception ex)
 				{
-					_loger.WriteError(ex.StackTrace);
+					_logger.Error(ex);
 				}
-
 			}
-			catch (Exception e)
+			catch (Exception mEx)
 			{
 				try
 				{
-					_loger.WriteError(e.StackTrace);
-					var messsage = CommandMessage.GetErrorMsg("Не удалось выполнить комманду");
-					messsage.OnIdMessage = msg.MessageId;
-					_bots[botId].SendMessage(new TransactionCommandMessage(messsage) { ChatId = msg.ChatId });
+					var message = MessageToBot.GetErrorMsg("Не удалось выполнить комманду");
+					LogAndSendException(message, mEx, botId, msg.ChatId, msg.MessageId);
 				}
 				catch (Exception ex)
 				{
-					_loger.WriteError(ex.StackTrace);
+					_logger.Error(ex);
 				}
 			}	
 		}
@@ -159,31 +134,45 @@ namespace Nastya
 			}
 		}
 
-		public void Wait()
+		private void SendToBotTask()
 		{
-			while (!cycle)
+			while (true)
 			{
-				foreach (var chat in _chats)
+				foreach (var msgColl in _messages)
 				{
-					while (!chat.Value.ChatMaper.SendMessages.IsEmpty)
+					while (!msgColl.Value.IsEmpty)
 					{
-						if (chat.Value.ChatMaper.SendMessages.TryDequeue(out var msg))
-						{
-							msg.ChatId = chat.Value.ChatMaper.ChatId;
-							_bots[chat.Value.Bot].SendMessage(msg);
-						}
+						if (msgColl.Value.TryGet(out var msg))
+							_bots[msgColl.Value.BotId].SendMessage(msgColl.Value.ChatId, msg);
 					}
 				}
 
 				foreach (var bot in _bots)
 				{
-					IMessage msg;
-					while ( ( msg = bot.Value.GetNewMessage() ) != null)
+					IBotMessage msg;
+					while ((msg = bot.Value.GetNewMessage()) != null)
 						Bot_OnMessage(msg, bot.Key);
-					
 				}
 			}
-			Dispose();
+		}
+
+		private void GetFromBotTask()
+		{
+			while (true)
+			{
+				
+			}
+		}
+
+		public void Wait()
+		{
+			var t1 = new Task(SendToBotTask);
+			var t2 = new Task(GetFromBotTask);
+			t1.Start();
+			t2.Start();
+			// ToDo WaitAll
+			t1.Wait();
+			t2.Wait();
 		}
 	}
 }

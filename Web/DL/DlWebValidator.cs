@@ -1,75 +1,108 @@
-﻿using Model.Logic.Model;
-using Model.Logic.Settings;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Net;
-using System.Text;
-using Web.Game;
+﻿using Model.Logic.Settings;
+using System.Threading.Tasks;
+using Model.Files;
+using Model.HttpMessages;
+using HttpMessagesFactory = Web.HttpMessages.HttpMessagesFactory;
 
 namespace Web.DL
 {
-	public class DlWebValidator
+	public interface IDlValidator
 	{
-		private ISettings _settings { get; }
-		public Response Response { get; }
+		Task<DLPage> SendCode(string code, DLPage page);
+		Task<DLPage> LogIn();
+		Task<DLPage> GetNextPage();
+	}
 
-		public DlWebValidator(ISettings settings)
+	public static class FactoryValidator
+	{
+		public static IDlValidator CreateValidator(ISettings settings) => 
+			settings.TypeGame.IsDummy() 
+				? (IDlValidator) new DlLocalValidator(settings)
+				: (IDlValidator) new DlWebValidator(settings);
+
+
+		private class DlLocalValidator : IDlValidator
 		{
-			_settings = settings;
-			Response = new Response();
+			private readonly ISettings _settings;
+
+			public DlLocalValidator(ISettings settings)
+			{
+				_settings = settings;
+			}
+
+			public Task<DLPage> SendCode(string code, DLPage page) => GetNextPage();
+			public Task<DLPage> LogIn() => GetNextPage();
+			public async Task<DLPage> GetNextPage() => GetNextPage(await GetPage());
+			private DLPage GetNextPage(string text) => PageConstructor.CreateNewPage(text);
+			private Task<string> GetPage() => FileHelper.ReadToEndAsync(_settings.Web.Domen);
 		}
 
-		private string Domen() => _settings.Web.Domen;
-		private string Site() => $@"http://{Domen()}/";
-		private string Login() => _settings.Game.Login;
-		private string Password() => _settings.Game.Password;
-
-		private string LogInContext() => $@"socialAssign=0&Login={Login()}&Password={Password()}&EnButton1=Sign+In&ddlNetwork=1";
-
-		private string GetUrl()
+		private class DlWebValidator : IDlValidator
 		{
-			var result = $@"{Site()}{_settings.Web.BodyRequest}/{_settings.Web.GameNumber}/";
+			private readonly ISettings _settings;
+			private readonly IHttpMessages _httpMessages;
 
-			if (_settings.Game.Sturm)
+			public DlWebValidator(ISettings settings)
 			{
+				_settings = settings;
+				_httpMessages = HttpMessagesFactory.DeadlineThrowAuthorizationMessages();
+			}
+
+			private string Domain => _settings.Web.Domen;
+			private string Site => $@"http://{Domain}/";
+			private string Login => _settings.Game.Login;
+			private string Password => _settings.Game.Password;
+
+			private string LoginContext =>
+				$@"socialAssign=0&Login={Login}&Password={Password}&EnButton1=Sign+In&ddlNetwork=1";
+
+			private string CreateUrl()
+			{
+				var result = $@"{Site}{_settings.Web.BodyRequest}/{_settings.Web.GameNumber}/";
+
+				if (!_settings.DlGame.Sturm) return result;
+
 				var lvl = _settings.Game.Level;
 				if (!string.IsNullOrEmpty(lvl))
 					return result + "?level=" + lvl;
+				return result;
 			}
-			return result;
+
+			private string LoginUrl() => $@"{Site}Login.aspx";
+
+			private static string GetContextSetCode(string code, DLPage page) =>
+				$"LevelId={page?.LevelId}&LevelNumber={page?.LevelNumber}&LevelAction.Answer=" + code;
+
+			public async Task<DLPage> SendCode(string code, DLPage page) =>
+				GetNextPage(await _httpMessages.GetText(CreateUrl(), GetContextSetCode(code, page)));
+
+			public async Task<DLPage> LogIn()
+			{
+				try
+				{
+					await _httpMessages.Response(CreateUrl());
+				}
+				catch
+				{
+
+				}
+
+				try
+				{
+					await _httpMessages.GetText(LoginUrl(), LoginContext);
+				}
+				catch
+				{
+
+				}
+
+				var text = await _httpMessages.GetText(CreateUrl());
+				return GetNextPage(text);
+			}
+
+			public async Task<DLPage> GetNextPage() => GetNextPage(await GetPage());
+			private DLPage GetNextPage(string text) => PageConstructor.CreateNewPage(text);
+			private Task<string> GetPage() => _httpMessages.GetText(CreateUrl());
 		}
-
-		private string LogInUrl() => $@"{Site()}Login.aspx";
-
-		private string GetContextSetCode(string code, DLPage page) =>
-			$"LevelId={page?.LevelId}&LevelNumber={page?.LevelNumber}&LevelAction.Answer=" + code;
-
-		public DLPage SendCode(string code, DLPage page) => GetNextPage(Response.PostHttpWebRequest(GetUrl(), GetContextSetCode(code, page)));
-
-		public DLPage LogIn()
-		{
-			Response.GetNextResponse(GetUrl());
-
-			var requestLogIn = Response.PostHttpWebRequest(LogInUrl(), LogInContext()); //.GetResponse();
-			var page = GetNextPage(requestLogIn);
-
-			if (page.Type == TypePage.ErrorAuthentication)
-				return null;
-
-			return GetNextPage();
-		}
-
-		private DLPage GetNextPage(HttpWebRequest request) => GetNextPage(Response.GetNextResponse(request));
-
-		public DLPage GetNextPage() => PageConstructor.GetNewPage(GetPage(), GetPage);
-
-		private DLPage GetNextPage(HttpWebResponse page) => PageConstructor.GetNewPage(page, GetPage);
-
-		protected string GetPage(HttpWebResponse response) => Response.GetHtmlText(response);
-
-		protected HttpWebResponse GetPage() => Response.GetNextResponse(GetUrl());
-
-		public bool IsLogOut(DLPage page) => page == null || page.Type == TypePage.ErrorAuthentication || page.Type == TypePage.Unknown;
 	}
 }

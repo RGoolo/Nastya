@@ -1,28 +1,31 @@
-﻿using Model.Types.Class;
-using Model.Types.Interfaces;
-using System;
-using System.Collections.Generic;
+﻿using System;
+using Model.BotTypes.Class;
+using Model.Files.FileTokens;
 
 namespace Model.Logic.Settings
 {
 	public interface ISettings
 	{
-		string DontExistFile(string ext);
+		string NotExistFile(string ext);
 
 		void SetValue(string name, string value);
 		string GetValue(string name, string @default = default(string));
-		Guid ChatGuid { get; }
+		IChatId ChatGuid { get; }
 
 		TypeGame SetUri(string uri);	
 		TypeGame TypeGame { get;  }
 
 		void Clear();
 		
-		IChatFileWorker FileWorker { get; }
+		IChatFileFactory FileChatWorker { get; }
 		ISettingsBraille Braille { get; }
 		ISettingsTest Test { get; }
 		ISettingsCoordinates Coordinates { get; }
 		ISettingsGame Game { get;  }
+		
+		IDlSettingsGame DlGame { get; }
+		IDzzzrSettingsGame DzzzrGame { get;}
+
 		ISettingsWeb Web { get; }
 		ISettingsPage Page { get;}
 
@@ -37,14 +40,29 @@ namespace Model.Logic.Settings
 
 	public interface ISettingsTest
 	{
-		string IsTest { get; set; }
-		string TestUri { get; set; }
+		string IsTest { get;  }
+		string TestUri { get; }
 	}
 
 	public interface ISettingsCoordinates
 	{
-		bool Coord { get; set; }
-		string ShowYandex { get; set; }
+		bool Coord { get; }
+		string ShowYandex { get; }
+	}
+
+	public interface IDlSettingsGame
+	{
+		string TimeFormat { get; }
+		bool Sturm { get;}
+	}
+
+	public interface IDzzzrSettingsGame
+	{
+		string Prefix { get; }
+		bool CheckOtherTask { get; }
+
+		string PasswordAu { get; set; }
+		string LoginAu { get; set; }
 	}
 
 	public interface ISettingsGame
@@ -59,7 +77,7 @@ namespace Model.Logic.Settings
 
 		string Login { get; set; }
 		string Password { get; set; }
-		string Uri { get; set; }
+		string Site { get; set; }
 
 		string Coord { get; set; }
 
@@ -69,20 +87,15 @@ namespace Model.Logic.Settings
 		string AllBonus { get; set; }
 		string Bonus { get; set; }
 
-
 		bool GameIsStart { get; set; }
 
 		string Level { get; set; }
-		bool Sturm { get; set; }
-		string Prefix { get; set; }
 
 		bool IsSendImg { get; set; }
 		bool IsSendVoice { get; set; }
 
-		bool CheckOtherTask { get; set; }
-
-		Guid SectorsMsg { get; set; }
-		Guid AllSectorsMsg { get; set; }
+		IMessageId SectorsMsg { get; set; }
+		IMessageId AllSectorsMsg { get; set; }
 	}
 
 	public interface ISettingsWeb
@@ -91,8 +104,6 @@ namespace Model.Logic.Settings
 		string GameNumber { get; set; }
 		string BodyRequest { get; set; }
 
-		string PasswordAu { get; set; }
-		string LoginAu { get; set; }
 	}
 
 	public interface ISettingsPage

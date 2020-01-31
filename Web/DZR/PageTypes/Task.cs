@@ -7,7 +7,7 @@ using Web.Base;
 
 namespace Web.DZR
 {
-	public class Task
+	public class DzrTask
 	{
 		private string _code_ = "_code_";
 
@@ -31,7 +31,7 @@ namespace Web.DZR
 			return _postForCode.Replace(_code_, code);
 		}
 
-		public Task(List<HtmlNode> nodes, string defaultUri)
+		public DzrTask(List<HtmlNode> nodes, string defaultUri)
 		{
 			DefaulUri = defaultUri;
 			HtmlNode nodeTitle = null;

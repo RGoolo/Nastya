@@ -4,25 +4,45 @@
 	<OutputType>Exe</OutputType>
 	<TargetFramework>netcoreapp3.0</TargetFramework>
 	<LangVersion>preview</LangVersion>
+	<Platforms>AnyCPU</Platforms>
   </PropertyGroup>
 
   <ItemGroup>
 	<Compile Remove="Args\**" />
-	<Compile Remove="Types\Base\**" />
+	<Compile Remove="BotTypes\Base\**" />
 	<Compile Remove="WebModel\**" />
 	<EmbeddedResource Remove="Args\**" />
-	<EmbeddedResource Remove="Types\Base\**" />
+	<EmbeddedResource Remove="BotTypes\Base\**" />
 	<EmbeddedResource Remove="WebModel\**" />
 	<None Remove="Args\**" />
-	<None Remove="Types\Base\**" />
+	<None Remove="BotTypes\Base\**" />
 	<None Remove="WebModel\**" />
   </ItemGroup>
 
   <ItemGroup>
-	<PackageReference Include="Google.Apis.Sheets.v4" Version="1.41.1.1721" />
-	<PackageReference Include="Google.Cloud.Speech.V1" Version="1.2.0" />
-	<PackageReference Include="Google.Cloud.Vision.V1" Version="1.6.0" />
-	<PackageReference Include="Telegram.Bot" Version="15.0.0" />
+	<PackageReference Include="Discord.Net" Version="2.1.1" />
+	<PackageReference Include="Google.Apis.Sheets.v4" Version="1.43.0.1848" />
+	<PackageReference Include="Google.Cloud.Speech.V1P1Beta1" Version="1.0.0-beta05" />
+	<PackageReference Include="Google.Cloud.Vision.V1" Version="1.7.0" />
+	<PackageReference Include="Microsoft.Extensions.Configuration" Version="3.1.1" />
+	<PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="3.1.1" />
+	<PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="3.1.1" />
+	<PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="3.1.1" />
+	<PackageReference Include="Telegram.Bot" Version="15.2.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\WordService\WordService.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="appsettings.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="HttpMessages\Simple\" />
   </ItemGroup>
 
 </Project>

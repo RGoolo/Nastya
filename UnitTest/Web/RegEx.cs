@@ -1,8 +1,6 @@
 ﻿using System.Collections.Generic;
 using Xunit;
-using Model.Types.Enums;
-using Model.Types.Class;
-using System.Text.RegularExpressions;
+using Model.BotTypes.Class;
 using Model.TelegramBot;
 
 namespace UnitTest
@@ -19,13 +17,13 @@ namespace UnitTest
 			var texter = new Texter(input, true);
 			(var str, var model) = TelegramBot.GetText(texter);
 			Assert.Equal(str, output);
-
 		}
 
 		public static IEnumerable<object[]> TypeUsers()
 		{
 			yield return new object[] { "<b>bold</b>", "<b>bold</b>" };
-			yield return new object[] { "<ba>bold</ba>", "bold" };
+			yield return new object[] { "<b>bold</ba></ba>", "bold" };
+			yield return new object[] { "<bd>bold</bd>", "bold" };
 
 			yield return new object[] { "<ab>cd</ab>", "cd" };
 			yield return new object[] { "<a href=\"link\">namelink</a>", "<a href=\"link\">namelink</a>" };
@@ -36,6 +34,8 @@ namespace UnitTest
 
 			yield return new object[] { "<h>col</h>", "col" };
 			yield return new object[] { "<head>ahead</head>", "ahead" };
+
+			yield return new object[] { "<head>abc", "abc" };
 		}
 	}
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using Model.BotTypes.Class;
 
 namespace Model.Logic.Settings
 {
@@ -10,12 +11,13 @@ namespace Model.Logic.Settings
 		bool GetValueBool(string name, bool @default = default(bool));
 		long GetValueLong(string name, long @default = default(long));
 		Guid GetValueGuid(string name, Guid @default = default(Guid));
+		IMessageId GetIMessageId(string name, IMessageId @default = null); //ToDo
 	}
 
-	public class SettingValues2
+	public abstract class SettingValues2
 	{
 		protected ISettingValues SettingsValues { get; }
-		public SettingValues2(ISettingValues settingsValues)
+		protected SettingValues2(ISettingValues settingsValues)
 		{
 			SettingsValues = settingsValues;
 		}
@@ -71,6 +73,56 @@ namespace Model.Logic.Settings
 		}
 	}
 
+	public class GameDlSettings : SettingValues2, IDlSettingsGame
+	{
+		// private bool sturm;
+
+		public GameDlSettings(ISettingValues settingsValues) : base(settingsValues)
+		{
+
+		}
+
+		public string TimeFormat {
+			get => SettingsValues.GetValue(Const.DlGame.TimeFormat, "hh:mm:ss");
+			set => SettingsValues.SetValue(Const.DlGame.TimeFormat, value);
+		}
+
+		public bool Sturm
+		{
+			get => SettingsValues.GetValueBool(Const.DlGame.Sturm);
+			set => SettingsValues.SetValue(Const.DlGame.Sturm, value.ToString());
+		}
+	}
+
+	public class GameDzzzrSettings : SettingValues2, IDzzzrSettingsGame
+	{
+		public GameDzzzrSettings(ISettingValues settingsValues) : base(settingsValues) { }
+
+		public string Prefix
+		{
+			get => SettingsValues.GetValue(Const.DzrGame.Prefix);
+			set => SettingsValues.SetValue(Const.DzrGame.Prefix, value);
+		}
+
+		public bool CheckOtherTask
+		{
+			get => SettingsValues.GetValueBool(Const.DzrGame.CheckOtherTask);
+			set => SettingsValues.SetValue(Const.DzrGame.CheckOtherTask, value.ToString());
+		}
+
+		public string PasswordAu
+		{
+			get => SettingsValues.GetValue(Const.DzrGame.PasswordAu);
+			set => SettingsValues.SetValue(Const.DzrGame.PasswordAu, value);
+		}
+		public string LoginAu
+		{
+			get => SettingsValues.GetValue(Const.DzrGame.LoginAu);
+			set => SettingsValues.SetValue(Const.DzrGame.LoginAu, value);
+		}
+
+	}
+
 	public class GameSettings : SettingValues2, ISettingsGame
 	{
 		public GameSettings(ISettingValues settingsValues) : base(settingsValues) { }
@@ -115,10 +167,10 @@ namespace Model.Logic.Settings
 			get => SettingsValues.GetValue(Const.Game.Password);
 			set => SettingsValues.SetValue(Const.Game.Password, value);
 		}
-		public string Uri
+		public string Site
 		{
-			get => SettingsValues.GetValue(Const.Game.Uri);
-			set => SettingsValues.SetValue(Const.Game.Uri, value);
+			get => SettingsValues.GetValue(Const.Game.Site);
+			set => SettingsValues.SetValue(Const.Game.Site, value);
 		}
 
 		public string Coord
@@ -160,16 +212,7 @@ namespace Model.Logic.Settings
 			get => SettingsValues.GetValue(Const.Game.Level);
 			set => SettingsValues.SetValue(Const.Game.Level, value.ToString());
 		}
-		public bool Sturm
-		{
-			get => SettingsValues.GetValueBool(Const.Game.Sturm);
-			set => SettingsValues.SetValue(Const.Game.Sturm, value.ToString());
-		}
-		public string Prefix
-		{
-			get => SettingsValues.GetValue(Const.Game.Prefix);
-			set => SettingsValues.SetValue(Const.Game.Prefix, value);
-		}
+
 
 		public bool IsSendImg
 		{
@@ -182,19 +225,14 @@ namespace Model.Logic.Settings
 			set => SettingsValues.SetValue(Const.Game.IsSendVoice, value.ToString());
 		}
 
-		public bool CheckOtherTask
+		public IMessageId SectorsMsg
 		{
-			get => SettingsValues.GetValueBool(Const.Game.CheckOtherTask);
-			set => SettingsValues.SetValue(Const.Game.CheckOtherTask, value.ToString());
-		}
-		public Guid SectorsMsg
-		{
-			get => SettingsValues.GetValueGuid(Const.Game.SectorsMsg);
+			get => SettingsValues.GetIMessageId(Const.Game.SectorsMsg);
 			set => SettingsValues.SetValue(Const.Game.SectorsMsg, value.ToString());
 		}
-		public Guid AllSectorsMsg
+		public IMessageId AllSectorsMsg
 		{
-			get => SettingsValues.GetValueGuid(Const.Game.AllSectorsMsg);
+			get => SettingsValues.GetIMessageId(Const.Game.AllSectorsMsg);
 			set => SettingsValues.SetValue(Const.Game.AllSectorsMsg, value.ToString());
 		}
 	}
@@ -218,16 +256,7 @@ namespace Model.Logic.Settings
 			set => SettingsValues.SetValue(Const.Web.BodyRequest, value);
 		}
 
-		public string PasswordAu
-		{
-			get => SettingsValues.GetValue(Const.Web.PasswordAu);
-			set => SettingsValues.SetValue(Const.Web.PasswordAu, value);
-		}
-		public string LoginAu
-		{
-			get => SettingsValues.GetValue(Const.Web.LoginAu);
-			set => SettingsValues.SetValue(Const.Web.LoginAu, value);
-		}
+	
 	}
 
 	public class PageSettings : SettingValues2, ISettingsPage

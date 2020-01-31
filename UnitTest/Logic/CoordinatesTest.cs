@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using Model.Logic.Coordinates;
-using Model.Logic.Settings;
 using Xunit;
 
 namespace UnitTest.Logic

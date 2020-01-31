@@ -1,9 +1,10 @@
 ﻿using Model.Logic.Settings;
-using Model.Types.Interfaces;
 using System;
 using System.Collections.Generic;
-using System.Net;
-using System.Text;
+using System.Threading.Tasks;
+using Model.BotTypes.Class;
+using Model.BotTypes.Interfaces;
+using Model.BotTypes.Interfaces.Messages;
 using Web.Game.Model;
 
 namespace Web.Base
@@ -15,9 +16,8 @@ namespace Web.Base
 		ISettings Settings { get; }
 
 		void LogIn();
-		bool IsLogOut();
 
-		List<IEvent> GetCode(string str, IUser user, Guid replaceMsg);
+		List<IEvent> GetCode(string str, IUser user, IMessageId replaceMsg);
 
 		void SendEvent(IEvent iEvent);
 

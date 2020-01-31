@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using Web.Game.Model;
-using Model.Logic.Settings;
-using Model.Types.Class;
-using Model.Types.Interfaces;
-
-namespace Web.Base
+﻿namespace Web.Base
 {
 	public class BaseValidator //: IWebValidator
 	{

@@ -5,65 +5,38 @@ using System.Linq;
 using Telegram.Bot.Types.Enums;
 using System.Net;
 using Model.Logic.Settings;
-using Model.Types.Class;
-using Model.Types.Interfaces;
-using Model.Types.Enums;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.InputFiles;
 using System.Threading;
 using System.Security;
-using System.Text.RegularExpressions;
+using Model.BotTypes.Class;
+using Model.BotTypes.Enums;
+using Model.BotTypes.Interfaces;
+using Model.BotTypes.Interfaces.Messages;
+using Model.Files.FileTokens;
+using Model.Logger;
+using MessageType = Model.BotTypes.Enums.MessageType;
 
 namespace Model.TelegramBot
 {
-	/*internal static class WebProxyExtension
-	{
-		//private const string webProxyurl = "144.217.161.149:8080"; //90.187.45.5:8123";
-
-		public static Random random = new Random(DateTime.Now.Millisecond);
-
-		public static WebProxy Create()
-		{
-			var ran = random.Next(Proxies.Count - 1);
-			return new WebProxy(Proxies[ran]);
-		}
-		
-		static List<string> Proxies = new List<string>()
-		{
-			"62.149.12.98:3128",
-			"51.75.33.220:3128",
-			"134.209.230.82:8080",
-			"46.4.115.48:3128",
-			"91.211.247.26:8080",
-			"145.239.92.81:3128",
-			"91.211.247.26:80",
-			"195.201.129.206:3128",
-			"195.230.131.210:3128",
-			"54.37.136.149:3128",
-			"159.65.204.30:8080",
-			"51.75.75.193:3128",
-			"212.182.25.89:3128",
-		};
-	}*/
-
-	public class TelegramBot : IConcurentBot
+	public class TelegramBot : IConcurrentBot
 	{
 		private class Resource : IResource
 		{
-			public Resource(IFileToken file, TypeResource type)
+			public Resource(IChatFile file, TypeResource type)
 			{
 				File = file;
 				Type = type;
 			}
 
-			public IFileToken File { get; }
+			public IChatFile File { get; }
 			public TypeResource Type { get; }
 		}
 
 		private readonly SecureString _token;
-		protected readonly Logger _log;
+		protected readonly ILogger _log;
 		private readonly CancellationToken _cancellationToken = default(CancellationToken);
-		private const int UPDATETIMESTam_Minutes = 5;
+		private const int UpdatetimesTimeMinutes = 5;
 		private const int MyUserId = 62779148;
 		private const long MyChat = 62779148;
 
@@ -72,26 +45,30 @@ namespace Model.TelegramBot
 		private TelegramHTML _telegramHtml = new TelegramHTML();
 		private Telegram.Bot.TelegramBotClient _bot;
 
-		private IChatFileWorker _chatFileWorker(Guid chatId) => SettingsHelper.GetSetting(chatId).FileWorker;
-		private IFileWorker _fileWorker => SettingsHelper.FileWorker;
+		private IChatFileFactory _chatFileWorker(IChatId chatId) => SettingsHelper.GetSetting(chatId).FileChatWorker;
+		// private IChatFileWorker _fileWorker => SettingsHelper.FileWorker;
 
 		public TypeBot TypeBot => TypeBot.Telegram;
 
-		public Logger Log => _log;
+		public ILogger Log => _log;
 
-		public Guid Id { get; }
+		public IBotId Id { get; }
 
-		public TelegramBot(SecureString token, Guid id)
+		public TelegramBot(SecureString token, IBotId id)
 		{
 			Id = id;
-			_log = new Logger(id.ToString());
-			_log.WriteTrace(".ctor");
+			_log = Logger.Logger.CreateLogger(id.ToString());
+			_log.Info(".ctor");
 			var cred = new NetworkCredential(string.Empty, token).Password;
 			_bot = new Telegram.Bot.TelegramBotClient(cred);//, WebProxyExtension.Create());
 			//ToDo: SetWebHook 
 			//ToDo: GetMeAsync
 			_token = token;
 
+
+			_bot.SetWebhookAsync(string.Empty);
+			_log.Warning($"{nameof(_bot.SetWebhookAsync)} successfully");
+			_offset = 0;
 		}
 
 		private TypeUser GetTypeUser(bool isAdmin, Message msg)
@@ -107,17 +84,10 @@ namespace Model.TelegramBot
 			return userType;
 		}
 
-		public void PreCycle()
-		{
-			_bot.SetWebhookAsync(string.Empty);
-			_log.WriteTrace($"{nameof(_bot.SetWebhookAsync)} successfully");
-			 _offset = 0;
-		}
-
-		public List<IMessage> RunCycle()
+		public List<IBotMessage> GetMessages()
 		{
 			var updates = _bot.GetUpdatesAsync(_offset, 1).Result;
-			var msgs = new List<IMessage>();
+			var msgs = new List<IBotMessage>();
 
 			foreach (var update in updates)
 			{
@@ -127,7 +97,7 @@ namespace Model.TelegramBot
 				if ((update.Id + 1) > _offset)
 					_offset = update.Id + 1;
 
-				_log.WriteTrace(nameof(_offset) + update.Id);
+				_log.Warning(nameof(_offset) + update.Id);
 			}
 
 			return msgs;
@@ -146,7 +116,7 @@ namespace Model.TelegramBot
 			//	return true;
 
 			//ToDo: DateTime.Now - _chatAdministations[msg.Chat.Id].timeStemp) > second
-			if (!_chatAdministations.ContainsKey(msg.Chat.Id) || (DateTime.Now - _chatAdministations[msg.Chat.Id].timeStemp).Minutes > UPDATETIMESTam_Minutes)
+			if (!_chatAdministations.ContainsKey(msg.Chat.Id) || (DateTime.Now - _chatAdministations[msg.Chat.Id].timeStemp).Minutes > UpdatetimesTimeMinutes)
 			{
 				var admins = _bot.GetChatAdministratorsAsync(msg.Chat.Id, _cancellationToken).Result;
 
@@ -174,83 +144,84 @@ namespace Model.TelegramBot
 		{
 			try
 			{
-				return (TelegramHTML.RemoteTag(text), GetParseMod(text));
+				return (TelegramHTML.RemoveTag(text), GetParseMod(text));
 			}
 			catch (Exception e)
 			{
-				return (text?.Text, ParseMode.Default);
+				{ Logger.Logger.CreateLogger(nameof(CookieContainer)).Warning(e); }
+				return (TelegramHTML.RemoveAllTag(text?.Text), ParseMode.Default);
 			}
 		}
 
 		private static ParseMode GetParseMod(Texter text) => text?.Html == true ? ParseMode.Html : ParseMode.Default;
 
-		public async Task<IMessage> Message(CommandMessage message, Guid chatId)
+		public async Task<IBotMessage> Message(IMessageToBot message, IChatId chatId)
 		{
-			_log.WriteTrace(
-				$"{nameof(message.TypeMessage)}:{message.TypeMessage} type:{message.Texter?.Html} message:{ message.Texter?.Text}");
+			_log.Info($"{nameof(message.TypeMessage)}:{message.TypeMessage} type:{message.Text?.Html} message:{ message.Text?.Text}");
 
-			var longChatId = chatId.ToLong();
+			var longChatId = IdsMapper.ToLong(chatId.GetId); // ToDo is
 			if (longChatId != 62779148)
 				return null;
 
-			(var text, var mode) = GetText(message.Texter);
-			var replaceMsg = message.OnIdMessage.ToInt();
+			var (text, mode) = GetText(message.Text);
+			var replaceMsg = IdsMapper.ToInt(message.OnIdMessage?.GetId); // ToDo is
+
 			Message senderMsg = null;
 
 			switch (message.TypeMessage)
 			{
-				case Types.Enums.MessageType.Edit:
-
+				case MessageType.Edit:
 					if (!string.IsNullOrEmpty(text))
 						senderMsg = await _bot.EditMessageTextAsync(longChatId, replaceMsg, text, mode,
 							true, cancellationToken: _cancellationToken);
 					break;
-				case Types.Enums.MessageType.Text:
+
+				case MessageType.Text:
 					if (!string.IsNullOrEmpty(text))
 						senderMsg = await _bot.SendTextMessageAsync(longChatId, text, mode,
 							replyToMessageId: replaceMsg, disableWebPagePreview: true,
 							cancellationToken: _cancellationToken);
 					break;
-				case Types.Enums.MessageType.Coordinates:
-					_log.WriteTrace($"{message.Coordinate.Latitude}:{message.Coordinate.Longitude} replyToMessageId:{replaceMsg} longChatId:{longChatId}");
+
+				case MessageType.Coordinates:
+					_log.Warning($"{message.Coordinate.Latitude}:{message.Coordinate.Longitude} replyToMessageId:{replaceMsg} longChatId:{longChatId}");
 
 					senderMsg = await _bot.SendVenueAsync(longChatId, message.Coordinate.Latitude,
 						message.Coordinate.Longitude, "title", "adress", replyToMessageId: replaceMsg,
 						cancellationToken: _cancellationToken);
 					break;
-				case Types.Enums.MessageType.Photo:
-					if (message.FileToken.Type == Types.Enums.FileType.Local)
-					{
-						await using var stream = _fileWorker.ReadStream(message.FileToken);
-						senderMsg = await _bot.SendPhotoAsync(longChatId, stream, text, mode,
-							replyToMessageId: replaceMsg, cancellationToken: _cancellationToken);
-					}
-					else
-					{
-						var photo = new InputOnlineFile(message.FileToken.Url);
-						senderMsg = await _bot.SendPhotoAsync(longChatId, photo, "", GetParseMod(message.Texter),
-							replyToMessageId: replaceMsg, cancellationToken: _cancellationToken);
-					}
 
+				case MessageType.Photo:
+					senderMsg = await _bot.SendPhotoAsync(longChatId, message.FileToken.GetInputFile(), text, mode,
+						replyToMessageId: replaceMsg, cancellationToken: _cancellationToken);
 					break;
-				case Types.Enums.MessageType.Document:
-					using (var file = _fileWorker.ReadStream(message.FileToken))
-						senderMsg = await _bot.SendDocumentAsync(longChatId, file, text,
-							mode, replyToMessageId: replaceMsg,
-							cancellationToken: _cancellationToken);
+
+				case MessageType.Voice:
+					senderMsg = await _bot.SendVoiceAsync(longChatId, message.FileToken.GetInputFile(), text, mode,
+							replyToMessageId: replaceMsg, cancellationToken: _cancellationToken);
 					break;
+
+				case MessageType.Document:
+					senderMsg = await _bot.SendDocumentAsync(longChatId, message.FileToken.GetInputFile(), text,
+						mode, replyToMessageId: replaceMsg,
+						cancellationToken: _cancellationToken);
+					break;
+				case MessageType.SystemMessage:
+					break;
+				default:
+					throw new ArgumentOutOfRangeException();
 			}
 
 			return senderMsg == null ? null : new NotificationMessage(TelegramMessage(senderMsg), message);
 		}
 
-		private async Task<IMessage> DownloadFileAsync(string fileId, IFileToken token, IMessage msg, TypeResource type)
+		private async Task<IBotMessage> DownloadFileAsync(string fileId, IChatFile token, IBotMessage msg, TypeResource type)
 		{
 			try
 			{
 				var tFile = await _bot.GetFileAsync(fileId, _cancellationToken);
-				
-				using (var file = _fileWorker.WriteStream(token))
+
+				await using (var file = token.WriteStream())
 				{
 					var a = _bot.DownloadFileAsync(tFile.FilePath, file, _cancellationToken);
 					a.Wait(_cancellationToken);
@@ -261,63 +232,57 @@ namespace Model.TelegramBot
 			}
 			catch (Exception ex)
 			{
-				_log.WriteError("Error downloading: " + ex.Message);
+				_log.Error(ex, "Error downloading: " );
 			}
 			return null;
 		}
 
-		public async Task<IMessage> DownloadFileAsync(IMessage msg)
-		{
-			return await DownloadFileAsync(msg, msg);
-		}
+		public async Task<IBotMessage> DownloadFileAsync(IBotMessage msg) => await DownloadFileAsync(msg, msg);
 
-		protected Task<IMessage> DownloadFileAsync(IMessage msg, IMessage resourceMsg)
+		protected Task<IBotMessage> DownloadFileAsync(IBotMessage msg, IBotMessage resourceMsg)
 		{
 			if (resourceMsg == null)
 				return null;
 
-			switch (resourceMsg.TypeMessage)
+			return resourceMsg.TypeMessage switch
 			{
-				case Types.Enums.MessageType.Photo:
-					return DownloadPhotoAsync(msg, resourceMsg);
-				case Types.Enums.MessageType.Voice:
-					return DownloadVoiceAsync(msg, resourceMsg);
-				default:
-					return DownloadFileAsync(msg, msg.ReplyToMessage);
-				}
+				MessageType.Photo => DownloadPhotoAsync(msg, resourceMsg),
+				MessageType.Voice => DownloadVoiceAsync(msg, resourceMsg),
+				_ => DownloadFileAsync(msg, msg.ReplyToMessage)
+			};
 		}
 
-		protected Task<IMessage> DownloadVoiceAsync(IMessage msg, IMessage resourceMsg)
+		protected Task<IBotMessage> DownloadVoiceAsync(IBotMessage msg, IBotMessage resourceMsg)
 		{
 			var tMsg = (resourceMsg as TelegramMessage)?.Message;
 			if (tMsg == null)
 				return null;
 
 			//var filePath = SettingHelper.DontExistFile("ogg", resourceMsg.ChatId);
-			var fileToken = _chatFileWorker(msg.ChatId).NewFileTokenByExt(".ogg");
-			return DownloadFileAsync(tMsg.Voice.FileId, fileToken, msg, TypeResource.Voice);
+			var file = _chatFileWorker(msg.ChatId).NewResourcesFileTokenByExt(".ogg");
+			return DownloadFileAsync(tMsg.Voice.FileId, file, msg, TypeResource.Voice);
 		}
 
-		protected Task<IMessage> DownloadPhotoAsync(IMessage msg, IMessage resourceMsg)
+		protected Task<IBotMessage> DownloadPhotoAsync(IBotMessage msg, IBotMessage resourceMsg)
 		{
 			var tMsg = (resourceMsg as TelegramMessage)?.Message;
 			if (tMsg == null)
 				return null;
 
 			//var filePath = SettingHelper.DontExistFile("jpg", resourceMsg.ChatId);
-			var fileToken = _chatFileWorker(msg.ChatId).NewFileTokenByExt(".jpg");
-			return DownloadFileAsync(tMsg.Photo[tMsg.Photo.Length - 1].FileId, fileToken, msg, TypeResource.Photo);
+			var fileToken = _chatFileWorker(msg.ChatId).NewResourcesFileTokenByExt(".jpg");
+			return DownloadFileAsync(tMsg.Photo[^1].FileId, fileToken, msg, TypeResource.Photo);
 		}
 
 		public void OnError(Exception ex)
 		{
-			//Временное, настроить VPN!;
-			_log.WriteTrace(nameof(OnError));
+			/*//Временное, настроить VPN!;
+			_log.Warning(nameof(OnError));
 			var cred = new NetworkCredential(string.Empty, _token).Password;
 			//_bot = new Telegram.Bot.TelegramBotClient(cred, WebProxyExtension.Create());
 
 			_bot.SetWebhookAsync(string.Empty);
-			_log.WriteTrace($"{nameof(_bot.SetWebhookAsync)} successfully");
+			_log.Warning($"{nameof(_bot.SetWebhookAsync)} successfully");*/
 		}
 	}
 }

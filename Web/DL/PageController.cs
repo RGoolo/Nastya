@@ -2,11 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Model.Logic.Coordinates;
+using Model.BotTypes.Class;
+using Model.BotTypes.Enums;
 using Model.Logic.Model;
 using Model.Logic.Settings;
-using Model.Types.Class;
-using Model.Types.Enums;
 using Web.Base;
 using Web.Game.Model;
 
@@ -16,24 +15,24 @@ namespace Web.DL.PageTypes
 	{
 		private readonly ISendMsgDl _sendMsgDl;
 		private DLPage _lastPage;
-		private ISettings Setting;
-		public const string TimeFormat = "HH:mm:ss";
+		private readonly ISettings _setting;
+		
 
-		public void SendMsg(string message, Guid? replaceMsgId = null, bool withHtml = false)
+		public void SendMsg(string message, IMessageId replaceMsgId = null, bool withHtml = false)
 		{
-			var t = CommandMessage.GetTextMsg(new Texter(message, withHtml));
-			t.OnIdMessage = replaceMsgId.GetValueOrDefault();
+			var t = MessageToBot.GetTextMsg(new Texter(message, withHtml));
+			t.OnIdMessage = replaceMsgId;
 			SendMsg(t);
 		}
 
-		private void SendMsg(IEnumerable<CommandMessage> msgs)
+		private void SendMsg(IEnumerable<IMessageToBot> msgs)
 		{
 			_sendMsgDl.SendMsg(msgs);
 		}
 
-		public void SendMsg(CommandMessage msg)
+		public void SendMsg(IMessageToBot msg)
 		{
-			var msgs = new List<CommandMessage>
+			var msgs = new List<IMessageToBot>
 			{
 				msg,
 			};
@@ -43,7 +42,7 @@ namespace Web.DL.PageTypes
 		public PageController(ISendMsgDl sendMsgDl, ISettings settings)
 		{
 			_sendMsgDl = sendMsgDl;
-			Setting = settings;
+			_setting = settings;
 		}
 
 		public void AfterSendCode(DLPage page, IEvent sendEvent)
@@ -63,14 +62,13 @@ namespace Web.DL.PageTypes
 
 			if (page.Type == TypePage.Finished)
 			{
-				var msg = CommandMessage.GetTextMsg("Игра закончена.");
+				var msg = MessageToBot.GetTextMsg("Поздравляю, вы закончили!");
 				msg.Notification = Notification.GameStoped;
 				SendMsg(msg);
 				return;
-				//throw new GameException("Сервер вернул некорректное значение.");
 			}
 
-			var lvlNumber = Setting.Page.LastLvl;
+			var lvlNumber = _setting.Page.LastLvl;
 
 			if (_lastPage == null)
 			{
@@ -83,102 +81,81 @@ namespace Web.DL.PageTypes
 				if (_lastPage.LevelNumber != page.LevelNumber)
 					SendNewLevelInfo(page, true);
 				else
+				{
 					SendDiffTime(page);
+					SendDiffHint(page);
+				}
 			}
 			_lastPage = page;
 			if (lvlNumber != _lastPage.LevelNumber)
-				Setting.Page.LastLvl = _lastPage.LevelNumber;
+				_setting.Page.LastLvl = _lastPage.LevelNumber;
+		}
+
+		private void SendDiffHint(DLPage page)
+		{
+			if(page.Hints == null || page.Hints.IsEmpty)
+				return;
+
+			if (_lastPage.Hints == null || _lastPage.Hints.IsEmpty)
+				return;
+
+			var msg = new List<IMessageToBot>();
+			foreach (var pageHint in page.Hints)
+			{
+				var lastHint = _lastPage.Hints.GetById(pageHint.Number);
+				if (lastHint == null)
+					continue;
+
+				if (!pageHint.IsReady || lastHint.IsReady) continue;
+
+				var texter = new Texter(pageHint.ToString(), true);
+				msg.Add(MessageToBot.GetTextMsg(texter));
+			}
+			if (msg.Any())
+				SendMsg(msg);
 		}
 
 		private void SendDiffTime(DLPage page)
 		{
-			var msg = new List<CommandMessage>();
+			var msg = new List<IMessageToBot>();
 
-			if (IsBorderValue(page.TimeToEnd, _lastPage.TimeToEnd, 5))
-				msg.Add(CommandMessage.GetTextMsg($"⏳ Осталось меньше 5 минут"));
+			if (IsBorderValue(page.TimeToEnd, _lastPage.TimeToEnd, 300))
+				msg.Add(MessageToBot.GetTextMsg($"⏳ Осталось меньше 5 минут"));
 
-			if (IsBorderValue(page.TimeToEnd, _lastPage.TimeToEnd, 1))
-				msg.Add(CommandMessage.GetTextMsg($"⏳ Осталось меньше минуты"));
+			if (IsBorderValue(page.TimeToEnd, _lastPage.TimeToEnd, 60))
+				msg.Add(MessageToBot.GetTextMsg($"⏳ Осталось меньше минуты"));
 
-			for (var i = 0; i < page.Hints.Count; ++i)
+			foreach (var newHint in page.Hints)
 			{
-				if (!page.Hints[i].IsReady)
-				{
-					var hint = _lastPage.Hints.Where(x => x.Number == page.Hints[i].Number && page.Hints[i].Number != 0).FirstOrDefault();
-					if (hint == null)
-						continue;
+				if (newHint.IsReady) continue;
 
-					if (IsBorderValue(page.Hints[i].TimeToEnd, hint.TimeToEnd, 5))
-						msg.Add(CommandMessage.GetTextMsg($"⏳ {hint.Name} Откроется через {hint.TimeToEnd.ToString(TimeFormat)}"));
+				var lastHint = _lastPage.Hints.FirstOrDefault(x => x.Number == newHint.Number && newHint.Number != 0);
+				if (lastHint == null)
+					continue;
 
-					//if (IsBorderValue(page.Hints[i].TimeTo, hint.TimeTo, 1))
-					//	msg.Add(CommandMessage.GetTextMsg($"⏳ {hint.Name} Откроется через {hint.TimeTo.ToString(TimeFormat)}"));
-				}
+				if (IsBorderValue(newHint.TimeToEnd, lastHint.TimeToEnd, 300))
+					msg.Add(MessageToBot.GetTextMsg(newHint.ToString()));
+
+				if (IsBorderValue(newHint.TimeToEnd, lastHint.TimeToEnd, 60))
+					msg.Add(MessageToBot.GetTextMsg(newHint.ToString()));
 			}
 			if (msg.Any())
 				SendMsg(msg);
 
 		}
 
-		public void SendNewLevelInfo(DLPage page, bool isNewlvl = false)
+		public void SendNewLevelInfo(DLPage page, bool newLvl = false)
 		{
 			if (page == null) return;
 
-			var msg = new List<CommandMessage>();
-
-			StringBuilder sb = new StringBuilder();
-			sb.AppendLine(!isNewlvl ? "📖 Текущий уровень" : $"📖 Новый уровень #{Setting.Web.GameNumber}");
-
-
-			if (page.Levels.Any())
-			{
-				sb.Append("Уровни: \n");
-				page.Levels.ForEach(x => sb.Append(x + "		"));
-				sb.Append("\n");
-			}
-
-			if (page.TimeToEnd != default(DateTime))
-				sb.Append($"⏳ Времени для автоперехода: " + page.TimeToEnd?.ToString(TimeFormat) + "\n");
-
-			sb.Append(page.LevelTitle + "\n" + page.Task + "\n");
-			/*if (page.Links.Count > 0)
-			{
-				sb.Append("В задании есть следующие ссылки: \n");
-				page.Links.ForEach(x => sb.Append(x + "\n"));
-			}*/
-
-			if (!string.IsNullOrEmpty(page.Sectors?.SectorsRemain))
-			{
-				sb.Append($"На уровне осталось закрыть: {page.Sectors.SectorsRemain}(/sectors) из {page.Sectors.CountSectors}(/allsectors).\n");
-			}
-
-			if (page.Bonuses.Any())
-			{
-				var isReady = page.Bonuses.Count(x => x.IsReady);
-				sb.Append($"на уровне закрыто {isReady}(/{Const.Game.Bonus}) из {page.Bonuses.Count()}(/{Const.Game.AllBonus})\n");
-				//page.Bonuses.ForEach(x => sb.Append(x.IsReady + x.Name + "\n" + x.Text + "\n"));
-				//sb.Append($"На уровне осталось закрыть: {page.Sectors.SectorsRemain}(/sectors) из {page.Sectors.CountSectors}(/allsectors).\n");
-			}
-
-			if (page.Hints.Any())
-			{
-				foreach (var hint in page.Hints)
-				{
-					sb.Append(hint.IsReady
-						? $"\n{hint.Name}: {hint.Text}\n"
-						: $"\n{hint.Name} откроется через: {hint.TimeToEnd.ToString(TimeFormat)}\n");
-				}
-			}
-
-			var message = CommandMessage.GetTextMsg(new Texter(sb.ToString(), true));
-			//msg.Add(message);
+			var msg = new List<IMessageToBot>();
 			
-			if (isNewlvl)
+			var message = MessageToBot.GetTextMsg(page.ToTexter(newLvl, _setting.DlGame.TimeFormat));
+			
+			if (newLvl)
 			{
-				//var messages = new SystemMess
-				//
 				message.Notification = Notification.NewLevel;
-				message.NotificationObject = new DLPage[]{_lastPage, page};
+				message.NotificationObject = new[] { _lastPage, page };
 			}
 
 			msg.Add(message);
@@ -211,7 +188,7 @@ namespace Web.DL.PageTypes
 			SendMsg(msg);
 		}
 
-		private bool IsBorderValue(DateTime? dt1, DateTime? dt2, int minutes)
+		private bool IsBorderValue(DateTime? dt1, DateTime? dt2, int second)
 		{
 			if (!dt1.HasValue || !dt2.HasValue)
 				return false;
@@ -230,23 +207,35 @@ namespace Web.DL.PageTypes
 			}
 
 			var difTime = new DateTime();
-			difTime.AddMinutes(minutes);
+			difTime.AddSeconds(second);
 
-			return ((maxDt - difTime).TotalMinutes > minutes && (minDt - difTime).TotalMinutes <= minutes);
+			return ((maxDt - difTime).TotalSeconds > second && (minDt - difTime).TotalSeconds <= second);
 		}
 
 		public void SendBonus(DLPage page, bool isAll = false)
 		{
-			var msg = new List<CommandMessage>();
+			var msgs = new List<IMessageToBot>();
 			StringBuilder sb = new StringBuilder("");
 
-			if (!page.Bonuses.Any())
+			if (page.Bonuses.IsEmpty)
 				sb.Append("Нет бонусов");
 			else
-				page.Bonuses.Where(x => isAll || !x.IsReady).ToList().ForEach(x => sb.Append(x.Name + ": " + x.Title + "\n" + (string.IsNullOrEmpty(x.Text) ? ("\n") : (x.Text + "\n\n"))));
+				sb.AppendLine(string.Join(Environment.NewLine,
+					isAll ? page.Bonuses.AllBonuses : page.Bonuses.ReadyBonuses));
+				
+			var msg = MessageToBot.GetTextMsg(new Texter(sb.ToString() == "" ? "Все бонусы закрыты." : WebHelper.ReplaceAudioLinks(sb.ToString()), true));
+			msg.Notification = Notification.SendSectors;
+			msgs.Add(msg);
 
-			msg.Add(CommandMessage.GetTextMsg(sb.ToString() == "" ? "Все бонусы закрыты." : sb.ToString()));
-			SendMsg(msg);
+			var souds = WebHelper.GetAudioLinks(sb.ToString());
+
+			foreach (var sound in souds)
+			{
+				var vMsg = MessageToBot.GetVoiceMsg(sound.Url, sound.Name);//
+				vMsg.Notification = Notification.Sound;
+				msgs.Add(vMsg);
+			}
+			SendMsg(msgs);
 		}
 
 		public void SendSectors(DLPage page, bool isAll = false)
@@ -266,7 +255,7 @@ namespace Web.DL.PageTypes
 				sb.Append($"На уровне нет секторов");
 			}
 
-			var msg = CommandMessage.GetTextMsg(new Texter(sb.ToString(), true));
+			var msg = MessageToBot.GetTextMsg(new Texter(sb.ToString(), true));
 			msg.Notification = Notification.SendSectors;
 			SendMsg(msg);
 		}

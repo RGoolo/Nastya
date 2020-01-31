@@ -1,11 +1,12 @@
-﻿using Model.Types.Enums;
-using Model.Types.Interfaces;
-using System;
-using Model.Types.Class;
+﻿using System;
+using Model.BotTypes.Class;
+using Model.BotTypes.Enums;
+using Model.BotTypes.Interfaces;
+using Model.BotTypes.Interfaces.Messages;
 
 namespace Model.TelegramBot
 {
-	public class User : IUser
+	public class TelegramUser : IUser
 	{
 		public Telegram.Bot.Types.User TUser { get; }
 
@@ -13,9 +14,9 @@ namespace Model.TelegramBot
 
 		public string Display => string.IsNullOrEmpty(TUser.FirstName) ? TUser.LastName : TUser.FirstName;
 
-		public Guid Id => TUser.Id.ToGuid();
+		public Guid Id => IdsMapper.ToGuid(TUser.Id);
 
-		public User(Telegram.Bot.Types.User user, TypeUser typeUser)
+		public TelegramUser(Telegram.Bot.Types.User user, TypeUser typeUser)
 		{
 			TUser = user;
 			Type = typeUser;

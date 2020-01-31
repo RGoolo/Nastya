@@ -1,10 +1,4 @@
-﻿using Model.Logic.Settings;
-using Model.Types.Class;
-using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Web.Base
+﻿namespace Web.Base
 {
 	public interface IWebValidator
 	{

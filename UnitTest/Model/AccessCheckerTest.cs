@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
+using Model.BotTypes.Class;
+using Model.BotTypes.Enums;
 using Xunit;
-using Model.Types.Enums;
-using Model.Types.Class;
 
 namespace UnitTest.Model
 {

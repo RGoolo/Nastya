@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using HtmlAgilityPack;
+using Model.BotTypes.Class;
 
 namespace Web.DL
 {
@@ -13,7 +14,6 @@ namespace Web.DL
 
 		public Bonus(string name, string text)
 		{
-
 			Name = name;
 			Text = text;
 			IsReady = !string.IsNullOrEmpty(text);
@@ -38,14 +38,24 @@ namespace Web.DL
 					Name = nodeText;
 				}
 
-				Text = node.ChildNodes?.Skip(1).FirstOrDefault()?.InnerText;
+				Text = node.ChildNodes?.Skip(1).FirstOrDefault()?.InnerHtml;
+				if (Text == null)
+				{
+					var nSib = node.NextSibling?.NextSibling;
+					if (nSib != null && nSib.Name != "h3" && nSib.Name != "div") 
+						Text = nSib.InnerHtml;
+				}
 				IsReady = !string.IsNullOrEmpty(Text);
 			}
 			catch (Exception e)
 			{
 				Console.WriteLine(e);
 			}
-			
+		}
+
+		public override string ToString()
+		{
+			return Name + ": " + Title + "\n" + Text;
 		}
 	}
 }

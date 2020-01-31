@@ -1,16 +1,16 @@
 ﻿
+using System.ComponentModel;
+using Model.BotTypes.Attribute;
+using Model.BotTypes.Enums;
+using Model.BotTypes.Interfaces;
+using Model.BotTypes.Interfaces.Messages;
 using Model.Logic.Google;
-using Model.Logic.Settings;
-using Model.Types.Attribute;
-using Model.Types.Enums;
-using Model.Types.Interfaces;
-using Telegram.Bot.Types;
 using Web.DL;
 
 namespace Nastya.Commands
 {
 	
-	[CommandClass(nameof(SheetsCommands), "Работа с Google Sheets.", Model.Types.Enums.TypeUser.User)]
+	[CommandClass(nameof(SheetsCommands), "Работа с Google Sheets.", TypeUser.User)]
 	public class SheetsCommands
 	{
 
@@ -30,14 +30,13 @@ namespace Nastya.Commands
 		}
 
 		[Command(nameof(CreateSheet), "Создать документ с именем.", typeUser: TypeUser.User)]
-		public void CreateSheet(string namePage)
+		public void CreateSheet([Description("Имя создаваемой страницы")] string namePage)
 		{
 			 _workerSheets.CreateSheetsAsync(namePage);
 		}
 
-
-		[CommandOnMsg(nameof(CreateSheetUp), Model.Types.Enums.MessageType.SystemMessage, typeUser: TypeUser.User)]
-		public void Notifications(Model.Types.Interfaces.IMessage msg)
+		[CommandOnMsg(nameof(CreateSheetUp), MessageType.SystemMessage, typeUser: TypeUser.User)]
+		public void Notifications(IBotMessage msg)
 		{
 			if (msg.ReplyToCommandMessage?.Notification != Notification.NewLevel)
 				return;
@@ -53,7 +52,6 @@ namespace Nastya.Commands
 			pageName = lastPage.LevelNumber + lastPage.LevelTitle;
 			_workerSheets.CreateSheetsAsync(lastPage.LevelNumber + lastPage.LevelTitle);
 			_workerSheets.UpdateDlPage(pageName, "A101", lastPage.Html);
-			
 		}
 	}
 }

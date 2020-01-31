@@ -18,6 +18,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		todo.txt = todo.txt
 	EndProjectSection
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WordService", "WordService\WordService.csproj", "{18660E8D-F062-4E16-89E7-86BCEB4668A3}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -40,6 +42,10 @@ Global
 		{9593E12C-DEEC-43D8-8F79-50A189B01B99}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9593E12C-DEEC-43D8-8F79-50A189B01B99}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9593E12C-DEEC-43D8-8F79-50A189B01B99}.Release|Any CPU.Build.0 = Release|Any CPU
+		{18660E8D-F062-4E16-89E7-86BCEB4668A3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{18660E8D-F062-4E16-89E7-86BCEB4668A3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{18660E8D-F062-4E16-89E7-86BCEB4668A3}.Release|Any CPU.ActiveCfg = Release|x86
+		{18660E8D-F062-4E16-89E7-86BCEB4668A3}.Release|Any CPU.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

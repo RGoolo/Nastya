@@ -1,16 +1,13 @@
 ﻿using System;
 using Model.Logic.Coordinates;
 using Model.Logic.Google;
-using Model.Logic.Settings;
 using Model.Logic.Yandex;
-using Model.Types.Class;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
-using Web.Game.Model;
+using Model.BotTypes.Class;
 
 namespace Web.Base
 {
@@ -37,6 +34,20 @@ namespace Web.Base
 			//return null;
 		}
 
+		public static string RemoveSpaces(string str)
+		{
+			try
+			{
+				return Regex.Replace(str, "((\r)|(\n)){3,}", "\r\n");
+			}
+			catch
+			{
+
+			}
+
+			return str;
+		}
+
 		public static (string, List<LinkStruct>) RemoveImg(string str, bool urlToText = true, string defaultUri = "")
 		{
 			List<LinkStruct> result = new List<LinkStruct>();
@@ -59,6 +70,30 @@ namespace Web.Base
 				result.Add(new AHrefLinkStruct(GetFullUrl(match.Groups[1].ToString(), defaultUri), match.Groups[2].ToString()));
 			}
 			return (str, result);
+		}
+
+
+		public static List<SoundLinkStruct> GetAudioLinks(string html)
+		{
+			//<audio controls=""><source src="http://d1.endata.cx/data/games/67838/ushi2_09wei0kfw.mp3" type="audio/mp3"><br>Тег audio не поддерживается вашим браузером. <a href="http://d1.endata.cx/data/games/67838/ushi2_09wei0kfw.mp3">Скачайте музыку</a></audio>
+			var result = new List<SoundLinkStruct>();
+			foreach (Match match in Regex.Matches(html, "<audio[^>]*><source src=\"(?<link>[^\">]*/(?<fileName>[^\"]*))\"[^>]*>"))
+			{
+				if (match.Success)
+				{
+					result.Add(new SoundLinkStruct(match.Groups["link"].Value, match.Groups["fileName"].Value));
+				}
+			}
+
+			return result;
+		}
+
+		public static string ReplaceAudioLinks(string html)
+		{
+		
+			return Regex.Replace(html, "<source src=\"(?<link>[^\">]*/(?<fileName>[^\"]*))\"[^>]*>",
+				"$2");
+			
 		}
 
 		public static string GetFullUrl(string url, string startUri)
@@ -86,7 +121,7 @@ namespace Web.Base
 
 		public enum TypeUrl
 		{
-			Img, AHref
+			Img, AHref, Sound
 		}
 
 		public static string GetTestPage(string file)
@@ -95,9 +130,9 @@ namespace Web.Base
 				return stream.ReadToEnd();
 		}
 
-		public static List<CommandMessage> ReplaceTextOnPhoto(string html, string _defaulUri) 
+		public static List<IMessageToBot> ReplaceTextOnPhoto(string html, string _defaulUri) 
 		{
-			var result = new List<CommandMessage>();
+			var result = new List<IMessageToBot>();
 			var buffText = RemoteTagToTelegram(html);
 
 			var textTask = RemoveImg(buffText, false, _defaulUri);
@@ -116,17 +151,17 @@ namespace Web.Base
 			foreach (var img in textTask.Item2.Where(x => x.TypeUrl == WebHelper.TypeUrl.Img))
 				buffText = buffText.Replace(img.Name, $"<a href=\"{img.Url}\">[{img.Name}]</a>");
 
-			result.Add(CommandMessage.GetTextMsg(new Texter(buffText, true)));
+			result.Add(MessageToBot.GetTextMsg(new Texter(buffText, true)));
 
 			foreach (var coord in coords)
-				result.Add(CommandMessage.GetCoordMsg(coord));
+				result.Add(MessageToBot.GetCoordMsg(coord));
 			
 
 			result.AddRange(textTask.Item2.Where(x => x.TypeUrl == WebHelper.TypeUrl.Img).Select(x => WithUrls(x)));
 			return result;
 		}
 
-		private static CommandMessage WithUrls(LinkStruct url)
+		private static IMessageToBot WithUrls(LinkStruct url)
 		{
 			var sb = new StringBuilder();
 			sb.Append(GetUrl(url.Name, url.Url));
@@ -135,7 +170,7 @@ namespace Web.Base
 			sb.Append("		");
 			sb.Append(GetUrl("[Y]", YandexGeocoder.GetSearchPhotoUrl(url.Url)));
 
-			return CommandMessage.GetPhototMsg( url.Url, new Texter(sb.ToString(), true));
+			return MessageToBot.GetPhototMsg( url.Url, new Texter(sb.ToString(), true));
 		}
 
 		public static string GetUrl(string link, string name) => $"<a href=\"{name}\">{link}</a>";

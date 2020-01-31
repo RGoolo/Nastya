@@ -1,15 +1,17 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using Model.Types.Class;
-using Model.Types.Enums;
-using Model.Types.Interfaces;
+using Model.BotTypes.Class;
+using Model.BotTypes.Enums;
+using Model.BotTypes.Interfaces;
+using Model.BotTypes.Interfaces.Messages;
 
 namespace Model.UnitTestBot
 {
 	public class UnitTest : IBot
 	{
-		public Guid Id => throw new NotImplementedException();
+		public IBotId Id => throw new NotImplementedException();
 
 		public TypeBot TypeBot => throw new NotImplementedException();
 
@@ -18,12 +20,22 @@ namespace Model.UnitTestBot
 			throw new NotImplementedException();
 		}
 
-		public void DownloadResource(IMessage msg)
+		public void SendMessages(IChatId chatId, List<TransactionCommandMessage> tMessage)
 		{
 			throw new NotImplementedException();
 		}
 
-		public IMessage GetNewMessage()
+		public void DownloadResource(IBotMessage msg)
+		{
+			throw new NotImplementedException();
+		}
+
+		public IBotMessage GetNewMessage()
+		{
+			throw new NotImplementedException();
+		}
+
+		public void SendMessage(IChatId chatId, TransactionCommandMessage tMessage)
 		{
 			throw new NotImplementedException();
 		}

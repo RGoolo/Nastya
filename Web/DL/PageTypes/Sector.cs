@@ -1,5 +1,4 @@
 ﻿using HtmlAgilityPack;
-using Model.Types.Class;
 
 namespace Web.DL.PageTypes
 {

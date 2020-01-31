@@ -1,12 +1,8 @@
 ﻿using Model.Logic.Google;
-using Model.Types.Interfaces;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net.Mime;
-using System.Runtime.InteropServices;
 using System.Text;
-using Model.Logic.Yandex;
+using Model.Files.FileTokens;
 
 namespace Model.Logic.Coordinates
 {
@@ -14,18 +10,17 @@ namespace Model.Logic.Coordinates
 	{
 		private SettingsPoints _settings;
 		private readonly string _creds;
-		private readonly IFileWorker _fileWorker;
 		private GooglePointProvider GooglePlacesProvider;
 		private readonly YandexPointProvider _yandexPlacesProvider;
 		private List<IPointProvider<Coordinate>> CoordinatesProvider;
 		private List<IPointProvider<Place>> PlacesProvider;
 		private readonly ICoordinateWorker _coordinateWorker;
 
-		public PointsFactory(SettingsPoints settings, string creds, IFileWorker fileWorker)
+		public PointsFactory(SettingsPoints settings, string creds)
 		{
 			_settings = settings;
 			var _creds = creds;
-			_fileWorker = fileWorker;
+			// _fileWorker = fileWorker;
 			GooglePlacesProvider = new GooglePointProvider(settings, _creds);
 			_yandexPlacesProvider = new YandexPointProvider(settings);
 
@@ -37,7 +32,7 @@ namespace Model.Logic.Coordinates
 
 		public PointWorker<Coordinate> GetCoordinates(string text) => new CoordinatesWorker(CoordinatesProvider.Where(x => x.Use).ToList(), text, _coordinateWorker);
 
-		public void SetPicture(IFileToken file, IEnumerable<Point> points) => new FactoryMaps(_creds, _fileWorker).SaveImg(file, points);
+		public void SetPicture(IChatFile file, IEnumerable<Point> points) => new FactoryMaps(_creds).SaveImg(file, points);
 
 		public PointWorker<Place> GetPlaces(string text) => new PlacesWorker(PlacesProvider.Where(x => x.Use).ToList(), text, _coordinateWorker);
 

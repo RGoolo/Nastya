@@ -24,6 +24,14 @@ namespace Web.Base
 		}
 	}
 
+	public class SoundLinkStruct : LinkStruct
+	{
+		public SoundLinkStruct(string url, string name) : base(url, name, TypeUrl.Sound)
+		{
+
+		}
+	}
+
 	public class AHrefLinkStruct : LinkStruct
 	{
 		public AHrefLinkStruct(string url, string name) : base(url, name, TypeUrl.AHref)

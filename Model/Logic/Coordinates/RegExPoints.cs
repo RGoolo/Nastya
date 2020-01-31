@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Globalization;
 using System.Text.RegularExpressions;
 
@@ -93,7 +92,6 @@ namespace Model.Logic.Coordinates
 		{
 			foreach (var coordinate in GetDegreeCoords(text))
 			{
-				Console.WriteLine($"coordinate {coordinate.OriginText} + {coordinate.ToString()}");
 				yield return coordinate;
 			}
 				

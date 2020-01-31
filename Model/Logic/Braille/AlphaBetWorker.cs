@@ -21,5 +21,7 @@ namespace Model.Logic.Braille
 
         public static AlphaBet GetAlphabet(string name) =>
             AlphaBet.FirstOrDefault(x => string.Equals(x.Name, name, StringComparison.OrdinalIgnoreCase));
-    }
+
+        public static List<AlphaBet> GetAlphabets() => AlphaBet;
+	}
 }

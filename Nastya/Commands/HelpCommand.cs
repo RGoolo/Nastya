@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using Model.BotTypes.Attribute;
+using Model.BotTypes.Class;
+using Model.BotTypes.Enums;
 using Model.Logic.Settings;
-using Model.Types.Attribute;
-using Model.Types.Class;
-using Model.Types.Enums;
 
 namespace Nastya.Commands
 {
@@ -17,29 +18,18 @@ namespace Nastya.Commands
 		private CommandAttribute GetCommandAttr(MemberInfo mInfo) => mInfo.GetCustomAttribute<CommandAttribute>(true);
 
 		[Command(nameof(Start), "Стартовые данные.", TypeUser.User)]
-		public List<CommandMessage> Start()
+		public IMessageToBot Start()
 		{
-			var result = new List<CommandMessage>();
-			
 			var sb = new StringBuilder();
-			sb.AppendLine($"Добрый день. Вас приветствует бот для ночных игр. Для полной информации введите: /{nameof(Help)}.");
-			sb.AppendLine("При первом запуске заполните данные аккаунта движка, из под которых будет играть бот:");
-
-			result.Add(CommandMessage.GetTextMsg(sb.ToString()));
-			sb.Clear();
-
-			sb.AppendLine($"/{Const.Game.Uri} http://classic.dzzzr.ru/demo/");
-			sb.AppendLine($"/{Const.Game.Login} login");
-			sb.AppendLine($"/{Const.Game.Password} \"password\"");
-
-			result.Add(CommandMessage.GetTextMsg(sb.ToString()));
-			return result;
+			sb.AppendLine($"Для получения полной информации: /{nameof(Help)}.");
+			
+			return MessageToBot.GetTextMsg(sb.ToString());
 		}
 
 		[Command(nameof(Help), "Что я умею.", TypeUser.User)]
-		public TransactionCommandMessage Help(string classAlias)
+		public TransactionCommandMessage Help(string classAlias = null)
 		{
-			var result = new  List<CommandMessage>();
+			var result = new  List<IMessageToBot>();
 			//классы с атрибутом CommandClassAttribute
 			var refCommands = Assembly.GetExecutingAssembly().GetTypes().Where(x => x.GetCustomAttribute<CommandClassAttribute>(true) != null).ToList();
 
@@ -49,7 +39,7 @@ namespace Nastya.Commands
 			if (string.IsNullOrEmpty(classAlias))
 			{
 				sb.Append("Вас приветствует бот, для игр дозора и дедлайна. Что я умею:\n");
-				result.Add(CommandMessage.GetTextMsg(sb.ToString()));
+				result.Add(MessageToBot.GetTextMsg(sb.ToString()));
 				sb.Clear();
 
 				foreach (var refCommand in refCommands)
@@ -69,27 +59,26 @@ namespace Nastya.Commands
 			return new TransactionCommandMessage(result);
 		}
 
-		private List<CommandMessage> GetClassInfo(Type refCommand)
+		private List<IMessageToBot> GetClassInfo(Type refCommand)
 		{
 			var onlyAdminText = "Только для администраторов группы";
 
 			var sb = new StringBuilder();
-			var result = new List<CommandMessage>();
+			var result = new List<IMessageToBot>();
 			var classAttr = refCommand.GetCustomAttribute<CommandClassAttribute>(true);
 			if (classAttr != null)
 			{
-				sb.Append($"Модуль: {classAttr.Description}");
+				sb.Append($"Модуль: {classAttr.Description}  /{nameof(Help)}_{classAttr.Alias}");
 				if ((classAttr.TypeUser & TypeUser.Admin) == TypeUser.Admin)
 					sb.Append($": {onlyAdminText}");
 				if (classAttr.TypeUser == TypeUser.Developer)
 					sb.Append($": Developer");
-				sb.Append($"Модуль: {classAttr.Description} /{nameof(Help)}_{classAttr.Alias} ");
-				sb.Append("\n");
+				sb.AppendLine();
 			}
 
 			var settings = refCommand.GetProperties().Where(x => x.GetCustomAttribute<CommandAttribute>(true) != null).ToList();
 			if (settings.Any())
-				sb.Append($"Настройки:\n");
+				sb.AppendLine($"Настройки:");
 			foreach (var props in settings)
 			{
 				var attr = props.GetCustomAttribute<CommandAttribute>(true);
@@ -98,8 +87,8 @@ namespace Nastya.Commands
 				//	sb.Append($": {onlyAdminText}");
 				if (props.PropertyType == typeof(bool))
 				{
-					sb.Append($"/{attr.Alias}_on /{attr.Alias}_off\n");
-					sb.Append($"Вкл / Выкл: {attr.Description}\n");
+					sb.AppendLine($"/{attr.Alias}_on /{attr.Alias}_off");
+					sb.AppendLine($"Вкл / Выкл: {attr.Description}");
 				}
 				else
 					sb.Append($"/{attr.Alias} : {attr.Description}");
@@ -108,7 +97,7 @@ namespace Nastya.Commands
 			}
 			var infos = refCommand.GetMethods().Where(x => x.GetCustomAttribute<CommandAttribute>(true) != null).ToList();
 			if (infos.Any())
-				sb.Append($"Функции:\n");
+				sb.AppendLine($"Функции:");
 
 			foreach (var methodInfo in infos)
 			{
@@ -121,12 +110,12 @@ namespace Nastya.Commands
 				//if (methodInfo.GetCustomAttribute<CheckPropertyAttribute>(true))
 				//	sb.Append($" - {attr2.BoolPropertyName}");
 
-				sb.Append("\n");
+				sb.AppendLine();
 			}
-			result.Add(CommandMessage.GetTextMsg(sb.ToString()));
+			result.Add(MessageToBot.GetTextMsg(sb.ToString()));
 
 			foreach(var custmAttr in refCommand.GetCustomAttributes<CustomHelpAttribute>(true))
-				result.Add(CommandMessage.GetTextMsg(custmAttr.CustomHelp));
+				result.Add(MessageToBot.GetTextMsg(custmAttr.CustomHelp));
 			
 			
 			return result;

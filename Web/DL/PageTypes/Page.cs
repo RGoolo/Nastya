@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
-using HtmlAgilityPack;
-using Web.Base;
-using System.Text.RegularExpressions;
-using System.Linq;
 using System;
+using System.Linq;
 using System.Text;
+using Model.BotTypes.Class;
+using Model.BotTypes.Enums;
+using Model.Logic.Settings;
 using Web.DL.PageTypes;
 
 namespace Web.DL
@@ -43,7 +43,7 @@ namespace Web.DL
 		/// <summary>
 		/// Текст задания
 		/// </summary>
-		public string Task { get; set; }
+		public string Body { get; set; }
 		/// <summary>
 		/// Ссылки на картинки из текста задания.
 		/// </summary>
@@ -67,10 +67,47 @@ namespace Web.DL
 		/// ID задания в движке
 		/// </summary>
 		public string LevelId { get; set; }
-		public List<Bonus> Bonuses { get; set; } = new List<Bonus>();
-		public List<Hint> Hints { get; set; } = new List<Hint>();
+		public Bonuses Bonuses { get; set; } 
+
+		public Hints Hints { get; set; } = new Hints();
 		public List<Link> Levels { get; set; } = new List<Link>();
 
 		public TypePage Type { get; set; }
+	}
+
+	public static class DlPageExtension
+	{
+		public static Texter ToTexter(this DLPage page, bool newLvl, string timeFormat)
+		{
+			StringBuilder sb = new StringBuilder();
+			sb.AppendLine((!newLvl ? "📖 Текущий уровень" : $"📖 Новый уровень") + $" #{page.LevelNumber}");
+
+			if (page.Levels.Any())
+			{
+				sb.AppendLine("Уровни:");
+				page.Levels.ForEach(x => sb.Append(x + "		"));
+				sb.AppendLine();
+			}
+
+			if (page.TimeToEnd != default(DateTime))
+				sb.AppendLine($"⏳ Времени для автоперехода: " + page.TimeToEnd?.ToString(timeFormat));
+
+			sb.AppendLine(page.LevelTitle);
+			sb.AppendLine(page.Body);
+
+			if (!string.IsNullOrEmpty(page.Sectors?.SectorsRemain))
+				sb.AppendLine($"На уровне осталось закрыть секторов: {page.Sectors.SectorsRemain}(/sectors) из {page.Sectors.CountSectors}(/allsectors).");
+			
+			if (!page.Bonuses.IsEmpty)
+			{
+				var isReady = page.Bonuses.CountReady;
+				sb.AppendLine($"На уровне осталось закрыть бонусов: {isReady}(/{Const.Game.Bonus}) из {page.Bonuses.Count}(/{Const.Game.AllBonus})");
+			}
+
+			if (page.Hints.Any())
+				sb.AppendLine(page.Hints.ToString());
+			
+			return new Texter(sb.ToString(), true);
+		}
 	}
 }

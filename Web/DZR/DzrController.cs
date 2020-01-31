@@ -1,15 +1,15 @@
 ﻿using System;
 using System.Linq;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Text;
 using System.Text.RegularExpressions;
+using Model.BotTypes.Class;
+using Model.BotTypes.Interfaces;
+using Model.BotTypes.Interfaces.Messages;
 using Model.Logic.Settings;
 using Web.Base;
 using Web.Game.Model;
 using Model.Logic.Model;
-using Model.Types.Class;
-using Model.Types.Interfaces;
 
 namespace Web.DZR
 {
@@ -28,13 +28,13 @@ namespace Web.DZR
 
 		public event SendMsgsSyncDel SendMsgs;
 		public ISettings Settings { get; }
-		public void LogIn() => _lastPage = _dzrWebValidator.LogIn();
+		public void LogIn() => _lastPage = _dzrWebValidator.LogIn().Result; //ToDo delete result
 
 		public bool IsLogOut() => _dzrWebValidator.IsLogOut(_lastPage);
 
-		public List<IEvent> GetCode(string str, IUser user, Guid replaceMsg)
+		public List<IEvent> GetCode(string str, IUser user, IMessageId replaceMsg)
 		{
-			var codes = GetCodes(str, Settings.Game.Prefix?.ToLower() ?? string.Empty);
+			var codes = GetCodes(str, Settings.DzzzrGame.Prefix?.ToLower() ?? string.Empty);
 
 			return codes?.Select(cod => (IEvent)new SimpleEvent(EventTypes.SendCode, user, cod, replaceMsg)).ToList();
 		}
@@ -46,7 +46,7 @@ namespace Web.DZR
 				case EventTypes.SendSpoiler:
 					break;
 				case EventTypes.SendCode:
-					var page = _dzrWebValidator.SendCode(iEvent.Text, GetMainTask(_lastPage));
+					var page = _dzrWebValidator.SendCode(iEvent.Text, GetMainTask(_lastPage)).Result; //ToDo delete result
 					SetNewPage(page);
 					break;
 				case EventTypes.GetLvlInfo:
@@ -71,7 +71,7 @@ namespace Web.DZR
 
 		public void Refresh()
 		{
-			var page = _dzrWebValidator.GetNextPage();
+			var page = _dzrWebValidator.GetNextPage().Result; //ToDo delete result
 			SetNewPage(page);
 		}
 
@@ -135,15 +135,15 @@ namespace Web.DZR
 		{
 			//if (newPage.AnswerType != AnswerType.None)
 
+			var checkOtherTask = Settings.DzzzrGame.CheckOtherTask;
 			if (lastPage == null || lastPage.Type != newPage.Type)
 			{
-				SendPageInfo(newPage, !Settings.Game.CheckOtherTask);
+				SendPageInfo(newPage, !checkOtherTask);
 					return;
 			}
 
 			SendDiffTime(lastPage.TimeToEnd, newPage.TimeToEnd);
 
-			var checkOtherTask = Settings.Game.CheckOtherTask;
 			if (!checkOtherTask)
 			{ 
 				SendDifference(GetMainTask(newPage), GetMainTask(lastPage));
@@ -196,12 +196,12 @@ namespace Web.DZR
 		}
 
 
-		private void SendDifference(Task task, Task oldTask)
+		private void SendDifference(DzrTask task, DzrTask oldTask)
 		{
 			if (task == null)
 				return;
 
-			var msg = new List<CommandMessage>();
+			var msg = new List<IMessageToBot>();
 			
 			if (oldTask == null || task?.LvlNumber != oldTask?.LvlNumber)
 			{
@@ -251,11 +251,11 @@ namespace Web.DZR
 
 		public void SendPageInfo(DzrPage page, bool onlyMain)
 		{
-			var msg = new List<CommandMessage>();
+			var msg = new List<IMessageToBot>();
 
 			if (page == null)
 			{
-				msg.Add(CommandMessage.GetTextMsg("Не получить данные об игре"));
+				msg.Add(MessageToBot.GetTextMsg("Не получить данные об игре"));
 
 				SndMsg(msg);
 				return;
@@ -263,7 +263,7 @@ namespace Web.DZR
 
 			if (page.Type != PageType.GameGo)
 			{
-				msg.Add(CommandMessage.GetTextMsg(new Texter(page.SysMessage)));
+				msg.Add(MessageToBot.GetTextMsg(new Texter(page.SysMessage)));
 				SndMsg(msg);
 				return;
 			}
@@ -280,9 +280,9 @@ namespace Web.DZR
 			SndMsg(msg);
 		}
 
-		private List<CommandMessage> GetTaskInfo(Task task, bool newTask = false, string timeForEnd = null)
+		private List<IMessageToBot> GetTaskInfo(DzrTask task, bool newTask = false, string timeForEnd = null)
 		{
-			var msg = new List<CommandMessage>();
+			var msg = new List<IMessageToBot>();
 			StringBuilder taskText = new StringBuilder();
 
 			if (newTask)
@@ -309,7 +309,7 @@ namespace Web.DZR
 			return WebHelper.ReplaceTextOnPhoto(taskText.ToString(), task.DefaulUri);
 		}
 
-		private Task GetMainTask(DzrPage page) => page?.Tasks?.Main(Settings.Game.Level);
+		private DzrTask GetMainTask(DzrPage page) => page?.Tasks?.Main(Settings.Game.Level);
 
 		public static List<string> GetCodes(string str, string prefix)
 		{
@@ -345,21 +345,21 @@ namespace Web.DZR
 			};
 		}
 
-		protected void SendTexttMsg(string message, Guid? replaceMsgId = null, bool withHtml = false)
+		protected void SendTexttMsg(string message, IMessageId replaceMsgId = null, bool withHtml = false)
 		{
-			var t = CommandMessage.GetTextMsg(new Texter(message, withHtml));
-			t.OnIdMessage = replaceMsgId.GetValueOrDefault();
+			var t = MessageToBot.GetTextMsg(new Texter(message, withHtml));
+			t.OnIdMessage = replaceMsgId;
 			SndMsg(t);
 		}
 
-		protected void SndMsg(IEnumerable<CommandMessage> messages)
+		protected void SndMsg(IEnumerable<IMessageToBot> messages)
 		{
 			SendMsgs?.Invoke(messages);
 		}
 
-		protected void SndMsg(CommandMessage messages)
+		protected void SndMsg(IMessageToBot messages)
 		{
-			var msg = new List<CommandMessage>
+			var msg = new List<IMessageToBot>
 			{
 				messages,
 			};

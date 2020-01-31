@@ -1,15 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Text;
+using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
-using Model.Logic.Coordinates;
-using Model.Logic.Model;
+using Model.BotTypes.Class;
+using Model.BotTypes.Interfaces;
+using Model.BotTypes.Interfaces.Messages;
 using Model.Logic.Settings;
-using Model.Types.Class;
-using Model.Types.Enums;
-using Model.Types.Interfaces;
 using Web.Base;
 using Web.DL.PageTypes;
 using Web.Game.Model;
@@ -19,18 +15,16 @@ namespace Web.DL
 
 	public interface ISendMsgDl
 	{
-		void SendMsg(IEnumerable<CommandMessage> msgs);
+		void SendMsg(IEnumerable<IMessageToBot> msgs);
 	}
 
 	public class DlController : IController, ISendMsgDl
 	{
-	
 		public event SendMsgsSyncDel SendMsgs;
 
 		public ISettings Setting { get; }
 
-		private DlWebValidator _webValidator { get; }
-		public TypeGame TypeGame => Setting.TypeGame;
+		private readonly IDlValidator _webValidator;
 
 		public ISettings Settings => Setting;
 
@@ -39,7 +33,7 @@ namespace Web.DL
 		public DlController(ISettings setting)// : base(setting)
 		{
 			Setting = setting;
-			_webValidator = new DlWebValidator(setting);
+			_webValidator = FactoryValidator.CreateValidator(setting);
 			_pageController = new PageController(this, setting);
 		}
 
@@ -66,20 +60,24 @@ namespace Web.DL
 					break;
 
 				case EventTypes.GetTimeForEnd:
-					_pageController.SendMsg($"Времени до автоперехода: {_pageController.GetCurrentPage.TimeToEnd?.ToString(PageController.TimeFormat)}");
+					_pageController.SendMsg($"Времени до автоперехода: {_pageController.GetCurrentPage.TimeToEnd?.ToString(Settings.DlGame.TimeFormat)}");
 					break;
 
 				case EventTypes.SendCode:
-					_pageController.AfterSendCode(_webValidator.SendCode(iEvent.Text, _pageController.GetCurrentPage), iEvent);
+					_pageController.AfterSendCode(_webValidator.SendCode(iEvent.Text, _pageController.GetCurrentPage).Result, iEvent); //ToDo: delete Result
 					break;
+
+				case EventTypes.SendSpoiler:
+				case EventTypes.TakeBreak:
+				case EventTypes.GoToTheNextLevel:
+				default:
+					throw new NotImplementedException("Не реализовал пока.");
 			}
 		}
 
-		public void LogIn() => _pageController.SetNewPage(_webValidator.LogIn());
+		public void LogIn() => _pageController.SetNewPage(_webValidator.LogIn().Result); //ToDo delete Result
 
-		public bool IsLogOut() => _webValidator.IsLogOut(_pageController.GetCurrentPage);
-
-		public List<IEvent> GetCode(string str, IUser user, Guid replaceMsg)
+		public List<IEvent> GetCode(string str, IUser user, IMessageId replaceMsg)
 		{
 			if (string.IsNullOrEmpty(str))
 				return null;
@@ -87,36 +85,22 @@ namespace Web.DL
 			if (str.StartsWith("."))
 				return new List<IEvent> {new SimpleEvent(EventTypes.SendCode, user, str.Substring(1), replaceMsg)};
 
-			if (str.Contains(" "))
-				return null;
+			const string symbol = "[a-zA-Zа-яА-ЯёЁ]";
+			var  match = Regex.Match(str, $@"^({symbol}+\d\w*)|(\d+{symbol}\w*)$");
 
-			foreach (Match match in Regex.Matches(str, @"\w+"))
-			{
-				if (match.Value.Length != str.Length)
-					return null;
-
-				foreach (Match match2 in Regex.Matches(str, @"\d+"))
-				{
-					if (match.Value.Length == match2.Value.Length)
-						return null;
-
-					return new List<IEvent> {new SimpleEvent(EventTypes.SendCode, user, match.Value, replaceMsg)};
-				}
-			}
-			return null;
+			return match.Success ? new List<IEvent> {new SimpleEvent(EventTypes.SendCode, user, match.Value, replaceMsg)} : null;
 		}
 
 		public void Refresh()
 		{
-			var page = _webValidator.GetNextPage();
+			var page = _webValidator.GetNextPage().Result; //ToDo: delete Result;
 			_pageController.SetNewPage(page);
 		}
 
-		public void SendMsg(IEnumerable<CommandMessage> msgs)
+		public void SendMsg(IEnumerable<IMessageToBot> msgs)
 		{
 			SendMsgs?.Invoke(msgs);
 		}
-
 	}
 }
  

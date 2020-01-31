@@ -2,7 +2,7 @@
 using System.Text;
 using System.Threading.Tasks;
 using Google.Cloud.Vision.V1;
-using Model.Types.Interfaces;
+using Model.Files.FileTokens;
 
 namespace Model.Logic.Google
 {
@@ -15,25 +15,14 @@ namespace Model.Logic.Google
 
 		private static string Link(string url, string name) => $"<a href=\"{url}\">{name}</a>";
 
-		private static Image GetImg(IFileWorker worker, IFileToken file)
-		{
-			switch (file.Type)
-			{
-				case Types.Enums.FileType.Local:
-					return Image.FromStream(worker.ReadStream(file));
-				case Types.Enums.FileType.Uri:
-					return Image.FromUri(file.Url);
-				default:
-					//ToDo: Exception
-					throw new System.Exception();
-			}
-		}
+		private static Image GetImg(IFile file) => file.FileType.IsLocal() ? Image.FromStream(file.ReadStream()) : Image.FromUri(file.Location);
 
-		public static async Task<string> GetTextAsync(IChatFileWorker worker, IFileToken file)
+		public static async Task<string> GetTextAsync(IFile file)
 		{
-			var image = GetImg(worker, file);
+			var image = GetImg(file);
 
 			var client = ImageAnnotatorClient.Create();
+			
 			StringBuilder sb = new StringBuilder();
 			var responce = await client.DetectTextAsync(image);
 			if (responce == null)
@@ -45,10 +34,10 @@ namespace Model.Logic.Google
 			return sb.ToString();
 		}
 
-		public static async Task<string> GetWebAsync(IChatFileWorker worker, IFileToken file)
+		public static async Task<string> GetWebAsync(IFile file)
 		{
 			StringBuilder sb = new StringBuilder();
-			var image = GetImg(worker, file);
+			var image = GetImg(file);
 
 			var client = ImageAnnotatorClient.Create();
 			var annotation = await client.DetectWebInformationAsync(image);
@@ -74,11 +63,11 @@ namespace Model.Logic.Google
 			return sb.ToString();
 		}
 
-		public static async Task<string> GetLogoAsync(IChatFileWorker worker, IFileToken file)
+		public static async Task<string> GetLogoAsync(IFile file)
 		{
 			StringBuilder sb = new StringBuilder();
 
-			var image = GetImg(worker, file);
+			var image = GetImg(file);
 
 			var client = ImageAnnotatorClient.Create();
 
@@ -90,10 +79,12 @@ namespace Model.Logic.Google
 			return sb.ToString();
 		}
 
-		public static async Task<string> GetLandmarkAsync(IChatFileWorker worker, IFileToken file)
+		public static async Task<string> GetLandmarkAsync(IFile file)
 		{
 			StringBuilder sb = new StringBuilder();
-			var image = GetImg(worker, file);
+			var image = GetImg(file);
+
+			
 
 			var client = ImageAnnotatorClient.Create();
 
@@ -105,10 +96,10 @@ namespace Model.Logic.Google
 			return sb.ToString();
 		}
 
-		public static async Task<string> GetDocAsync(IChatFileWorker worker, IFileToken file)
+		public static async Task<string> GetDocAsync(IFile file)
 		{
 			StringBuilder sb = new StringBuilder();
-			var image = GetImg(worker, file);
+			var image = GetImg(file);
 
 			var client = ImageAnnotatorClient.Create();
 			var response = await client.DetectDocumentTextAsync(image);

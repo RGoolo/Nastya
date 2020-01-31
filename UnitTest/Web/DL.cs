@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
+using Model.BotTypes.Class;
+using Model.BotTypes.Class.Ids;
+using Model.BotTypes.Enums;
 using Model.Logic.Settings;
 using Model.TelegramBot;
-using Model.Types.Class;
-using Model.Types.Enums;
 using Web.DL;
 using Web.DL.PageTypes;
 using Xunit;
@@ -21,9 +21,9 @@ namespace UnitTest.Web
 
 		private class CollectionNotofication : ISendMsgDl
 		{
-			public readonly List<CommandMessage> _messages = new List<CommandMessage>();
+			public readonly List<IMessageToBot> _messages = new List<IMessageToBot>();
 
-			public void SendMsg(IEnumerable<CommandMessage> msgs)
+			public void SendMsg(IEnumerable<IMessageToBot> msgs)
 			{
 				_messages.AddRange(msgs);
 			}
@@ -43,7 +43,7 @@ namespace UnitTest.Web
 		[Fact]
 		public void DLTest()
 		{
-			var testGuid = new Guid("C5121271-CF33-4EFA-B1E0-EE3486B1E724");
+			var testGuid =new ChatGuid( new Guid("C5121271-CF33-4EFA-B1E0-EE3486B1E724"));
 			var notifications = new CollectionNotofication();
 		
 			var settings = SettingsHelper.GetSetting(testGuid);
@@ -57,7 +57,7 @@ namespace UnitTest.Web
 			_pageController.SetNewPage(page2);
 
 			(var text, var mod) =
-				TelegramBot.GetText(notifications._messages.First(x => x.Notification == Notification.NewLevel).Texter);
+				TelegramBot.GetText(notifications._messages.First(x => x.Notification == Notification.NewLevel).Text);
 			
 			Assert.Equal(page.Bonuses.Count, 0);
 		}
@@ -67,8 +67,7 @@ namespace UnitTest.Web
 		{
 			var page = PageConstructor.GetNewPage(GetFile(nameSecondLvlHtml));
 
-			
-			Assert.Equal(page.Hints.Count, 1);
+			Assert.False(page.Hints.IsEmpty);
 		}
 
 	}

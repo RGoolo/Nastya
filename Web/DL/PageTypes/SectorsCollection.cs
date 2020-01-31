@@ -52,7 +52,5 @@ namespace Web.DL.PageTypes
 			var sectors = Sectors.Where(x => (!x.Accepted || isAll));
 			return sb.Append(string.Join(Environment.NewLine, sectors.Select(x => x.ToString()).ToArray())).ToString();
 		}
-
-
 	}
 }

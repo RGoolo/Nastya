@@ -1,6 +1,7 @@
-﻿using Model.Types.Class;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using Model.BotTypes.Class;
+using Model.BotTypes.Class.Ids;
 
 namespace Model.Logic.Settings
 {
@@ -136,6 +137,16 @@ namespace Model.Logic.Settings
 			{
 				if (!_properties.ContainsKey(name)) return @default;
 				return Guid.TryParse(_properties.GetValueOrDefault(name), out var b) ? b : @default;
+			}
+		}
+
+		public virtual IMessageId GetMessageId(string name, IMessageId @default = default)
+		{
+			lock (_lock)
+			{
+				if (!_properties.ContainsKey(name)) return @default;
+				var guid = Guid.TryParse(_properties.GetValueOrDefault(name), out var b) ? b :Guid.Empty;
+				return new MessageGuid(guid);
 			}
 		}
 	}

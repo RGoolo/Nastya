@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using Model.Logic;
 using Model.Logic.Braille;
-using Model.Types.Class;
 using Nastya.Commands;
 using Xunit;
 
@@ -24,10 +21,10 @@ namespace UnitTest.Logic
         [Fact]
         public void Integration()
         {
-            var cat = new BrailleCommand().Brailles(new[] {"13", "153", "4523", "0"});
+            var cat = new BrailleCommand().BrOnly(new[] {"13", "153", "4523", "0"});
             Assert.Equal("⠅⠕⠞⠀", cat);
 
-            var digAB = new BrailleCommand().Alphabet("digital");
+            var digAB = new BrailleCommand().Brs("digital");
             Assert.Equal(digAB, "1⠁\r\n2⠃\r\n3⠉\r\n4⠙\r\n5⠑\r\n6⠋\r\n7⠛\r\n8⠓\r\n9⠊\r\n0⠚");
         }
 

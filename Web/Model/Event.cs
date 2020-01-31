@@ -1,5 +1,7 @@
-﻿using Model.Types.Interfaces;
-using System;
+﻿using System;
+using Model.BotTypes.Class;
+using Model.BotTypes.Interfaces;
+using Model.BotTypes.Interfaces.Messages;
 
 namespace Web.Game.Model
 {
@@ -21,7 +23,7 @@ namespace Web.Game.Model
 
 	public interface IEvent
 	{
-		Guid IdMsg { get; }
+		IMessageId IdMsg { get; }
 		IUser User { get; }
 		EventTypes EventType { get; }
 		string Text { get; }
@@ -31,7 +33,7 @@ namespace Web.Game.Model
 	{
 		public string Text { get; set; }
 		public EventTypes EventType { get; set; }
-		public Guid IdMsg { get; }
+		public IMessageId IdMsg { get; }
 		public IUser User { get; }
 
 		public SimpleEvent(EventTypes eventType, IUser user) : this (eventType, user, null, null)
@@ -39,11 +41,11 @@ namespace Web.Game.Model
 
 		}
 
-		public SimpleEvent(EventTypes eventType, IUser user, string text, Guid? idMsg)
+		public SimpleEvent(EventTypes eventType, IUser user, string text, IMessageId idMsg)
 		{
 			Text = text;
 			EventType = eventType;
-			IdMsg = idMsg.GetValueOrDefault();
+			IdMsg = idMsg;
 			User = user;
 		}
 	}

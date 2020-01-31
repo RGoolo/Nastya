@@ -2,18 +2,20 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Model.Types.Attribute;
-using Model.Types.Interfaces;
+using Model.BotTypes.Attribute;
+using Model.BotTypes.Enums;
+using Model.BotTypes.Interfaces;
+using Model.BotTypes.Interfaces.Messages;
 
 namespace Nastya.Commands
 {
-	[CommandClass(nameof(SyntacticalAnalyzer), "Синтаксический анализ.", Model.Types.Enums.TypeUser.User)]
+	[CommandClass(nameof(SyntacticalAnalyzer), "Синтаксический анализ.", TypeUser.User)]
 	public class SyntacticalAnalyzer
 	{
 		private const string replacesChars = "\n ";
 
 		[Command(nameof(Anl), "Возращает текст лесенкой, первые и последние буквы.")]
-		public string Anl(string[] str, IMessage msg)
+		public string Anl(string[] str, IBotMessage msg)
 		{
 			if (msg.ReplyToMessage != null)
 				str = msg.ReplyToMessage.Text.Split(replacesChars.ToArray(), StringSplitOptions.RemoveEmptyEntries).ToArray();
@@ -31,7 +33,7 @@ namespace Nastya.Commands
 		}
 
 		[Command(nameof(Alf), "Вернет либо алфавит, либо номера в алфавите.")]
-		public string Alf(string[] strs, IMessage msg)
+		public string Alf(string[] strs, IBotMessage msg)
 		{
 			if (msg.ReplyToMessage != null)
 				strs = msg.ReplyToMessage.Text.Split(replacesChars.ToArray(), StringSplitOptions.RemoveEmptyEntries).ToArray();

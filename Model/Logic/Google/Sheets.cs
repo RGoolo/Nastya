@@ -20,12 +20,12 @@ namespace Model.Logic.Google
 
 		private readonly SheetsService _service;
 
-		public Sheets()
+		public Sheets(string chatId)
 		{
 			UserCredential credential;
 
 			using (var stream =
-				new FileStream("credentials.json", FileMode.Open, FileAccess.Read))
+				new FileStream(chatId + "credentials.json", FileMode.Open, FileAccess.Read))
 			{
 				// The file token.json stores the user's access and refresh tokens, and is created
 				// automatically when the authorization flow completes for the first time.
@@ -36,7 +36,6 @@ namespace Model.Logic.Google
 					"user",
 					CancellationToken.None,
 					new FileDataStore(credPath, true)).Result;
-				Console.WriteLine("Credential file saved to: " + credPath);
 			}
 
 			// Create Google Sheets API service.
@@ -71,7 +70,7 @@ namespace Model.Logic.Google
 
 			var batchUpdateRequest = _service.Spreadsheets.BatchUpdate(batchUpdateSpreadsheetRequest, spreadsheetId);
 
-			batchUpdateRequest.Execute();
+			 batchUpdateRequest.Execute();
 		}
 
 		public void UpdateValue(string spreadsheetId, string pageName, string cell, string value)
@@ -103,19 +102,7 @@ namespace Model.Logic.Google
 			
 			ValueRange response = request.Execute();
 			IList<IList<Object>> values = response.Values;
-			if (values != null && values.Count > 0)
-			{
-				Console.WriteLine("Name, Major");
-				foreach (var row in values)
-				{
-					// Print columns A and E, which correspond to indices 0 and 4.
-					Console.WriteLine("{0}, {1}", row[0], row[4]);
-				}
-			}
-			else
-			{
-				Console.WriteLine("No data found.");
-			}
+			
 			Console.Read();
 		}
 	}

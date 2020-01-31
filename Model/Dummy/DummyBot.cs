@@ -1,25 +1,26 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Threading;
 using System.Threading.Tasks;
-using Model.Types.Class;
-using Model.Types.Enums;
-using Model.Types.Interfaces;
+using Model.BotTypes.Class;
+using Model.BotTypes.Enums;
+using Model.BotTypes.Interfaces;
+using Model.BotTypes.Interfaces.Messages;
+using Model.Logger;
 
 namespace Model.Dummy
 {
-	public class DummyBot : IConcurentBot
+	public class DummyBot : IConcurrentBot
 	{
-		public Guid Id { get; }
+		public IBotId Id { get; }
 
-		public Logger Log { get; }
+		public ILogger Log { get; }
 
 		public TypeBot TypeBot => TypeBot.Dummy;
 
-		public DummyBot(Guid id) 
+		public DummyBot(IBotId id) 
 		{
 			Id = id;
-			Log = new Logger(id.ToString());
+			Log =  Logger.Logger.CreateLogger(id.ToString());
 		}
 
 		/*protected void Cycle2()
@@ -50,25 +51,24 @@ namespace Model.Dummy
 
 		public  void Dispose() => throw new NotImplementedException();
 
-		public List<IMessage> RunCycle()
+		public List<IBotMessage> GetMessages()
 		{
 			var text = Console.ReadLine();
 			var msg = new Message(Id, null, text);
-			return new List<IMessage> { msg };
+			return new List<IBotMessage> { msg };
 		}
 
-		public async Task<IMessage> Message(CommandMessage message, Guid chatId)
+		public async Task<IBotMessage> Message(IMessageToBot message, IChatId chatId)
 		{
-			
 			switch (message.TypeMessage)
 			{
 					case MessageType.SystemMessage:
 					return null;
 				case MessageType.Text:
-					Console.WriteLine(message.Texter);
+					Console.WriteLine(message.Text);
 					break;
 				case MessageType.Coordinates:
-					Console.WriteLine($"{message.Coordinate} : {message.Texter}");
+					Console.WriteLine($"{message.Coordinate} : {message.Text}");
 					break;
 				case MessageType.Photo:
 					Console.WriteLine($"{message.FileToken}");
@@ -78,19 +78,15 @@ namespace Model.Dummy
 			return new Message(Id, message);
 		}
 
-		protected  void DownloadFile(IMessage msg)
+		protected  void DownloadFile(IBotMessage msg)
 		{
 			//empty
 		}
 
 		
 
-		public void PreCycle()
-		{
-			//throw new NotImplementedException();
-		}
-
-		public Task<IMessage> DownloadFileAsync(IMessage msg)
+	
+		public Task<IBotMessage> DownloadFileAsync(IBotMessage msg)
 		{
 			return null;
 			//throw new NotImplementedException();

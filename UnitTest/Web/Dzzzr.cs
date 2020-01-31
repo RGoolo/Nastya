@@ -1,8 +1,5 @@
 ﻿using System.Collections.Generic;
 using Xunit;
-using Model.Types.Enums;
-using Model.Types.Class;
-using Web.DZR;
 
 namespace UnitTest.Model
 {
