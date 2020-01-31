@@ -30,6 +30,8 @@ namespace UnitTest
 		
 
 			yield return new object[] { "<i>italic</i>", "<i>italic</i>" };
+			yield return new object[] { "<i><b>italic</b></i>", "<i><b>italic</b></i>" };
+			yield return new object[] { "<i><b>italic</i></b>", "italic" };
 			yield return new object[] { "<in>tI</in>", "tI" };
 
 			yield return new object[] { "<h>col</h>", "col" };

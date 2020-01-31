@@ -144,13 +144,15 @@ namespace Model.TelegramBot
 		{
 			try
 			{
-				return (TelegramHTML.RemoveTag(text), GetParseMod(text));
+				var t = TelegramHTML.RemoveTag(text); //, GetParseMod(text));
+				if (TelegramHTML.CheckPaarTags(t))
+					return (t, GetParseMod(text));
 			}
 			catch (Exception e)
 			{
 				{ Logger.Logger.CreateLogger(nameof(CookieContainer)).Warning(e); }
-				return (TelegramHTML.RemoveAllTag(text?.Text), ParseMode.Default);
 			}
+			return (TelegramHTML.RemoveAllTag(text?.Text), ParseMode.Default);
 		}
 
 		private static ParseMode GetParseMod(Texter text) => text?.Html == true ? ParseMode.Html : ParseMode.Default;
