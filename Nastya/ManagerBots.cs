@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Model;
 using Model.Logic.Model;
 using Model.BotTypes;
 using Model.BotTypes.Class;
@@ -67,16 +68,13 @@ namespace Nastya
 		{
 			if (!_chats.TryGetValue(msg.ChatId, out var mapper))
 			{
-
 				var msgColl = new MessageCollection(msg.ChatId, botId);
-
 
 				var chatMapper = new ChatMapper(_bots[botId].TypeBot, msg.ChatId, msgColl);
 				_messages.Add(msg.ChatId, msgColl);
 				mapper = new BotChatMapper(botId, chatMapper);
 				_chats.Add(msg.ChatId, mapper);
 			}
-
 			try
 			{
 				var messages = mapper.ChatMapper.OnMessage(msg);
@@ -164,15 +162,11 @@ namespace Nastya
 			}
 		}
 
-		public void Wait()
+		public Task Wait()
 		{
 			var t1 = new Task(SendToBotTask);
-			var t2 = new Task(GetFromBotTask);
 			t1.Start();
-			t2.Start();
-			// ToDo WaitAll
-			t1.Wait();
-			t2.Wait();
+			return t1;
 		}
 	}
 }

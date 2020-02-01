@@ -4,38 +4,41 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using Google.Apis.Auth.OAuth2;
+using Google.Apis.Auth.OAuth2.Flows;
 using Google.Apis.Services;
 using Google.Apis.Sheets.v4;
 using Google.Apis.Sheets.v4.Data;
 using Google.Apis.Util.Store;
+using Model.Files.FileTokens;
 
 namespace Model.Logic.Google
 {
 	public class Sheets
 	{
-		// If modifying these scopes, delete your previously saved credentials
-		// at ~/.credentials/sheets.googleapis.com-dotnet-quickstart.json
+		private readonly string _sheetsUrl;
+
 		private static readonly string[] Scopes = { SheetsService.Scope.Spreadsheets };
 		private const string ApplicationName = "Nastya SheetsService";
 
 		private readonly SheetsService _service;
 
-		public Sheets(string chatId)
+		public Sheets(IChatFile fileCred, IChatFileToken token, string sheetsUrl)
 		{
+			_sheetsUrl = sheetsUrl;
 			UserCredential credential;
 
-			using (var stream =
-				new FileStream(chatId + "credentials.json", FileMode.Open, FileAccess.Read))
+			using (var stream = fileCred.ReadStream())
 			{
-				// The file token.json stores the user's access and refresh tokens, and is created
-				// automatically when the authorization flow completes for the first time.
-				string credPath = "token.json";
+				var secrets = GoogleClientSecrets.Load(stream).Secrets;
+
+				var path = Path.GetDirectoryName(token.Location);
+
 				credential = GoogleWebAuthorizationBroker.AuthorizeAsync(
-					GoogleClientSecrets.Load(stream).Secrets,
+					secrets,
 					Scopes,
 					"user",
 					CancellationToken.None,
-					new FileDataStore(credPath, true)).Result;
+					new FileDataStore(path, true)).Result;
 			}
 
 			// Create Google Sheets API service.
@@ -48,7 +51,7 @@ namespace Model.Logic.Google
 		}
 
 		//ToDo: acync
-		public void CreatePage3(string spreadsheetId, string name)
+		public void CreatePage3(string name)
 		{
 			var myNewSheet = new Spreadsheet();
 			myNewSheet.Properties = new SpreadsheetProperties();
@@ -56,7 +59,7 @@ namespace Model.Logic.Google
 			var newSheet = _service.Spreadsheets.Create(myNewSheet).Execute();
 		}
 
-		public void CreatePage(string spreadsheetId, string name)
+		public Task CreatePageAsync(string name)
 		{
 			var addSheetRequest = new AddSheetRequest();
 			addSheetRequest.Properties = new SheetProperties();
@@ -68,12 +71,12 @@ namespace Model.Logic.Google
 				AddSheet = addSheetRequest
 			});
 
-			var batchUpdateRequest = _service.Spreadsheets.BatchUpdate(batchUpdateSpreadsheetRequest, spreadsheetId);
+			var batchUpdateRequest = _service.Spreadsheets.BatchUpdate(batchUpdateSpreadsheetRequest, _sheetsUrl);
 
-			 batchUpdateRequest.Execute();
+			 return batchUpdateRequest.ExecuteAsync();
 		}
 
-		public void UpdateValue(string spreadsheetId, string pageName, string cell, string value)
+		public async Task UpdateValueAsync(string pageName, string cell, string value)
 		{
 			String range = $"{pageName}!{cell}";  // single cell D5
 			String myNewCellValue = value;
@@ -83,19 +86,20 @@ namespace Model.Logic.Google
 			var oblist = new List<object>() { value };
 			valueRange.Values = new List<IList<object>> { oblist };
 
-			SpreadsheetsResource.ValuesResource.UpdateRequest update = _service.Spreadsheets.Values.Update(valueRange, spreadsheetId, range);
+			SpreadsheetsResource.ValuesResource.UpdateRequest update = _service.Spreadsheets.Values.Update(valueRange, _sheetsUrl, range);
 			update.ValueInputOption = SpreadsheetsResource.ValuesResource.UpdateRequest.ValueInputOptionEnum.RAW;
-			UpdateValuesResponse result2 = update.Execute();
+			
+			UpdateValuesResponse result2 = await update.ExecuteAsync(new CancellationToken());
 		}
 
-		public async Task GetDataAsync(string spreadsheetId)
+		public async Task GetDataAsync()
 		{
 			//ToDo delete:
 			//await new Task(() => Thread.Sleep(0));
 			// Define request parameters.
 			var a = Directory.GetCurrentDirectory();
 ;			var range = "A2:E";
-			SpreadsheetsResource.ValuesResource.GetRequest request = _service.Spreadsheets.Values.Get(spreadsheetId, range);
+			SpreadsheetsResource.ValuesResource.GetRequest request = _service.Spreadsheets.Values.Get(_sheetsUrl, range);
 
 			// Prints the names and majors of students in a sample spreadsheet:
 			// https://docs.google.com/spreadsheets/d/1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms/edit

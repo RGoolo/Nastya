@@ -20,19 +20,19 @@ namespace Nastya
 				.AddJsonFile("appsettings.json", true, true);
 
 			var config = builder.Build();
-
 			var appConfig = config.GetSection("main").Get<Configuration>();
 			
 			SettingsHelper.Directory = appConfig.SettingsPath;
-			Logger.FileLog = Path.Combine(appConfig.logPath, DateTime.Now.ToString("HH.mm.ss") + ".txt");
+			Logger.FileLog = Path.Combine(appConfig.LogPath, DateTime.Now.ToString("HH.mm.ss") + ".txt");
 
 			Console.OutputEncoding = Encoding.UTF8;
 			StartBot();
 		}
+
 		private static void StartBot()
 		{
 			var startBot = new ManagerBots();
-			startBot.Wait();
+			startBot.Wait().Wait();
 		}
 	}
 }

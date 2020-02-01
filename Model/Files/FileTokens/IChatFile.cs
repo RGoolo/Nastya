@@ -10,5 +10,6 @@ namespace Model.Files.FileTokens
 		void Save<T>(T type);
 		void Delete();
 		bool Exists();
+		void CopyFrom(IChatFileToken token);
 	}
 }

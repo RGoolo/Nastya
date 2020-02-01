@@ -33,6 +33,8 @@ namespace Model.TelegramBot
 						return MessageType.Video;
 					case Telegram.Bot.Types.Enums.MessageType.Text:
 						return MessageType.Text;
+					case Telegram.Bot.Types.Enums.MessageType.Document:
+						return MessageType.Document;
 					default:
 						return MessageType.Undefined;
 				}

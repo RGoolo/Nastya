@@ -12,5 +12,6 @@ namespace Model.Logic.Model
 	{
 		public GameException() { }
 		public GameException(string s) : base(s) { }
+		public GameException(Exception e) : base(e.Message) { }
 	}
 }

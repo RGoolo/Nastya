@@ -17,6 +17,12 @@ namespace Model.BotTypes.Class
 		public TransactionCommandMessage(IMessageToBot message)
 		{
 			_messages = new List<IMessageToBot>{message};
+		}	
+		
+		public TransactionCommandMessage(string text)
+		{
+			var msg = MessageToBot.GetTextMsg(text);
+			_messages = new List<IMessageToBot>{ msg };
 		}
 
 		public TransactionCommandMessage(List<IMessageToBot> messages)

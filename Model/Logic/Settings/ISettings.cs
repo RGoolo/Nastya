@@ -18,7 +18,7 @@ namespace Model.Logic.Settings
 
 		void Clear();
 		
-		IChatFileFactory FileChatWorker { get; }
+		IChatFileFactory FileChatFactory { get; }
 		ISettingsBraille Braille { get; }
 		ISettingsTest Test { get; }
 		ISettingsCoordinates Coordinates { get; }

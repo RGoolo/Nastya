@@ -15,7 +15,7 @@ namespace Nastya.Commands
 		[Command(Const.DzrGame.Prefix, "Префикс кодов, для дозора")]
 		public string Prefix { get; set; }
 
-		[Command(Const.DzrGame.CheckOtherTask, "Отслеживать все задание, по умолчанию будет только верхнее")]
+		[Command(Const.DzrGame.CheckOtherTask, "Отслеживать изменение всех заданий, по умолчанию будет только верхнее")]
 		public bool CheckOtherTask { get; set; }
 
 		

@@ -24,7 +24,7 @@ namespace Nastya
 
 		private static SecureString GetBotToken()
 		{
-			var token = SecurityEnvironment.GetPassword("bot_token");
+			var token = SecurityEnvironment.GetPassword("telegram_bot_token");
 			if (token != null)
 			{
 				//Console.WriteLine("Use old telegram bot token?");
@@ -42,7 +42,7 @@ namespace Nastya
 				key = Console.ReadKey(true);
 			}
 
-			SecurityEnvironment.SetPassword(token, "bot_token");
+			SecurityEnvironment.SetPassword(token, "telegram_bot_token");
 			return token;
 		}
 	}

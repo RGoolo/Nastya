@@ -7,6 +7,7 @@ using System.Text;
 using Model.BotTypes.Attribute;
 using Model.BotTypes.Class;
 using Model.BotTypes.Enums;
+using Model.BotTypes.Interfaces.Messages;
 using Model.Logic.Settings;
 
 namespace Nastya.Commands
@@ -27,7 +28,7 @@ namespace Nastya.Commands
 		}
 
 		[Command(nameof(Help), "Что я умею.", TypeUser.User)]
-		public TransactionCommandMessage Help(string classAlias = null)
+		public TransactionCommandMessage Help(IUser user, string classAlias = null)
 		{
 			var result = new  List<IMessageToBot>();
 			//классы с атрибутом CommandClassAttribute
@@ -43,13 +44,13 @@ namespace Nastya.Commands
 				sb.Clear();
 
 				foreach (var refCommand in refCommands)
-					result.AddRange(GetClassInfo(refCommand));
+					result.AddRange(GetClassInfo(refCommand, user));
 			}
 			else
 			{
 				var @class = refCommands.FirstOrDefault(x =>  x.GetCustomAttribute<CommandClassAttribute>(true).Alias.Equals(classAlias,StringComparison.CurrentCultureIgnoreCase));
 				if (@class != null)
-					result.AddRange(GetClassInfo(@class));
+					result.AddRange(GetClassInfo(@class, user));
 			}
 
 			//ToDo:
@@ -59,7 +60,7 @@ namespace Nastya.Commands
 			return new TransactionCommandMessage(result);
 		}
 
-		private List<IMessageToBot> GetClassInfo(Type refCommand)
+		private List<IMessageToBot> GetClassInfo(Type refCommand, IUser user)
 		{
 			var onlyAdminText = "Только для администраторов группы";
 
@@ -68,12 +69,15 @@ namespace Nastya.Commands
 			var classAttr = refCommand.GetCustomAttribute<CommandClassAttribute>(true);
 			if (classAttr != null)
 			{
-				sb.Append($"Модуль: {classAttr.Description}  /{nameof(Help)}_{classAttr.Alias}");
-				if ((classAttr.TypeUser & TypeUser.Admin) == TypeUser.Admin)
-					sb.Append($": {onlyAdminText}");
-				if (classAttr.TypeUser == TypeUser.Developer)
-					sb.Append($": Developer");
-				sb.AppendLine();
+				if (!classAttr.TypeUser.IsDeveloper() || user.Type.IsDeveloper())
+				{
+					sb.Append($"Модуль: {classAttr.Description}  /{nameof(Help)}_{classAttr.Alias}");
+					if ((classAttr.TypeUser & TypeUser.Admin) == TypeUser.Admin)
+						sb.Append($": {onlyAdminText}");
+					if ((classAttr.TypeUser & TypeUser.Developer) == TypeUser.Developer)
+						sb.Append($": Developer");
+					sb.AppendLine();
+				}
 			}
 
 			var settings = refCommand.GetProperties().Where(x => x.GetCustomAttribute<CommandAttribute>(true) != null).ToList();
@@ -87,13 +91,14 @@ namespace Nastya.Commands
 				//	sb.Append($": {onlyAdminText}");
 				if (props.PropertyType == typeof(bool))
 				{
-					sb.AppendLine($"/{attr.Alias}_on /{attr.Alias}_off");
+					sb.Append($"/{attr.Alias}_on /{attr.Alias}_off");
+					sb.AppendLine( attr.TypeUser.IsAdmin() ?" (Админ)" : "");
+
 					sb.AppendLine($"Вкл / Выкл: {attr.Description}");
 				}
 				else
-					sb.Append($"/{attr.Alias} : {attr.Description}");
+					sb.AppendLine($"/{attr.Alias}" + (attr.TypeUser.IsAdmin() ? " (Админ): " : " : ") + attr.Description);
 
-				sb.Append(Environment.NewLine);
 			}
 			var infos = refCommand.GetMethods().Where(x => x.GetCustomAttribute<CommandAttribute>(true) != null).ToList();
 			if (infos.Any())

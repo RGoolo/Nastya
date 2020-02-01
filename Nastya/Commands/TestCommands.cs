@@ -6,11 +6,11 @@ using Web.DL;
 namespace Nastya.Commands
 {
 	
-	[CommandClass(nameof(SheetsCommands), "Всякое барахло для тестов. ToDo: Убрать это из хелпа!", TypeUser.User)]
+	[CommandClass(nameof(TestCommand), "Всякое барахло для тестов", TypeUser.Developer)]
 	public class TestCommand
 	{
 
-		[Command(nameof(GetNotification), "Получаем нотификашку тового левала", typeUser: TypeUser.User)]
+		[Command(nameof(GetNotification), "Получаем нотификашку тового левала", typeUser: TypeUser.Developer)]
 		public TransactionCommandMessage GetNotification(string name)
 		{
 			var dlPage = new DLPage();

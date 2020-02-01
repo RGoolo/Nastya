@@ -1,14 +1,20 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 using Model.BotTypes.Class;
 using Model.BotTypes.Enums;
 
 namespace Model.Files.FileTokens
 {
+	public enum SystemChatFile
+	{
+		Settings, SheetToken, SheetCredentials
+	}
+
 	public interface IChatFileFactory
 	{
 		IChatFile NewResourcesFileByExt(string ext);
-		IChatFile SettingsFile();
+		IChatFile SystemFile(SystemChatFile type);
 		IChatFile GetChatFile(IChatFileToken fileToken);
 	}
 
@@ -25,7 +31,7 @@ namespace Model.Files.FileTokens
 	{
 		private readonly string _botSettingsPath;
 		private readonly IChatId _chatId;
-		private const string SettingsFileName = "setting.xml";
+
 		private const string ResourcesFolder = "resources";
 		public ChatFileFactory(IChatId chatId, string botSettingsPath)
 		{
@@ -45,17 +51,24 @@ namespace Model.Files.FileTokens
 				fullName);
 		}
 
-		public IChatFile SettingsFile()
+		public IChatFile SystemFile(SystemChatFile type)
 		{
-			var fileName = SettingsFileName;
+			var fileName = type switch
+			{
+				SystemChatFile.Settings => $"{type}.xml",
+				SystemChatFile.SheetCredentials => $"{type}.json",
+				SystemChatFile.SheetToken => $"Google.Apis.Auth.OAuth2.Responses.TokenResponse-user",
+				_ => $"{type}.xml",
+			};
+
 			var fullName = Path.Combine(_botSettingsPath, fileName);
 			var res = Path.Combine(_botSettingsPath, ResourcesFolder);
 
 			if (!Directory.Exists(res))
-				Directory.CreateDirectory(_botSettingsPath);
+				Directory.CreateDirectory(res);
 
 			return new ChatFile(FileTypeFlags.IsChat | FileTypeFlags.IsLocal | FileTypeFlags.Settings,
-				SettingsFileName,
+				fileName,
 				_chatId,
 				fullName);
 		}

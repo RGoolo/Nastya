@@ -41,13 +41,7 @@ namespace Model.Files.FileTokens
 		/// </summary>
 		public string Location { get; }
 
-		public FileStream ReadStream()
-		{
-			if (!FileType.IsLocal())
-				throw new NotImplementedException();
-
-			return File.OpenRead(Location);
-		}
+		public FileStream ReadStream() => ((IChatFileToken) this).ReadStream();
 
 		public FileStream WriteStream(FileMode fileMode = FileMode.Create)
 		{
@@ -57,7 +51,6 @@ namespace Model.Files.FileTokens
 			return new FileStream(Location, FileMode.Create);
 		}
 
-		
 		public T Read<T>()
 		{
 			var formatter = new XmlSerializer(typeof(T));
@@ -88,6 +81,14 @@ namespace Model.Files.FileTokens
 				throw new NotImplementedException();
 
 			return File.Exists(Location);
+		}
+
+		public void CopyFrom(IChatFileToken token)
+		{
+			using var write = WriteStream();
+			using var read = token.ReadStream();
+
+			read.CopyTo(write);
 		}
 	}
 }

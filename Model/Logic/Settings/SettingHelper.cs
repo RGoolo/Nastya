@@ -39,7 +39,7 @@ namespace Model.Logic.Settings
 
 		public ISettingsWeb Web { get; }
 		public ISettingsPage Page { get; }
-		public IChatFileFactory FileChatWorker { get; }
+		public IChatFileFactory FileChatFactory { get; }
 		
 		public string NotExistFile(string ext) => NotExistFile(ext, ChatGuid);
 
@@ -53,8 +53,8 @@ namespace Model.Logic.Settings
 
 		public SettingHelper(IChatId chatId, string directory)
 		{
-			FileChatWorker = new ChatFileFactory(chatId, directory); //This 
-			_settingsFile = FileChatWorker.SettingsFile();
+			FileChatFactory = new ChatFileFactory(chatId, directory); //This 
+			_settingsFile = FileChatFactory.SystemFile(SystemChatFile.Settings);
 			Path = directory;
 
 			// FileChatWorker = new LocalChatFileWorker(chatId);

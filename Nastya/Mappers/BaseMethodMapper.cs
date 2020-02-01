@@ -1,10 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Model.BotTypes;
 using Model.BotTypes.Class;
 using Model.BotTypes.Class.Reflection;
 using Model.BotTypes.Enums;
 using Model.BotTypes.Interfaces.Messages;
+using Model.Logic.Model;
 using Model.Logic.Settings;
 
 namespace Nastya.Mappers
@@ -69,44 +71,60 @@ namespace Nastya.Mappers
 				case string res6:
 					list.Add(new TransactionCommandMessage(MessageToBot.GetTextMsg(res6)));
 					break;
+					default:
+					throw new GameException("не поддерживает возращаемый тип");
+				case null:
+					break;
 			}
 		}
 
 		protected async Task SetInQ(Task res, IBotMessage botMessage)
 		{
-			switch (res)
+			try
 			{
-				case Task<TransactionCommandMessage> res2:
-					Send(await res2);
-					break;
-				case Task<IEnumerable<TransactionCommandMessage>> res3:
-					SendMsg(await res3);
-					break;
-				case Task<List<TransactionCommandMessage>> res31:
-					SendMsg(await res31);
-					break;
-				case Task<TransactionCommandMessage[]> res32:
-					SendMsg(await res32);
-					break;
-				case Task<IMessageToBot> res4:
-					Send(new TransactionCommandMessage(await res4));
-					break;
-				case Task<IEnumerable<IMessageToBot>> res5:
-					Send(new TransactionCommandMessage(await res5));
-					break;
-				case Task<List<IMessageToBot>> res51:
-					Send(new TransactionCommandMessage(await res51));
-					break;
-				case Task<IMessageToBot[]> res52:
-					Send(new TransactionCommandMessage(await res52));
-					break;
-				case Task<string> res6:
+				switch (res)
+				{
+					case Task<TransactionCommandMessage> res2:
+						Send(await res2);
+						break;
+					case Task<IEnumerable<TransactionCommandMessage>> res3:
+						SendMsg(await res3);
+						break;
+					case Task<List<TransactionCommandMessage>> res31:
+						SendMsg(await res31);
+						break;
+					case Task<TransactionCommandMessage[]> res32:
+						SendMsg(await res32);
+						break;
+					case Task<IMessageToBot> res4:
+						Send(new TransactionCommandMessage(await res4));
+						break;
+					case Task<IEnumerable<IMessageToBot>> res5:
+						Send(new TransactionCommandMessage(await res5));
+						break;
+					case Task<List<IMessageToBot>> res51:
+						Send(new TransactionCommandMessage(await res51));
+						break;
+					case Task<IMessageToBot[]> res52:
+						Send(new TransactionCommandMessage(await res52));
+						break;
+					case Task<string> res6:
 					{
 						var msg = MessageToBot.GetTextMsg(await res6);
 						msg.OnIdMessage = botMessage.MessageId;
 						Send(new TransactionCommandMessage(msg));
 					}
-					break;
+						break;
+					case null:
+						break;
+					default:
+						Send(new TransactionCommandMessage("не поддерживает возращаемый тип"));
+						break;
+				}
+			}
+			catch(Exception ex)
+			{
+				Send(new TransactionCommandMessage(ex.Message));
 			}
 		}
 

@@ -19,8 +19,6 @@ namespace Model.BotTypes.Class.Reflection
 			[typeof(IMessageCommand)] = (mess, command) => command,
 			[typeof(IBotMessage)] = (mess, command) => mess,
 			[typeof(IUser)] = (mess, command) => mess.User,
-			
 		};
-
 	}
 }

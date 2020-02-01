@@ -83,12 +83,15 @@ namespace Model.BotTypes.Class.Reflection
 			{
 				return InvokeMethodWithCastParam(msg, msgCommand);
 			}
-			catch (ArgumentNeedException ex)
+			catch(ModelException model)
 			{
-				throw new MessageException(msg, $"Не хватает параметра: {ex.ArgumentName}");
+				throw;
 			}
-			catch(Exception ex)
+			catch (Exception ex)
 			{
+				if (ex.InnerException is ModelException)
+					throw ex.InnerException;
+
 				Logger.Error(ex);
 				throw new MessageException(msg, $"Не удалось выполнить метод." );
 			}
@@ -107,7 +110,7 @@ namespace Model.BotTypes.Class.Reflection
 
 			[typeof(IChatId)] = (mess, command) => mess.ChatId,
 			[typeof(ISettings)] = (mess, command) => SettingsHelper.GetSetting(mess.ChatId),
-			[typeof(IChatFileFactory)] = (mess, command) => SettingsHelper.GetSetting(mess.ChatId).FileChatWorker,
+			[typeof(IChatFileFactory)] = (mess, command) => SettingsHelper.GetSetting(mess.ChatId).FileChatFactory,
 			//[typeof(ISendMessage)] = (mess, command) => mess.User,
 		};
 
@@ -124,9 +127,8 @@ namespace Model.BotTypes.Class.Reflection
 				{
 					if (i < msgCommand.Values.Count())
 					{
-						parameters.Add(param.IsOptional
-							? Type.Missing
-							: GetValuesWithEnum(param.ParameterType, msgCommand.Values[i]));
+						parameters.Add(GetValuesWithEnum(param.ParameterType, msgCommand.Values[i]));
+						i++;
 					}
 					else if (param.IsOptional) 
 						parameters.Add(param.DefaultValue);
@@ -137,7 +139,7 @@ namespace Model.BotTypes.Class.Reflection
 					}
 						
 					// parameters.Add(StandardStructureMapper.GetDefault(param.ParameterType));
-					i++;
+					
 				}
 			}
 

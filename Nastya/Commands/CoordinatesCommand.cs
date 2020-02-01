@@ -67,9 +67,9 @@ namespace Nastya.Commands
 		[Command(nameof(AddYandex), "Добавлять в координаты ссылку на yandex map.")]
 		public bool AddYandex { get => _settings.Yandex.LinkFor; set => _settings.Yandex.LinkFor = value; }
 
+		[Password]
 		[Command(nameof(GoogleToken), "Добавлять в координаты ссылку на yandex map.")]
-		public string GoogleToken { get => string.Empty; //remove!!! 
-			set => SecurityEnvironment.SetPassword(value, "google_maps_token"); }
+		public string GoogleToken { get; set; }
 
 		/*	[Command(nameof(Dontaddkml), "Не добавляет kml файл к сообщениям на координаты.", "{F8F5407E-64A7-483A-82C6-FA26740ABB48}")]
 		public bool Dontaddkml{ get; set; }*/

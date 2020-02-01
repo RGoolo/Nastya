@@ -74,9 +74,16 @@ namespace Nastya.Mappers
 
 							if (method.CommandAttribute.Resource != TypeResource.None && method.CommandAttribute.Resource != message.Resource.Type)
 								continue;
-
-							var res = method.Invoke(message, msgCommand);
-							AddParam(result, res, message);
+							try
+							{
+								var res = method.Invoke(message, msgCommand);
+								AddParam(result, res, message);
+							}
+							catch (Exception e)
+							{
+								Console.WriteLine(e);
+								throw;
+							}
 						}
 					}
 				}

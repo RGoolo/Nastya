@@ -45,7 +45,7 @@ namespace Model.TelegramBot
 		private TelegramHTML _telegramHtml = new TelegramHTML();
 		private Telegram.Bot.TelegramBotClient _bot;
 
-		private IChatFileFactory _chatFileWorker(IChatId chatId) => SettingsHelper.GetSetting(chatId).FileChatWorker;
+		private IChatFileFactory _chatFileWorker(IChatId chatId) => SettingsHelper.GetSetting(chatId).FileChatFactory;
 		// private IChatFileWorker _fileWorker => SettingsHelper.FileWorker;
 
 		public TypeBot TypeBot => TypeBot.Telegram;
@@ -266,7 +266,8 @@ namespace Model.TelegramBot
 			{
 				MessageType.Photo => DownloadPhotoAsync(msg, resourceMsg),
 				MessageType.Voice => DownloadVoiceAsync(msg, resourceMsg),
-				_ => DownloadFileAsync(msg, msg.ReplyToMessage)
+				MessageType.Document => DownloadDocumentAsync(msg, msg.ReplyToMessage),
+				_ => DownloadFileAsync(msg, resourceMsg.ReplyToMessage),
 			};
 		}
 
@@ -290,6 +291,17 @@ namespace Model.TelegramBot
 			//var filePath = SettingHelper.DontExistFile("jpg", resourceMsg.ChatId);
 			var fileToken = _chatFileWorker(msg.ChatId).NewResourcesFileByExt(".jpg");
 			return DownloadFileAsync(tMsg.Photo[^1].FileId, fileToken, msg, TypeResource.Photo);
+		}
+
+		protected Task<IBotMessage> DownloadDocumentAsync(IBotMessage msg, IBotMessage resourceMsg)
+		{
+			var tMsg = (resourceMsg as TelegramMessage)?.Message;
+			if (tMsg == null)
+				return null;
+
+			//var filePath = SettingHelper.DontExistFile("jpg", resourceMsg.ChatId);
+			var fileToken = _chatFileWorker(msg.ChatId).NewResourcesFileByExt(System.IO.Path.GetExtension(tMsg.Document.FileName));
+			return DownloadFileAsync(tMsg.Document.FileId, fileToken, msg, TypeResource.Document);
 		}
 
 		public void OnError(Exception ex)

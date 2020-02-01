@@ -8,7 +8,8 @@ namespace Model
 		[JsonProperty("settingsPath")]
 		public string SettingsPath { get; set; }
 
+
 		[JsonProperty("logPath")]
-		public string logPath { get; set; }
+		public string LogPath { get; set; }
 	}
 }

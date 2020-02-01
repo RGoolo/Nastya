@@ -42,7 +42,7 @@ namespace Nastya.Commands
 			return $"type={type}\nurl={url}";
 		}
 
-		[Command(nameof(Const.Game.CopyFromPM), "Скопировать данные по игре с лички (логин, пароль, сайт).")]
+		[Command(nameof(Const.Game.CopyFromPM), "Скопировать данные по игре с лички (логин, пароль, сайт).", TypeUser.Admin)]
 		public string copyFromPM(ISettings chatSettings, IUser user)
 		{
 			var userSettings = SettingsHelper.GetSetting(user);

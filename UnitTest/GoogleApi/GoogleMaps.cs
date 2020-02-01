@@ -29,7 +29,7 @@ namespace UnitTest.GoogleApi
 			var settings = SettingsHelper.GetSetting(new ChatGuid(TestGuid));
 			settings.Clear();
 			
-			var file = settings.FileChatWorker.NewResourcesFileByExt(".jpg");
+			var file = settings.FileChatFactory.NewResourcesFileByExt(".jpg");
 			var factoryMaps = new FactoryMaps(password);
 
 			var points = new List<Point>
