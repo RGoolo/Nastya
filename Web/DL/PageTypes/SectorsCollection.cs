@@ -9,13 +9,16 @@ namespace Web.DL.PageTypes
 {
 	public class SectorsCollection
 	{
-		public List<Sector> Sectors { get; } = new List<Sector>();
+		private List<Sector> SectorsInternal { get; } = new List<Sector>();
+		public IReadOnlyCollection<Sector> AllSectors => SectorsInternal;
+		private List<Sector> AcceptedSectorsInternal { get; } = new List<Sector>();
+		public IReadOnlyCollection<Sector> AcceptedSectors => AcceptedSectorsInternal;
+
 		public string CountSectors { get; }
-		public string SectorsRemain { get; }
+		public string SectorsRemainString { get; }
 
 		public SectorsCollection(HtmlNode contentBlock)
 		{
-
 			var Headers = contentBlock.SelectNodes("h3");
 			if (Headers == null) return;
 
@@ -29,7 +32,7 @@ namespace Web.DL.PageTypes
 				if (matches.Count == 0) continue;
 
 				CountSectors = regexSectorsTitle.Replace(matches[0].Value, "$2");
-				SectorsRemain = regexSectorsRemain.Replace(text, "$2");
+				SectorsRemainString = regexSectorsRemain.Replace(text, "$2");
 
 				var currentNode = headerNode;
 				do
@@ -40,16 +43,21 @@ namespace Web.DL.PageTypes
 				var sectorsNodes = currentNode.SelectNodes(".//p");
 
 				foreach (var sectorNode in sectorsNodes)
-					Sectors.Add(new Sector(sectorNode));
+				{
+					var sector = new Sector(sectorNode);
+					SectorsInternal.Add(sector);
+					if (sector.Accepted)
+						AcceptedSectorsInternal.Add(sector);
+				}
 			}
 		}
 
-		public string GetText(bool isAll)
+		public string ToString(bool isAll)
 		{
 			var sb = new StringBuilder();
-			sb.AppendLine($"На уровне осталось закрыть: {SectorsRemain} из {CountSectors}");
-			
-			var sectors = Sectors.Where(x => (!x.Accepted || isAll));
+			sb.AppendLine($"На уровне осталось закрыть: {SectorsRemainString} из {CountSectors}");
+
+			var sectors = isAll ? SectorsInternal : AcceptedSectors;
 			return sb.Append(string.Join(Environment.NewLine, sectors.Select(x => x.ToString()).ToArray())).ToString();
 		}
 	}

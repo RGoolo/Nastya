@@ -44,7 +44,5 @@ namespace UnitTest.Logic
 			var str = point.ReplacePoints();
 			var str2 = str;
 		}
-		
-
 	}
 }

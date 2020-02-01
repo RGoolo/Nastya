@@ -20,10 +20,12 @@ namespace Model.Logic.Settings
 		public static ISettings GetSetting(IChatId chatId)
 		{
 			if (!Settings.ContainsKey(chatId))
-				Settings.Add(chatId, new SettingHelper(chatId));
+				Settings.Add(chatId, new SettingHelper(chatId, System.IO.Path.Combine(Directory, chatId.GetId.ToString())));
 
 			return Settings[chatId];
 		}
+
+		public static string Directory { get; set; }
 
 		// public static IChatFileWorker FileWorker => _fileWorker ??= new LocalChatFileWorker(new ChatGuid(Guid.Empty));
 	}

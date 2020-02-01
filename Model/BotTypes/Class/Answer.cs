@@ -1,4 +1,5 @@
-﻿using Model.BotTypes.Interfaces;
+﻿using Model.BotTypes.Enums;
+using Model.BotTypes.Interfaces;
 using Model.BotTypes.Interfaces.Messages;
 using Model.Logic.Settings;
 

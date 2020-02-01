@@ -1,8 +1,10 @@
 ﻿using System;
 using System.IO;
 using System.Net;
+using System.Xml.Serialization;
 using Model.BotTypes.Class;
 using Model.BotTypes.Enums;
+using Model.Logic.Settings;
 
 namespace Model.Files.FileTokens
 {
@@ -58,6 +60,39 @@ namespace Model.Files.FileTokens
 		//		Directory.CreateDirectory(path);
 
 			return new FileStream(Location, FileMode.Create);
+		}
+
+		
+		public T Read<T>()
+		{
+			var formatter = new XmlSerializer(typeof(T));
+			using var fs = ReadStream();
+
+			return (T)formatter.Deserialize(fs);
+		}
+
+		public void Save<T>(T type)
+		{
+			var formatter = new XmlSerializer(typeof(T));
+			using var fs = WriteStream();
+
+			formatter.Serialize(fs, type);
+		}
+
+		public void Delete()
+		{
+			if (!FileType.IsLocal())
+				throw new NotImplementedException();
+
+			System.IO.File.Delete(Location);
+		}
+
+		public bool Exists()
+		{
+			if (!FileType.IsLocal())
+				throw new NotImplementedException();
+
+			return System.IO.File.Exists(Location);
 		}
 	}
 

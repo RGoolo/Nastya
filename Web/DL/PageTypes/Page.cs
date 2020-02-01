@@ -95,8 +95,8 @@ namespace Web.DL
 			sb.AppendLine(page.LevelTitle);
 			sb.AppendLine(page.Body);
 
-			if (!string.IsNullOrEmpty(page.Sectors?.SectorsRemain))
-				sb.AppendLine($"На уровне осталось закрыть секторов: {page.Sectors.SectorsRemain}(/sectors) из {page.Sectors.CountSectors}(/allsectors).");
+			if (!string.IsNullOrEmpty(page.Sectors?.SectorsRemainString))
+				sb.AppendLine($"На уровне осталось закрыть секторов: {page.Sectors.SectorsRemainString}(/sectors) из {page.Sectors.CountSectors}(/allsectors).");
 			
 			if (!page.Bonuses.IsEmpty)
 			{

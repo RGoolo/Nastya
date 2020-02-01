@@ -1,5 +1,6 @@
 ﻿using System;
 using Model.BotTypes.Class;
+using Model.BotTypes.Enums;
 using Model.Files.FileTokens;
 
 namespace Model.Logic.Settings
@@ -86,7 +87,8 @@ namespace Model.Logic.Settings
 
 		string AllBonus { get; set; }
 		string Bonus { get; set; }
-
+		bool UpdateAllBonus { get; set; }
+		bool UpdateBonus { get; set; }
 		bool GameIsStart { get; set; }
 
 		string Level { get; set; }

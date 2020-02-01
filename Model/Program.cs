@@ -7,15 +7,7 @@ namespace Model
 	{
 		public static void Main(string[] args)
 		{
-			var builder = new ConfigurationBuilder()
-				.SetBasePath(Directory.GetCurrentDirectory())
-				.AddJsonFile("appsettings.json", true, true);
-
-			var config = builder.Build();
-
-			var appConfig = config.GetSection("main").Get<Configuration>();
-
-			Console.WriteLine(appConfig.Name);
+			
 		}
 	}
 }

@@ -26,7 +26,7 @@ namespace Model.Files.FileTokens
 
 	public class ChatFileTokenFactory : IChatFileFactory
 	{
-		private readonly string _botSettingsPath;
+		private string _botSettingsPath;
 		private readonly IChatId _chatId;
 		private const string SettingsFileName = "setting.xml";
 		private const string ResourcesFolder = "resources";
@@ -39,7 +39,7 @@ namespace Model.Files.FileTokens
 		public IChatFile NewResourcesFileTokenByExt(string ext)
 		{
 			var fileName = Guid.NewGuid() + ext; // Какой шанс что гуиды повторятся?
-			var fullName = Path.Combine(_botSettingsPath, _chatId.ToString(), fileName);
+			var fullName = Path.Combine(_botSettingsPath, ResourcesFolder, fileName);
 
 			return new ChatFile(
 				FileTypeFlags.IsChat | FileTypeFlags.IsLocal | FileTypeFlags.Resources,
@@ -47,6 +47,7 @@ namespace Model.Files.FileTokens
 				_chatId,
 				fullName);
 		}
+
 
 		public IFile NewResourcesFileByExt(string ext)
 		{
@@ -56,7 +57,11 @@ namespace Model.Files.FileTokens
 		public IChatFile SettingsFile()
 		{
 			var fileName = SettingsFileName;
-			var fullName = Path.Combine(_botSettingsPath, _chatId.ToString(), fileName);
+			var fullName = Path.Combine(_botSettingsPath, fileName);
+			var res = Path.Combine(_botSettingsPath, ResourcesFolder);
+
+			if (!Directory.Exists(res))
+				Directory.CreateDirectory(res);
 
 			return new ChatFile(FileTypeFlags.IsChat | FileTypeFlags.IsLocal | FileTypeFlags.Settings,
 				SettingsFileName,
@@ -66,9 +71,7 @@ namespace Model.Files.FileTokens
 
 		public IChatFile InternetFile(string uri)
 		{
-
 			var name = UriHelper.GetFileName(uri);
-
 			return new ChatFile(FileTypeFlags.IsChat, name, _chatId, uri);
 		}
 

@@ -157,8 +157,23 @@ namespace Model.TelegramBot
 
 		private static ParseMode GetParseMod(Texter text) => text?.Html == true ? ParseMode.Html : ParseMode.Default;
 
-		public async Task<IBotMessage> Message(IMessageToBot message, IChatId chatId)
+		public Task<IBotMessage> Message(IMessageToBot message, IChatId chatId)
 		{
+			try
+			{
+				return InternalMessage(message, chatId);
+			}
+			catch (Exception ex)
+			{
+				_log.Error(ex);
+			}
+
+			return null;
+		}
+		
+		public async Task<IBotMessage> InternalMessage(IMessageToBot message, IChatId chatId)
+		{
+
 			_log.Info($"{nameof(message.TypeMessage)}:{message.TypeMessage} type:{message.Text?.Html} message:{ message.Text?.Text}");
 
 			var longChatId = IdsMapper.ToLong(chatId.GetId); // ToDo is
@@ -167,6 +182,7 @@ namespace Model.TelegramBot
 
 			var (text, mode) = GetText(message.Text);
 			var replaceMsg = IdsMapper.ToInt(message.OnIdMessage?.GetId); // ToDo is
+			var editMsg = IdsMapper.ToInt(message.EditMsg?.GetId); // ToDo is
 
 			Message senderMsg = null;
 
@@ -174,7 +190,7 @@ namespace Model.TelegramBot
 			{
 				case MessageType.Edit:
 					if (!string.IsNullOrEmpty(text))
-						senderMsg = await _bot.EditMessageTextAsync(longChatId, replaceMsg, text, mode,
+						senderMsg = await _bot.EditMessageTextAsync(longChatId, editMsg, text, mode,
 							true, cancellationToken: _cancellationToken);
 					break;
 

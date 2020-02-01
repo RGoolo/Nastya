@@ -5,9 +5,10 @@ namespace Model
 	[JsonObject("main")]
 	public class Configuration
 	{
+		[JsonProperty("settingsPath")]
+		public string SettingsPath { get; set; }
 
-		[JsonProperty("something")]
-		public string Name { get; set; }
-		
+		[JsonProperty("logPath")]
+		public string logPath { get; set; }
 	}
 }

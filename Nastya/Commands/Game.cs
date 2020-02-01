@@ -36,9 +36,10 @@ namespace Nastya.Commands
 		public string Password { get; set; }
 
 		[Command(Const.Game.Site, "Задать адрес игры")]
-		public void Site(IChatId chatId, string url)
+		public string Site(IChatId chatId, string url)
 		{
-			SettingsHelper.GetSetting(chatId).SetUri(url);
+			var  type = SettingsHelper.GetSetting(chatId).SetUri(url);
+			return $"type={type}\nurl={url}";
 		}
 
 		[Command(nameof(Const.Game.CopyFromPM), "Скопировать данные по игре с лички (логин, пароль, сайт).")]
@@ -126,6 +127,16 @@ namespace Nastya.Commands
 		{
 			GetGame(settings)?.SetEvent(new SimpleEvent(EventTypes.GetAllBonus, user));
 		}
+
+		[CheckProperty(nameof(GameIsStart))]
+		[Command(Const.Game.UpdateBonuses, "Обновлять бонусы на уровне", TypeUser.User)]
+		public bool UpdateBonuses { get; set; }
+
+
+		[CheckProperty(nameof(GameIsStart))]
+		[Command(Const.Game.UpdateAllBonuses, "Обновлять все бонусы на уровне", TypeUser.User)]
+		public bool UpdateAllBonuses { get; set; }
+
 
 		[CheckProperty(nameof(GameIsStart))]
 		[Command(nameof(GoToTheNextLevel), "Перейти на следующий уровень")]

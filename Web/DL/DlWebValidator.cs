@@ -1,5 +1,6 @@
 ﻿using Model.Logic.Settings;
 using System.Threading.Tasks;
+using Model.BotTypes;
 using Model.Files;
 using Model.HttpMessages;
 using HttpMessagesFactory = Web.HttpMessages.HttpMessagesFactory;

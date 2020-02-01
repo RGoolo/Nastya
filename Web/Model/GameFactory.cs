@@ -1,4 +1,5 @@
-﻿using Model.Logic.Settings;
+﻿using Model.BotTypes.Enums;
+using Model.Logic.Settings;
 using Web.DL;
 using Web.DZR;
 

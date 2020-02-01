@@ -17,7 +17,6 @@ namespace Web.DL.PageTypes
 		private DLPage _lastPage;
 		private readonly ISettings _setting;
 		
-
 		public void SendMsg(string message, IMessageId replaceMsgId = null, bool withHtml = false)
 		{
 			var t = MessageToBot.GetTextMsg(new Texter(message, withHtml));
@@ -25,8 +24,10 @@ namespace Web.DL.PageTypes
 			SendMsg(t);
 		}
 
-		private void SendMsg(IEnumerable<IMessageToBot> msgs)
+		private void SendMsg(IReadOnlyCollection<IMessageToBot> msgs)
 		{
+			if (msgs == null) return;
+			if (!msgs.Any()) return;
 			_sendMsgDl.SendMsg(msgs);
 		}
 
@@ -82,66 +83,15 @@ namespace Web.DL.PageTypes
 					SendNewLevelInfo(page, true);
 				else
 				{
-					SendDiffTime(page);
-					SendDiffHint(page);
+					SendMsg(CheckChanges.Time(page, _lastPage));
+					SendMsg(CheckChanges.Hints(page, _lastPage));
+					SendMsg(CheckChanges.Sectors(page, _lastPage, _setting));
 				}
 			}
+
 			_lastPage = page;
 			if (lvlNumber != _lastPage.LevelNumber)
 				_setting.Page.LastLvl = _lastPage.LevelNumber;
-		}
-
-		private void SendDiffHint(DLPage page)
-		{
-			if(page.Hints == null || page.Hints.IsEmpty)
-				return;
-
-			if (_lastPage.Hints == null || _lastPage.Hints.IsEmpty)
-				return;
-
-			var msg = new List<IMessageToBot>();
-			foreach (var pageHint in page.Hints)
-			{
-				var lastHint = _lastPage.Hints.GetById(pageHint.Number);
-				if (lastHint == null)
-					continue;
-
-				if (!pageHint.IsReady || lastHint.IsReady) continue;
-
-				var texter = new Texter(pageHint.ToString(), true);
-				msg.Add(MessageToBot.GetTextMsg(texter));
-			}
-			if (msg.Any())
-				SendMsg(msg);
-		}
-
-		private void SendDiffTime(DLPage page)
-		{
-			var msg = new List<IMessageToBot>();
-
-			if (IsBorderValue(page.TimeToEnd, _lastPage.TimeToEnd, 300))
-				msg.Add(MessageToBot.GetTextMsg($"⏳ Осталось меньше 5 минут"));
-
-			if (IsBorderValue(page.TimeToEnd, _lastPage.TimeToEnd, 60))
-				msg.Add(MessageToBot.GetTextMsg($"⏳ Осталось меньше минуты"));
-
-			foreach (var newHint in page.Hints)
-			{
-				if (newHint.IsReady) continue;
-
-				var lastHint = _lastPage.Hints.FirstOrDefault(x => x.Number == newHint.Number && newHint.Number != 0);
-				if (lastHint == null)
-					continue;
-
-				if (IsBorderValue(newHint.TimeToEnd, lastHint.TimeToEnd, 300))
-					msg.Add(MessageToBot.GetTextMsg(newHint.ToString()));
-
-				if (IsBorderValue(newHint.TimeToEnd, lastHint.TimeToEnd, 60))
-					msg.Add(MessageToBot.GetTextMsg(newHint.ToString()));
-			}
-			if (msg.Any())
-				SendMsg(msg);
-
 		}
 
 		public void SendNewLevelInfo(DLPage page, bool newLvl = false)
@@ -160,56 +110,7 @@ namespace Web.DL.PageTypes
 
 			msg.Add(message);
 
-			/*
-			 var textTask = WebHelper.RemoveImg(WebHelper.RemoteTagToTelegram(sb.ToString()));
-
-			var text = textTask.Item1 + "\n";
-			foreach (var img in textTask.Item2)
-			{
-				text = text.Replace(img.Name, $"<a href=\"{img.Url}\">{img.Name}</a>");
-			}
-
-			text = text.Replace("<a>", "</a>)");
-
-			msg.Add(CommandMessage.GetTextMsg(new Texter(text, true)));
-
-			var currentCoords = RegExPoints.GetCoords(sb.ToString()).ToList();
-			foreach (var x in currentCoords)
-				msg.Add(CommandMessage.GetCoordMsg(x));
-								*/
-
-			/*if (page.ImageUrls.Any())
-			{
-				if (page.ImageUrls.Count > 10)
-					msg.Add(CommandMessage.GetTextMsg("Тут должны быть картинки, но их больше 10, так что не загружаю!"));
-				else
-					msg.AddRange(page.ImageUrls.Select(x => CommandMessage.GetPhototMsg(x, new Texter(x))));
-			}*/
 			SendMsg(msg);
-		}
-
-		private bool IsBorderValue(DateTime? dt1, DateTime? dt2, int second)
-		{
-			if (!dt1.HasValue || !dt2.HasValue)
-				return false;
-
-			DateTime maxDt;
-			DateTime minDt;
-			if (dt1 > dt2)
-			{
-				maxDt = dt1.Value;
-				minDt = dt2.Value;
-			}
-			else
-			{
-				maxDt = dt2.Value;
-				minDt = dt1.Value;
-			}
-
-			var difTime = new DateTime();
-			difTime.AddSeconds(second);
-
-			return ((maxDt - difTime).TotalSeconds > second && (minDt - difTime).TotalSeconds <= second);
 		}
 
 		public void SendBonus(DLPage page, bool isAll = false)
@@ -242,13 +143,10 @@ namespace Web.DL.PageTypes
 		{
 			StringBuilder sb = new StringBuilder();
 
-			if (!string.IsNullOrEmpty(page.Sectors?.SectorsRemain))
+			if (!string.IsNullOrEmpty(page.Sectors?.SectorsRemainString))
 			{
-				var sectors = page.Sectors.Sectors.Where(x => (!x.Accepted || isAll));
-				sb.Append($"На уровне осталось закрыть: {page.Sectors.SectorsRemain} из {page.Sectors.CountSectors}\n");
-				sectors.ToList().ForEach(x =>
-					sb.Append(
-						$"{(x.Accepted ? "" : "<b>")}{x.Name} : {(x.Accepted ? x.Answer : "-")}{(x.Accepted ? "" : "</b>")}\n"));
+				var sectors = isAll ? page.Sectors.AllSectors : page.Sectors.AcceptedSectors;
+				sb.Append(sectors);
 			}
 			else
 			{

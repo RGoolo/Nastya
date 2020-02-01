@@ -20,7 +20,10 @@ namespace Model.Files.FileTokens
 
 	public interface IChatFile : IFile, IChatFileId
 	{
-
+		T Read<T>();
+		void Save<T>(T type);
+		void Delete();
+		bool Exists();
 	}
 
 	public interface IFile : IFileToken

@@ -57,6 +57,9 @@
 			public const string AllBonus = "allBonus";
 			public const string Bonus = "bonus";
 
+			public const string UpdateBonuses = "updateBonuses";
+			public const string UpdateAllBonuses = "updateAllBonuses";
+
 			public const string GameIsStart = "GameIsStart";
 
 			public const string Level = "level";
