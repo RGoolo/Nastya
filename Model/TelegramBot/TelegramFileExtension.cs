@@ -5,7 +5,7 @@ namespace Model.TelegramBot
 {
 	public static class TelegramFileExtension
 	{ 
-		public static InputOnlineFile GetInputFile(this IFileToken token)
+		public static InputOnlineFile GetInputFile(this IChatFileToken token)
 		{
 			return token.IsLocal() ? new InputOnlineFile(token.ReadStream(), token.FileName) : new InputOnlineFile(token.Location);
 		}

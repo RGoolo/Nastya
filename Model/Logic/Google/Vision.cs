@@ -15,9 +15,9 @@ namespace Model.Logic.Google
 
 		private static string Link(string url, string name) => $"<a href=\"{url}\">{name}</a>";
 
-		private static Image GetImg(IFile file) => file.FileType.IsLocal() ? Image.FromStream(file.ReadStream()) : Image.FromUri(file.Location);
+		private static Image GetImg(IChatFile file) => file.FileType.IsLocal() ? Image.FromStream(file.ReadStream()) : Image.FromUri(file.Location);
 
-		public static async Task<string> GetTextAsync(IFile file)
+		public static async Task<string> GetTextAsync(IChatFile file)
 		{
 			var image = GetImg(file);
 
@@ -34,7 +34,7 @@ namespace Model.Logic.Google
 			return sb.ToString();
 		}
 
-		public static async Task<string> GetWebAsync(IFile file)
+		public static async Task<string> GetWebAsync(IChatFile file)
 		{
 			StringBuilder sb = new StringBuilder();
 			var image = GetImg(file);
@@ -63,7 +63,7 @@ namespace Model.Logic.Google
 			return sb.ToString();
 		}
 
-		public static async Task<string> GetLogoAsync(IFile file)
+		public static async Task<string> GetLogoAsync(IChatFile file)
 		{
 			StringBuilder sb = new StringBuilder();
 
@@ -79,7 +79,7 @@ namespace Model.Logic.Google
 			return sb.ToString();
 		}
 
-		public static async Task<string> GetLandmarkAsync(IFile file)
+		public static async Task<string> GetLandmarkAsync(IChatFile file)
 		{
 			StringBuilder sb = new StringBuilder();
 			var image = GetImg(file);
@@ -96,7 +96,7 @@ namespace Model.Logic.Google
 			return sb.ToString();
 		}
 
-		public static async Task<string> GetDocAsync(IFile file)
+		public static async Task<string> GetDocAsync(IChatFile file)
 		{
 			StringBuilder sb = new StringBuilder();
 			var image = GetImg(file);

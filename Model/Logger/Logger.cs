@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 
 namespace Model.Logger
 {
@@ -11,13 +12,30 @@ namespace Model.Logger
 	public class Logger : ILogger
 	{
 		private readonly string _className;
+		private readonly StreamWriter _file;
+		public static string FileLog { get; set; } = "log.txt";
+
+		private static StreamWriter Staticfile;
 
 		public static ILogger CreateLogger(string className)
 		{
-			return new Logger(className);
+			if (Staticfile == null)
+			{
+				var path = Path.GetDirectoryName(FileLog);
+				if (!Directory.Exists(path))
+					Directory.CreateDirectory(path);
+
+				Staticfile = new StreamWriter(FileLog, true);
+			}
+
+			return new Logger(className, Staticfile);
 		}
 
-		private Logger(string className) =>	_className = className;
+		private Logger(string className, StreamWriter file)
+		{
+			_className = className;
+			_file = file;
+		}
 
 		public Grpc.Core.Logging.ILogger ForType<T>()
 		{
@@ -36,7 +54,7 @@ namespace Model.Logger
 
 		public void Info(string message)
 		{
-			Console.WriteLine($"{_className} Info:{message}");
+			_file.WriteLine($"{_className} Info:{message}");
 		}
 
 		public void Info(string format, params object[] formatArgs)
@@ -44,14 +62,14 @@ namespace Model.Logger
 			throw new NotImplementedException();
 		}
 
-		public void Warning(string message) => Console.WriteLine($"{_className} warning:{message}");
-		public void Warning(string message, params object[] formatArgs) => Console.WriteLine($"{_className} warning:{string.Format(message, formatArgs)}");
-		public void Warning(Exception exception) => Console.WriteLine($"{_className} warning:{exception.Message}\n{exception.StackTrace}");
-		public void Warning(Exception exception, string message) => Console.WriteLine($"{_className} warning:{message}\n{exception.Message}\n{exception.StackTrace}");
+		public void Warning(string message) => _file.WriteLine($"{_className} warning:{message}");
+		public void Warning(string message, params object[] formatArgs) => _file.WriteLine($"{_className} warning:{string.Format(message, formatArgs)}");
+		public void Warning(Exception exception) => _file.WriteLine($"{_className} warning:{exception.Message}\n{exception.StackTrace}");
+		public void Warning(Exception exception, string message) => _file.WriteLine($"{_className} warning:{message}\n{exception.Message}\n{exception.StackTrace}");
 
-		public void Error(string message) => Console.WriteLine($"{_className} error:{message}");
-		public void Error(string message, params object[] formatArgs) => Console.WriteLine($"{_className} error:{string.Format(message, formatArgs)}");
-		public void Error(Exception exception) => Console.WriteLine($"{_className} error:{exception.Message}\n{exception.StackTrace}");
-		public void Error(Exception exception, string message) => Console.WriteLine($"{_className} error:{message}\n{exception.Message}\n{exception.StackTrace}");
+		public void Error(string message) => _file.WriteLine($"{_className} error:{message}");
+		public void Error(string message, params object[] formatArgs) => _file.WriteLine($"{_className} error:{string.Format(message, formatArgs)}");
+		public void Error(Exception exception) => _file.WriteLine($"{_className} error:{exception.Message}\n{exception.StackTrace}");
+		public void Error(Exception exception, string message) => _file.WriteLine($"{_className} error:{message}\n{exception.Message}\n{exception.StackTrace}");
 	}
 }

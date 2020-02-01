@@ -277,7 +277,7 @@ namespace Model.TelegramBot
 				return null;
 
 			//var filePath = SettingHelper.DontExistFile("ogg", resourceMsg.ChatId);
-			var file = _chatFileWorker(msg.ChatId).NewResourcesFileTokenByExt(".ogg");
+			var file = _chatFileWorker(msg.ChatId).NewResourcesFileByExt(".ogg");
 			return DownloadFileAsync(tMsg.Voice.FileId, file, msg, TypeResource.Voice);
 		}
 
@@ -288,7 +288,7 @@ namespace Model.TelegramBot
 				return null;
 
 			//var filePath = SettingHelper.DontExistFile("jpg", resourceMsg.ChatId);
-			var fileToken = _chatFileWorker(msg.ChatId).NewResourcesFileTokenByExt(".jpg");
+			var fileToken = _chatFileWorker(msg.ChatId).NewResourcesFileByExt(".jpg");
 			return DownloadFileAsync(tMsg.Photo[^1].FileId, fileToken, msg, TypeResource.Photo);
 		}
 

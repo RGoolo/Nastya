@@ -9,7 +9,7 @@ namespace Model.Logic.Google
 {
 	public class Voice
 	{
-		public static async Task<string> GetText(IFile file)
+		public static async Task<string> GetText(IChatFile file)
 		{
 
 			StringBuilder sb = new StringBuilder();

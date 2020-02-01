@@ -43,7 +43,7 @@ namespace Model.BotTypes.Class
 		IMessageId OnIdMessage { get; set; }
 		Texter Text { get; set; }
 		Coordinate Coordinate { get; set; }
-		IFileToken FileToken { get; set; }
+		IChatFileToken FileToken { get; set; }
 		Notification Notification { get; set; }
 		object NotificationObject { get; set; }
 		IMessageId EditMsg { get; set; }
@@ -58,7 +58,7 @@ namespace Model.BotTypes.Class
 		public IMessageId OnIdMessage { get; set; }
 		public Texter Text { get; set; }
 		public Coordinate Coordinate { get; set; }
-		public IFileToken FileToken { get; set; }
+		public IChatFileToken FileToken { get; set; }
 		public Notification Notification { get; set; }
 		public object NotificationObject { get; set; }
 		public IMessageId EditMsg { get; set; }
@@ -91,13 +91,13 @@ namespace Model.BotTypes.Class
 		public static IMessageToBot GetEditMsg(Texter texter)
 			=> new MessageToBot(MessageType.Edit) { Text = texter };
 
-		public static IMessageToBot GetPhototMsg(IFileToken token, Texter text)
+		public static IMessageToBot GetPhototMsg(IChatFileToken token, Texter text)
 			=> new MessageToBot(MessageType.Photo) { Text = text, FileToken = token };
 
-		public static IMessageToBot GetPhototMsg(IFileToken token, string text)
+		public static IMessageToBot GetPhototMsg(IChatFileToken token, string text)
 			=> GetPhototMsg(token, new Texter(text));
 
-		public static IMessageToBot GetHTMLPhototMsg(IFileToken token, string text)
+		public static IMessageToBot GetHTMLPhototMsg(IChatFileToken token, string text)
 			=> GetPhototMsg(token, new Texter(text, true));
 
 		public static IMessageToBot GetPhototMsg(string url, Texter text)

@@ -8,13 +8,13 @@ using Model.Logic.Settings;
 
 namespace Model.Files.FileTokens
 {
-	public class UrlChatFileToken : IFileToken
+	public class UrlChatFileToken : IChatFileToken
 	{
 		public UrlChatFileToken(string uri)
 		{
 			Location = uri;
 			FileType = FileTypeFlags.Resources;
-			FileName = UriHelper.GetFileName(uri); // ToDo last;
+			FileName = UriHelper.GetFileName(uri);
 		}
 
 		public FileTypeFlags FileType { get; }
@@ -22,18 +22,18 @@ namespace Model.Files.FileTokens
 		public string Location { get; set; }
 	}
 
-	public class ChatFile : IChatFile
+
+	internal class ChatFile : IChatFile
 	{
 		public FileTypeFlags FileType { get; }
 		public string FileName { get; }
-		public IChatId ChatId { get; set; }
 
-		public ChatFile(FileTypeFlags fileType, string fileName, IChatId chatId, string location)
+
+		internal ChatFile(FileTypeFlags fileType, string fileName, IChatId chatId, string location)
 		{
 			FileType = fileType;
 			FileName = fileName;
 			Location = location;
-			ChatId = chatId;
 		}
 		
 		/// <summary>
@@ -46,18 +46,13 @@ namespace Model.Files.FileTokens
 			if (!FileType.IsLocal())
 				throw new NotImplementedException();
 
-			return System.IO.File.OpenRead(Location);
+			return File.OpenRead(Location);
 		}
 
-		public FileStream WriteStream()
+		public FileStream WriteStream(FileMode fileMode = FileMode.Create)
 		{
 			if (!FileType.IsLocal())
 				throw new NotImplementedException();
-
-			// Console.WriteLine("localToken.FilePath:" + localToken.FileFullPath);
-			//var path = Path.GetFullPath(Location);
-		//	if (!Directory.Exists(path))
-		//		Directory.CreateDirectory(path);
 
 			return new FileStream(Location, FileMode.Create);
 		}
@@ -84,7 +79,7 @@ namespace Model.Files.FileTokens
 			if (!FileType.IsLocal())
 				throw new NotImplementedException();
 
-			System.IO.File.Delete(Location);
+			File.Delete(Location);
 		}
 
 		public bool Exists()
@@ -92,54 +87,7 @@ namespace Model.Files.FileTokens
 			if (!FileType.IsLocal())
 				throw new NotImplementedException();
 
-			return System.IO.File.Exists(Location);
-		}
-	}
-
-	public class File : IFile
-	{
-		public FileTypeFlags FileType { get; }
-		public string FileName { get; }
-
-		public File(FileTypeFlags fileType, string fileName, string location)
-		{
-			FileType = fileType;
-			FileName = fileName;
-			Location = location;
-
-			if (!FileType.IsLocal()) return;
-			
-			var path = Path.GetFullPath(Location);
-			if (!Directory.Exists(path))
-				Directory.CreateDirectory(path);
-		}
-
-		/// <summary>
-		/// Url or FullFilePath
-		/// </summary>
-		public string Location { get; }
-
-		public FileStream ReadStream()
-		{
-			if (!FileType.IsLocal())
-			{
-				//WebClient wc = new WebClient();
-				//return wc.DownloadData(Location);
-				throw new NotImplementedException();
-			}
-
-			return System.IO.File.OpenRead(Location);
-		}
-
-		public FileStream WriteStream()
-		{
-			if (!FileType.IsLocal())
-				throw new NotImplementedException();
-
-			// Console.WriteLine("localToken.FilePath:" + localToken.FileFullPath);
-			
-
-			return new FileStream(Location, FileMode.Create);
+			return File.Exists(Location);
 		}
 	}
 }

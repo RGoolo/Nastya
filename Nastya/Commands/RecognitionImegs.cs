@@ -23,19 +23,19 @@ namespace Nastya.Commands
 		public Task<string> IsCheckVisionMsg { get; set; }
 
 		[Command("text", "Получить текст с изображения.", resource: TypeResource.Photo)]
-		public Task<string> GetText(IFile token) => ConvertToText(Vision.GetTextAsync, token);
+		public Task<string> GetText(IChatFile token) => ConvertToText(Vision.GetTextAsync, token);
 
 		[Command("logo", "Получить список logo с изображения.", resource: TypeResource.Photo)]
-		public Task<string> GetLogo(IFile token) => ConvertToText(Vision.GetLogoAsync, token);
+		public Task<string> GetLogo(IChatFile token) => ConvertToText(Vision.GetLogoAsync, token);
 
 		[Command("imgweb", "Получить список web с изображения.", resource: TypeResource.Photo)]
-		public Task<string> GetWeb(IFile token) => ConvertToText(Vision.GetWebAsync, token);
+		public Task<string> GetWeb(IChatFile token) => ConvertToText(Vision.GetWebAsync, token);
 
 		[Command("imgmark", "Получить список Landmark с изображения.", resource: TypeResource.Photo)]
-		public Task<string> GetLandmark(IFile token) => ConvertToText(Vision.GetLandmarkAsync, token);
+		public Task<string> GetLandmark(IChatFile token) => ConvertToText(Vision.GetLandmarkAsync, token);
 
 		[Command("imgdoc", "Получить список Landmark с изображения.", resource: TypeResource.Photo)]
-		public Task<string> GetDoc(IFile token) => ConvertToText(Vision.GetDocAsync, token);
+		public Task<string> GetDoc(IChatFile token) => ConvertToText(Vision.GetDocAsync, token);
 
 		//private Coordinates _coord = new CheckCoordinates();// ToDo to voice
 		[CommandOnMsg(nameof(IsCheckVisionMsg), MessageType.Voice, typeUser: TypeUser.User)]
@@ -45,7 +45,7 @@ namespace Nastya.Commands
 			GetText(msg.Resource.File);
 		}
 
-		private async Task<string> ConvertToText(Func<IFile, Task<string>> toText, IFile token)
+		private async Task<string> ConvertToText(Func<IChatFile, Task<string>> toText, IChatFile token)
 		{
 			return await toText(token);
 			//return MessageToBot.GetTextMsg(new Texter(text));

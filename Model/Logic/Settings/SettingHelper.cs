@@ -53,7 +53,7 @@ namespace Model.Logic.Settings
 
 		public SettingHelper(IChatId chatId, string directory)
 		{
-			FileChatWorker = new ChatFileTokenFactory(chatId, directory); //This 
+			FileChatWorker = new ChatFileFactory(chatId, directory); //This 
 			_settingsFile = FileChatWorker.SettingsFile();
 			Path = directory;
 

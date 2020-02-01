@@ -7,12 +7,9 @@ namespace Model.Files.FileTokens
 {
 	public interface IChatFileFactory
 	{
-		IChatFile NewResourcesFileTokenByExt(string ext);
-		IFile  NewResourcesFileByExt(string ext);
+		IChatFile NewResourcesFileByExt(string ext);
 		IChatFile SettingsFile();
-		IChatFile InternetFile(string uri);
-		IChatFile GetExistFileByPath(string fullFileName);
-		IChatFile GetChatFile(IFileToken fileToken);
+		IChatFile GetChatFile(IChatFileToken fileToken);
 	}
 
 	public static class UriHelper
@@ -24,19 +21,19 @@ namespace Model.Files.FileTokens
 		}
 	}
 
-	public class ChatFileTokenFactory : IChatFileFactory
+	public class ChatFileFactory : IChatFileFactory
 	{
-		private string _botSettingsPath;
+		private readonly string _botSettingsPath;
 		private readonly IChatId _chatId;
 		private const string SettingsFileName = "setting.xml";
 		private const string ResourcesFolder = "resources";
-		public ChatFileTokenFactory(IChatId chatId, string botSettingsPath)
+		public ChatFileFactory(IChatId chatId, string botSettingsPath)
 		{
 			_botSettingsPath = botSettingsPath;
 			_chatId = chatId;
 		}
 
-		public IChatFile NewResourcesFileTokenByExt(string ext)
+		public IChatFile NewResourcesFileByExt(string ext)
 		{
 			var fileName = Guid.NewGuid() + ext; // Какой шанс что гуиды повторятся?
 			var fullName = Path.Combine(_botSettingsPath, ResourcesFolder, fileName);
@@ -48,12 +45,6 @@ namespace Model.Files.FileTokens
 				fullName);
 		}
 
-
-		public IFile NewResourcesFileByExt(string ext)
-		{
-			throw new NotImplementedException();
-		}
-
 		public IChatFile SettingsFile()
 		{
 			var fileName = SettingsFileName;
@@ -61,7 +52,7 @@ namespace Model.Files.FileTokens
 			var res = Path.Combine(_botSettingsPath, ResourcesFolder);
 
 			if (!Directory.Exists(res))
-				Directory.CreateDirectory(res);
+				Directory.CreateDirectory(_botSettingsPath);
 
 			return new ChatFile(FileTypeFlags.IsChat | FileTypeFlags.IsLocal | FileTypeFlags.Settings,
 				SettingsFileName,
@@ -75,7 +66,7 @@ namespace Model.Files.FileTokens
 			return new ChatFile(FileTypeFlags.IsChat, name, _chatId, uri);
 		}
 
-		public IChatFile GetChatFile(IFileToken fileToken)
+		public IChatFile GetChatFile(IChatFileToken fileToken)
 		{
 			return fileToken.IsLocal() ? GetExistFileByPath(fileToken.Location) : InternetFile(fileToken.Location);
 		}

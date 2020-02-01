@@ -23,19 +23,19 @@ namespace Model.Files.FileTokens
 				_ => throw new ArgumentOutOfRangeException(nameof(type), type, null)
 			};
 		
-		public static bool IsLocal(this IFileToken flags)
+		public static bool IsLocal(this IChatFileToken flags)
 		{
 			return flags.FileType.IsLocal();
 		}
 
-		public static bool Is(this IFileToken flags, FileType type) => flags.FileType.Is(type);
+		public static bool Is(this IChatFileToken flags, FileType type) => flags.FileType.Is(type);
 
-		public static FileStream ReadStream(this IFileToken token)
+		public static FileStream ReadStream(this IChatFileToken token)
 		{
 			if (!token.IsLocal())
 				throw new NotImplementedException();
 
-			return System.IO.File.OpenRead(token.Location);
+			return File.OpenRead(token.Location);
 		}
 	}
 }

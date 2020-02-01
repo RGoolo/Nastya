@@ -98,7 +98,7 @@ namespace Model.BotTypes.Class.Reflection
 		{
 			[typeof(string[])] = (mess, command) => command.Values.ToArray(),
 			[typeof(IChatFile)] = (mess, command) => mess.Resource.File,
-			[typeof(IFile)] = (mess, command) => mess.Resource.File,
+			[typeof(IChatFile)] = (mess, command) => mess.Resource.File,
 				
 			[typeof(IEnumerable<string>)] = (mess, command) => command.Values,
 			[typeof(IMessageCommand)] = (mess, command) => command,

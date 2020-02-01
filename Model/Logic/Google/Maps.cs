@@ -46,16 +46,16 @@ namespace Model.Logic.Google
 			stream?.CopyTo(fileStream); //ToDo stream
 		}
 
-		public static Maps GetMap(Coordinates.Coordinate coord)
+		public static Maps GetMap(Coordinate coord)
 		{
-			return new Maps(new List<Coordinates.Coordinate> { coord });
+			return new Maps(new List<Coordinate> { coord });
 		}
 
 		public static Maps GetMap(string coord)
 		{
 			return new Maps(new List<string> { coord });
 		}
-		public static Maps GetMap(IEnumerable<Coordinates.Coordinate> coords)
+		public static Maps GetMap(IEnumerable<Coordinate> coords)
 		{
 			return new Maps(coords);
 		}
@@ -91,7 +91,7 @@ namespace Model.Logic.Google
 
 		public bool isDir_action;
 
-		public Maps(IEnumerable<Coordinates.Coordinate> coords)
+		public Maps(IEnumerable<Coordinate> coords)
 		{
 			if (!coords.Any())
 				return;

@@ -28,7 +28,6 @@ namespace Model.BotTypes.Class
 
 		public List<string> GetCommands(string str)
 		{
-			Console.WriteLine(str);
 			string @params = $"((\\s|^){StartSplitterPattern}(?'{NameGroup}'(\\w|\\d|_)+))*";
 			var command = new List<string>();
 			foreach (Match match in Regex.Matches(str, @params))
@@ -43,11 +42,8 @@ namespace Model.BotTypes.Class
 
 		public List<IMessageCommand> CreateCommands(string text, List<string> commands)
 		{
-			Console.WriteLine("-----------");
 			if (string.IsNullOrEmpty(text))
 				return null;
-
-			Console.WriteLine(text + string.Join("\n", commands));
 
 			var result = new List<IMessageCommand>();
 			foreach (var command in commands)

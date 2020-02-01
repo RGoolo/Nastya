@@ -16,7 +16,7 @@ namespace Nastya.Commands
 		public bool IsCheckVoice { get; set; }
 
 		[Command("text", "Получить текст из голосового файла.", resource: TypeResource.Voice)]
-		public Task<string> GetVoiceText(IFile token) => ConvertToText(Voice.GetText, token);
+		public Task<string> GetVoiceText(IChatFile token) => ConvertToText(Voice.GetText, token);
 
 		//private Coordinates _coord = new CheckCoordinates();
 		[CommandOnMsg(nameof(IsCheckVoice), MessageType.Photo, typeUser: TypeUser.User)]
@@ -46,7 +46,7 @@ namespace Nastya.Commands
 			return GetVoiceText(factory.GetChatFile(msg.ReplyToCommandMessage.FileToken));
 		}
 
-		private async Task<string> ConvertToText(Func<IFile, Task<string>> toText, IFile token)
+		private async Task<string> ConvertToText(Func<IChatFile, Task<string>> toText, IChatFile token)
 		{
 			var text = await toText(token);
 			return string.IsNullOrEmpty(text) ? "не удалось распознать сообщение" : text;

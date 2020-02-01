@@ -44,7 +44,7 @@ namespace Model.HttpMessages.Simple
 			}
 			catch (Exception ex)
 			{
-				Logger.Logger.CreateLogger(nameof(System.Net.CookieContainer)).Error(ex);
+				_logger.Error(ex);
 			}
 		}
 

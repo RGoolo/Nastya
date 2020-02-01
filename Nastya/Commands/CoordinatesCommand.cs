@@ -136,7 +136,7 @@ namespace Nastya.Commands
 			{
 				//var file = SettingsHelper.GetSetting(ChatId).FileWorker.NewFileTokenByExt(".jpg");
 
-				var file = fWorker.NewResourcesFileTokenByExt(".jpg");
+				var file = fWorker.NewResourcesFileByExt(".jpg");
 				//if (addPicture) _pointsFactory.GetPictureText(text, file);
 				_pointsFactory.SetPicture(file, pointWorker.Points());
 
