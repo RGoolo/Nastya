@@ -35,25 +35,25 @@ namespace UnitTest.Logic
 		[MemberData(nameof(CountCoordinate))]
 		public void CountCoordinateTest(string coords, int count)
 		{
-			var coordinate = RegExPoints.GetCoords(coords);
-		//	Assert.Equal(coordinate.Count,count);
+			var coordinate = RegExPoints.GetCoords(coords).ToList();
+			Assert.Equal(coordinate.Count,count);
 		}
 		public static IEnumerable<object[]> CountCoordinate()
 		{
 
-			yield return new object[] { "55.755831, 137.617673 — градусы", 0 }; //137
+			yield return new object[] { "1 55.755831, 137.617673 — градусы", 0 };
 			//Good ToDo: add test
-			yield return new object[] { "55.755831, 37.617673 — градусы", 1 };
-			yield return new object[] { "55,755831, 37,617673 — градусы", 1 };
-			yield return new object[] { "N55°75'5831, E55°75'5831  — градусы(+ доп.буквы)", 1 };
-			yield return new object[] { "55°45.35′N, 37°37.06′E — градусы и минуты(+ доп.буквы)", 1 };
-			yield return new object[] { "-55°45′20.9916″N, 37°37′3.6228″E — градусы, минуты и секунды(+ доп.буквы)", 1 };
+			yield return new object[] { "2 55.755831, 37.617673 — градусы", 1 };
+			yield return new object[] { "3 55,755831, 37,617673 — градусы", 1 };
+			yield return new object[] { "4 N55°75'5831, E55°75'5831  — градусы(+ доп.буквы)", 1 }; //ToDo:
+			yield return new object[] { "5 55°45.35′N, 37°37.06′E — градусы и минуты(+ доп.буквы)", 1 }; // ToDo:
+			yield return new object[] { "6 -55°45′20.9916″N, 37°37′3.6228″E — градусы, минуты и секунды(+ доп.буквы)", 1 };
 			//Bad
-			yield return new object[] { "155,755831, 37,617673 — градусы", 0} ; //155
-			yield return new object[] { "55,755831, 137,617673 — градусы", 0 }; //137
-			yield return new object[] { "-155°45′20.9916″N, 37°37′3.6228″E — градусы, минуты и секунды(+ доп.буквы)", 0 };
-			yield return new object[] { "155°45′20.9916″N, 37°37′3.6228″E — градусы, минуты и секунды(+ доп.буквы)", 0 };
-			yield return new object[] { "59.953519, 30.356323 59.933631, 30.305234 59.920544, 30.329020", 3 };
+			yield return new object[] { "7 1551,755831, 37,617673 — градусы", 0} ; //155
+			yield return new object[] { "8 55,7, 137,617673 — градусы", 0 }; //137
+			yield return new object[] { "9 -155°45′20.9916″N, 37°37′3.6228″E — градусы, минуты и секунды(+ доп.буквы)", 1 };
+			yield return new object[] { "10 155°45′20.9916″N, 37°37′3.6228″E — градусы, минуты и секунды(+ доп.буквы)", 1 };
+			yield return new object[] { "11 59.953519, 30.356323 59.933631, 30.305234 59.920544, 30.329020", 3 };
 		}
 
 

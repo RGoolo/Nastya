@@ -1,13 +1,18 @@
-﻿namespace UnitTest.Logic
+﻿using System;
+using System.Collections.Generic;
+using Model.Logic.Coordinates;
+using Xunit;
+
+namespace UnitTest.Logic
 {
-	/*
+	
 	public class CoordinatesProviderTest
 	{
 		[Theory]
 		[MemberData(nameof(OneCoordinate))]
 		public void OneCoordinateTest(string coords)
 		{
-			var factory = new PointsFactory(new SettingsPoints(), string.Empty, new LocalChatFileWorker(Guid.Empty));
+			var factory = new PointsFactory(new SettingsPoints(), string.Empty);
 			var point = factory.GetCoordinates(coords);
 			var str = point.ReplacePoints();
 		}
@@ -16,7 +21,7 @@
 		[MemberData(nameof(OneCoordinate))]
 		public void CoordinateTest(string coords)
 		{
-			var factory = new PointsFactory(new SettingsPoints(), string.Empty, new LocalChatFileWorker(Guid.Empty));
+			var factory = new PointsFactory(new SettingsPoints(), string.Empty);
 			var point = factory.GetCoordinates(coords);
 			var str = point.TotalPoints();
 		}
@@ -34,12 +39,12 @@
 		[MemberData(nameof(OnePlace))]
 		public void OnePlaceTest(string coords)
 		{
-			var factory = new PointsFactory(new SettingsPoints(), string.Empty, new LocalChatFileWorker(Guid.Empty));
+			var factory = new PointsFactory(new SettingsPoints(), string.Empty);
 			var point = factory.GetPlaces(coords);
 			var str = point.ReplacePoints();
 			var str2 = str;
 		}
 		
 
-	}*/
+	}
 }

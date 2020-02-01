@@ -11,7 +11,7 @@ namespace Model.Logic.Coordinates
 
 		private static class DegreeDigital
 		{
-			private const string PatternDigital = @"-?\d{1,2}\.\d{2,16}";
+			private const string PatternDigital = @"-?\d{1,2}(\.|,)\d{2,16}";
 			private const string N = "(N|n|н|Н)";
 			private const string S = "(?<firstMinus>S|s)";
 			private const string E = "(E|e|Е|е)";
@@ -115,7 +115,7 @@ namespace Model.Logic.Coordinates
 
 		private static float Parse(string str) => string.IsNullOrEmpty(str)
 			? 0
-			: float.Parse(str, NumberStyles.Float, CultureInfo.InvariantCulture);
+			: float.Parse(str, NumberStyles.Any, CultureInfo.InvariantCulture);
 
 		private static IEnumerable<Coordinate> GetDegreeMinSecCoords(string text)
 		{
