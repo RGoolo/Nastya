@@ -14,5 +14,11 @@
 			get => SettingsValues.GetValue(Const.Coordinates.ShowYandex);
 			set => SettingsValues.SetValue(Const.Coordinates.ShowYandex, value);
 		}
+
+		public string GoogleCreads 
+		{
+			get => SettingsValues.GetValue(Const.Coordinates.GoogleCreads);
+			set => SettingsValues.SetValue(Const.Coordinates.GoogleCreads, value);
+		}
 	}
 }

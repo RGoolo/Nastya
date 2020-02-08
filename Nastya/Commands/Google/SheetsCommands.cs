@@ -19,55 +19,64 @@ namespace Nastya.Commands
 {
 	
 	[CommandClass(nameof(SheetsCommands), "Работа с Google Sheets.", TypeUser.User)]
-	public class SheetsCommands : BaseCommand
+	public class SheetsCommands
 	{
+		private readonly IChatId _chatId;
 		private WorkerSheets _workerSheets;
 		private string _sheetsUrl;
+		private readonly IChatFileFactory _fileFactory;
 
-		private static WorkerSheets Create(IChatFileFactory fileFactory, string url)
+		public SheetsCommands(ISettings settings, IChatId chatId)
+		{
+			_chatId = chatId;
+			_fileFactory = settings.FileChatFactory;
+		}
+
+		private WorkerSheets Create(string url)
 		{
 			if (string.IsNullOrEmpty(url))
 				throw new ModelException("Не задан путь к документу.");
 
-			var fileCred = fileFactory.SystemFile(SystemChatFile.SheetCredentials);
+			var fileCred = _fileFactory.SystemFile(SystemChatFile.SheetCredentials);
 			if (!fileCred.Exists())
 				throw new ModelException("Не задан Token доступа.");
 
-			var fileToken = fileFactory.SystemFile(SystemChatFile.SheetToken);
+			var fileToken = _fileFactory.SystemFile(SystemChatFile.SheetToken);
 			return new WorkerSheets(fileCred, fileToken, url);
 		}
 
-		private WorkerSheets GetSheets(IChatFileFactory fileFactory)
+		private WorkerSheets GetSheets()
 		{
-			return _workerSheets ??= Create(fileFactory, _sheetsUrl?.Contains("/") == true ? _sheetsUrl.Split("/")[5] : _sheetsUrl);
+			return _workerSheets ??= Create(_sheetsUrl?.Contains("/") == true ? _sheetsUrl.Split("/")[5] : _sheetsUrl);
 		}
 
-		private void RecreateSheets(IChatFileFactory fileFactory)
+		private void RecreateSheets(string url)
 		{
+			_sheetsUrl = url?.Contains("/") == true ? url.Split("/")[5] : url;
 			if (_workerSheets == null) return;
-			_workerSheets = Create(fileFactory, _sheetsUrl?.Contains("/") == true ? _sheetsUrl.Split("/")[5] : _sheetsUrl);
+			_workerSheets = Create(_sheetsUrl);
 		}
 
 		[Command(nameof(SaveTokenSheet), "Файл с токеном для доступа к странице", TypeUser.User, TypeResource.Document)]
-		public string SaveTokenSheet(IBotMessage msg, IChatFileFactory fileFactory, IChatFile fileToken)
+		public string SaveTokenSheet(IBotMessage msg, IChatFile fileToken)
 		{
-			fileFactory.SystemFile(SystemChatFile.SheetCredentials).CopyFrom(fileToken);
+			_fileFactory.SystemFile(SystemChatFile.SheetCredentials).CopyFrom(fileToken);
 			fileToken.Delete();
-			return "Усешно получено";
+			return "Успешно получено";
 		}
 
 		[Command(nameof(CopyCreadFromPM), "Скопировать файл с токеном для доступа из лички", TypeUser.Admin)]
-		public string CopyCreadFromPM(IUser user, IChatFileFactory factory, IChatId chatId)
+		public string CopyCreadFromPM(IUser user)
 		{
-			if (user.Id != chatId.GetId)
+			if (user.Id != _chatId.GetId)
 			{
 				var userFiles = SettingsHelper.GetSetting(user).FileChatFactory;
 				userFiles.SystemFile(SystemChatFile.SheetCredentials)
-					.CopyFrom(factory.SystemFile(SystemChatFile.SheetCredentials));
-				userFiles.SystemFile(SystemChatFile.SheetToken).CopyFrom(factory.SystemFile(SystemChatFile.SheetToken));
+					.CopyFrom(_fileFactory.SystemFile(SystemChatFile.SheetCredentials));
+				userFiles.SystemFile(SystemChatFile.SheetToken).CopyFrom(_fileFactory.SystemFile(SystemChatFile.SheetToken));
 			}
 
-			RecreateSheets(factory);
+			RecreateSheets(_sheetsUrl);
 			return "Успешно скопировано";
 		}
 
@@ -75,17 +84,16 @@ namespace Nastya.Commands
 		public bool CreateSheetUp { get; set; }
 
 		[Command(nameof(SheetsUrl), "Ссылка на документ")]
-		public string SheetsUrl(IChatFileFactory fileFactory, [Description("ссылка на документ")] string url)
+		public string SheetsUrl 
 		{
-			_sheetsUrl = url;
-			RecreateSheets(fileFactory);
-			return nameof(SheetsUrl) + "=" + url;
+			get =>_sheetsUrl;
+			set => RecreateSheets(value);
 		}
 
 		[Command(nameof(CreateSheet), "Создать документ с именем.", typeUser: TypeUser.User)]
-		public Task CreateSheet([Description("Имя создаваемой страницы")] string namePage, IChatFileFactory fileFactory)
+		public Task CreateSheet([Description("Имя создаваемой страницы")] string namePage)
 		{
-			return GetSheets(fileFactory).CreateSheetsAsync(namePage);
+			return GetSheets().CreateSheetsAsync(namePage);
 		}
 
 		[Command(nameof(LvlCell), "Ячейка для записи html первой страниц")]
@@ -96,7 +104,7 @@ namespace Nastya.Commands
 
 
 		[CommandOnMsg(nameof(CreateSheetUp), MessageType.SystemMessage, typeUser: TypeUser.User)]
-		public async Task Notifications(IBotMessage msg, IChatFileFactory fileFactory)
+		public async Task Notifications(IBotMessage msg)
 		{
 			if (msg.ReplyToCommandMessage?.Notification != Notification.NewLevel)
 				return;
@@ -106,12 +114,12 @@ namespace Nastya.Commands
 			var newPage = dlPages[1];
 
 			var pageName = newPage.LevelNumber + newPage.LevelTitle;
-			await GetSheets(fileFactory).CreateSheetsAsync(newPage.LevelNumber + newPage.LevelTitle);
-			await GetSheets(fileFactory).UpdateDlPage(pageName, LvlCell, newPage.Html);
+			await GetSheets().CreateSheetsAsync(newPage.LevelNumber + newPage.LevelTitle);
+			await GetSheets().UpdateDlPage(pageName, LvlCell, newPage.Html);
 
 			pageName = lastPage.LevelNumber + lastPage.LevelTitle;
-			await GetSheets(fileFactory).CreateSheetsAsync(lastPage.LevelNumber + lastPage.LevelTitle);
-			await GetSheets(fileFactory).UpdateDlPage(pageName, NewLvlCell, lastPage.Html);
+			await GetSheets().CreateSheetsAsync(lastPage.LevelNumber + lastPage.LevelTitle);
+			await GetSheets().UpdateDlPage(pageName, NewLvlCell, lastPage.Html);
 		}
 	}
 }

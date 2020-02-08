@@ -44,7 +44,6 @@ namespace Nastya.Mappers
 			return CheckRecoursiveResource(msg.ReplyToMessage);
 		}
 
-
 		protected void AddParam(List<TransactionCommandMessage> list, object result, IBotMessage msg)
 		{
 			if (result == null) return;

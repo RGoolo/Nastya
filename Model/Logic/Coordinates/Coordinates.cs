@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using Model.Files.FileTokens;
 
 namespace Model.Logic.Coordinates
@@ -19,7 +20,7 @@ namespace Model.Logic.Coordinates
 		public PointsFactory(SettingsPoints settings, string creds)
 		{
 			_settings = settings;
-			var _creds = creds;
+			_creds = creds;
 			// _fileWorker = fileWorker;
 			GooglePlacesProvider = new GooglePointProvider(settings, _creds);
 			_yandexPlacesProvider = new YandexPointProvider(settings);
@@ -32,7 +33,7 @@ namespace Model.Logic.Coordinates
 
 		public PointWorker<Coordinate> GetCoordinates(string text) => new CoordinatesWorker(CoordinatesProvider.Where(x => x.Use).ToList(), text, _coordinateWorker);
 
-		public void SetPicture(IChatFile file, IEnumerable<Point> points) => new FactoryMaps(_creds).SaveImg(file, points);
+		public Task SetPicture(IChatFile file, IEnumerable<Point> points) => new FactoryMaps(_creds).SaveImg(file, points);
 
 		public PointWorker<Place> GetPlaces(string text) => new PlacesWorker(PlacesProvider.Where(x => x.Use).ToList(), text, _coordinateWorker);
 

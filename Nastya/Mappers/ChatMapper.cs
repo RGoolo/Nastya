@@ -44,8 +44,10 @@ namespace Nastya.Mappers
 			PayManager = new PayManager(chatId);
 
 			var allClasses = Assembly.GetExecutingAssembly().GetTypes().Where(x => x.GetCustomAttribute<CommandClassAttribute>(true) != null).ToList();
-			
-			foreach (var instance in allClasses.Select(Activator.CreateInstance))
+
+			var settings = SettingsHelper.GetSetting(chatId);
+
+			foreach (var instance in allClasses.Select(c => CreateInstance(c, sendMsg, chatId, settings)))
 			{
 				_instances.Add(instance);
 				if (instance is BaseCommand baseCommand)
@@ -57,6 +59,26 @@ namespace Nastya.Mappers
 			}
 
 			props.FillProperty();
+		}
+
+		private object CreateInstance(Type type, ISendMessages message, IChatId chatId, ISettings settings)
+		{
+			//ToDo FirstOrDefault?
+			var ctors = type.GetConstructors();
+			var ctor = ctors.First();
+			var param = new List<object>();
+			
+			foreach (var parameterInfo in ctor.GetParameters())
+			{
+				if (parameterInfo.ParameterType == typeof(ISendMessages))
+					param.Add(message);
+				else if (parameterInfo.ParameterType == typeof(IChatId))
+					param.Add(chatId);
+				else if (parameterInfo.ParameterType == typeof(ISettings))
+					param.Add(settings);
+			}
+
+			return Activator.CreateInstance(type, param.ToArray());
 		}
 
 		public List<TransactionCommandMessage> OnMessage(IBotMessage message)

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using Model.BotTypes.Class;
@@ -70,7 +71,9 @@ namespace Web.DL
 		public Bonuses Bonuses { get; set; } 
 
 		public Hints Hints { get; set; } = new Hints();
-		public List<Link> Levels { get; set; } = new List<Link>();
+		public List<string> Levels { get; set; } = new List<string>();
+
+		public bool IsSturm { get; set; }
 
 		public TypePage Type { get; set; }
 	}
@@ -80,12 +83,21 @@ namespace Web.DL
 		public static Texter ToTexter(this DLPage page, bool newLvl, string timeFormat)
 		{
 			StringBuilder sb = new StringBuilder();
+
+			if (page.Type == TypePage.NotStarted)
+			{
+				sb.AppendLine(page.Body);
+				sb.AppendLine($"⏳ Времени до старта: " + page.TimeToEnd?.ToString(timeFormat));
+
+				return new Texter(sb.ToString());
+			}
+
 			sb.AppendLine((!newLvl ? "📖 Текущий уровень" : $"📖 Новый уровень") + $" #{page.LevelNumber}");
 
 			if (page.Levels.Any())
 			{
 				sb.AppendLine("Уровни:");
-				page.Levels.ForEach(x => sb.Append(x + "		"));
+				page.Levels.ForEach(x => sb.Append($"/{Const.Game.Level}_{x}\t"));
 				sb.AppendLine();
 			}
 

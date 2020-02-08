@@ -1,5 +1,6 @@
 ﻿using System.Net;
 using System.Threading.Tasks;
+using HtmlAgilityPack;
 using Model.HttpMessages.Simple;
 
 namespace Model.HttpMessages
@@ -16,5 +17,8 @@ namespace Model.HttpMessages
 		Task Response(string url, string context);
 		Task<string> GetText(string url);
 		Task<string> GetText(string url, string context);
+
+		Task<HtmlNode> GetDocumentNode(string url);
+
 	}
 }

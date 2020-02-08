@@ -13,5 +13,10 @@
 		}
 
 		public override string ToString() => Text;
+
+		public static implicit operator Texter(string param)
+		{
+			return new Texter(param);
+		}
 	}
 }

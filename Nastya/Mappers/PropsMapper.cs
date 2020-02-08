@@ -86,11 +86,13 @@ namespace Nastya.Mappers
 					if (msgCommand.Values.Any())
 					{
 						property.SetValue(msgCommand.FirstValue);
+						var value = property.IsGet ? property.Get.ToString() : msgCommand.FirstValue;
+						
 						_settingHelper.SetValue(msgCommand.Name, msgCommand.FirstValue);
-
+						
 						result.Add(property.IsPassword
 							? MessageToBot.GetInfoMsg($"{msgCommand.Name}=*****")
-							: MessageToBot.GetInfoMsg($"{msgCommand.Name}={msgCommand.FirstValue}"));
+							: MessageToBot.GetInfoMsg($"{msgCommand.Name}={value}"));
 						continue;
 					}
 				}

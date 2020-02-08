@@ -16,6 +16,7 @@ namespace Model.Files.FileTokens
 		IChatFile NewResourcesFileByExt(string ext);
 		IChatFile SystemFile(SystemChatFile type);
 		IChatFile GetChatFile(IChatFileToken fileToken);
+		IChatFile InternetFile(string uri);
 	}
 
 	public static class UriHelper

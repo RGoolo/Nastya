@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Google.Apis.Auth.OAuth2;
 using Google.Cloud.Vision.V1;
 using Model.Files.FileTokens;
 
@@ -21,6 +22,20 @@ namespace Model.Logic.Google
 		{
 			var image = GetImg(file);
 
+			/*Credentials myCredentials = ServiceAccountCredentials.fromStream(
+				new FileInputStream("path/to/credentials.json"));
+
+			ImageAnnotatorSettings imageAnnotatorSettings =
+				ImageAnnotatorSettings.newBuilder()
+					.setCredentialsProvider(FixedCredentialsProvider.create(myCredentials))
+					.build();*/
+
+			/*ServiceAccountCredential.FromServiceAccountData()
+
+			ImageAnnotatorClient imageAnnotatorClient =
+				ImageAnnotatorClient.create(imageAnnotatorSettings);
+
+			var credential = GoogleCredential.FromFile(jsonPath);*/
 			var client = ImageAnnotatorClient.Create();
 			
 			StringBuilder sb = new StringBuilder();

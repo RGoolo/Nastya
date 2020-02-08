@@ -69,8 +69,6 @@ namespace Model.BotTypes.Class
 		public object NotificationObject { get; set; }
 		public IMessageId EditMsg { get; set; }
 
-		//public CommandMessage() { }
-
 		protected MessageToBot(MessageType msgType)
 		{
 			TypeMessage = msgType;
@@ -85,23 +83,14 @@ namespace Model.BotTypes.Class
 		public static IMessageToBot GetSystemMsg(object obj, SystemType systemType)
 			=> new MessageToBot(systemType, obj);
 
-		public static IMessageToBot GetTextMsg(string text)
-			=> new MessageToBot(MessageType.Text) { Text = new Texter(text) };
-
 		public static IMessageToBot GetTextMsg(Texter texter)
 			=> new MessageToBot(MessageType.Text) { Text = texter };
-
-		public static IMessageToBot GetEditMsg(string text)
-			=> GetEditMsg(new Texter(text));
 
 		public static IMessageToBot GetEditMsg(Texter texter)
 			=> new MessageToBot(MessageType.Edit) { Text = texter };
 
 		public static IMessageToBot GetPhototMsg(IChatFileToken token, Texter text)
 			=> new MessageToBot(MessageType.Photo) { Text = text, FileToken = token };
-
-		public static IMessageToBot GetPhototMsg(IChatFileToken token, string text)
-			=> GetPhototMsg(token, new Texter(text));
 
 		public static IMessageToBot GetHTMLPhototMsg(IChatFileToken token, string text)
 			=> GetPhototMsg(token, new Texter(text, true));

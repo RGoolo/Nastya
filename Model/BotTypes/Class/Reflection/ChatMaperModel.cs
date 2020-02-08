@@ -30,6 +30,9 @@ namespace Model.BotTypes.Class.Reflection
 		public void SetDefault() => SetValue(StandardStructureMapper.GetDefault(_propInfo.PropertyType));
 		public void SetValue(string value) => SetValue(GetValuesWithEnum(_propInfo.PropertyType, value));
 
+		public bool IsGet => _propInfo.CanRead;
+		public object Get => _propInfo.GetValue(Instance);
+
 		private void SetValue(object value)
 		{
 			try

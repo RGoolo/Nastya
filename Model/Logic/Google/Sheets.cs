@@ -27,24 +27,14 @@ namespace Model.Logic.Google
 			_sheetsUrl = sheetsUrl;
 			UserCredential credential;
 
-			using (var stream = fileCred.ReadStream())
-			{
-				var secrets = GoogleClientSecrets.Load(stream).Secrets;
 
-				var path = Path.GetDirectoryName(token.Location);
 
-				credential = GoogleWebAuthorizationBroker.AuthorizeAsync(
-					secrets,
-					Scopes,
-					"user",
-					CancellationToken.None,
-					new FileDataStore(path, true)).Result;
-			}
+			var credential1 = GoogleCredential.GetApplicationDefault();
 
 			// Create Google Sheets API service.
 			_service = new SheetsService(new BaseClientService.Initializer()
 			{
-				HttpClientInitializer = credential,
+				HttpClientInitializer = credential1,
 				ApplicationName = ApplicationName,
 			});
 

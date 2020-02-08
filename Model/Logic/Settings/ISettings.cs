@@ -47,14 +47,16 @@ namespace Model.Logic.Settings
 
 	public interface ISettingsCoordinates
 	{
-		bool Coord { get; }
+		bool Coord { get; set; }
 		string ShowYandex { get; }
+
+		string GoogleCreads{ get; }
 	}
 
 	public interface IDlSettingsGame
 	{
 		string TimeFormat { get; }
-		bool Sturm { get;}
+		bool Sturm { get; set; }
 	}
 
 	public interface IDzzzrSettingsGame

@@ -12,7 +12,7 @@ namespace Nastya.Commands
 {
 
 	[CommandClass("VisionMsg", "Распознаем текст с картинки", TypeUser.User)]
-	public class RecognitionImegs : BaseCommand
+	public class RecognitionImegs
 	{
 		public enum TypeEnum
 		{
@@ -38,8 +38,8 @@ namespace Nastya.Commands
 		public Task<string> GetDoc(IChatFile token) => ConvertToText(Vision.GetDocAsync, token);
 
 		//private Coordinates _coord = new CheckCoordinates();// ToDo to voice
-		[CommandOnMsg(nameof(IsCheckVisionMsg), MessageType.Voice, typeUser: TypeUser.User)]
-		public void GetTextMsgVoice(IBotMessage msg)
+		[CommandOnMsg(nameof(GetTextMsg), MessageType.Photo, typeUser: TypeUser.User)]
+		public void GetTextMsg(IBotMessage msg)
 		{
 			if (msg.Resource == null) return;
 			GetText(msg.Resource.File);

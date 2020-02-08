@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Text;
+using System.Threading.Tasks;
 using Model.Files.FileTokens;
 
 namespace Model.Logic.Google
@@ -35,12 +36,12 @@ namespace Model.Logic.Google
 			return _startImg + "&" + string.Join("&", points.Select(x => new Marker(x, (++i).ToString()).ToString())) + "&" + Key;
 		}
 
-		public void SaveImg(IChatFile file, IEnumerable<Point> points)
+		public async Task SaveImg(IChatFile file, IEnumerable<Point> points)
 		{
 			var urlImg = GetUrlImg(points);
 			var request = WebRequest.Create(urlImg);
-			using var response = request.GetResponse();
-			using var stream = response.GetResponseStream();
+			using var response = await request.GetResponseAsync();
+			using var stream =  response.GetResponseStream();
 			using var fileStream = file.WriteStream();
 
 			stream?.CopyTo(fileStream); //ToDo stream

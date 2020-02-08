@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Net;
+using System.Threading.Tasks;
 using Model.BotTypes.Attribute;
 using Model.BotTypes.Class;
 using Model.BotTypes.Enums;
@@ -20,10 +21,14 @@ namespace Nastya.Commands
 	[CommandClass("coords", "Работа с координатами.", TypeUser.User)]
 	public class CoordinatesCommand : BaseCommand
 	{
-		public CoordinatesCommand()
+		public ISettings Settings { get; }
+
+		public CoordinatesCommand(ISettings settings)
 		{
+			Settings = settings;
+
 			//ToDo chat key
-			var cred = new NetworkCredential(string.Empty, SecurityEnvironment.GetTextPassword("google_maps_token")).Password;
+			var cred = Settings.Coordinates.GoogleCreads;
 			_settings = new SettingsPoints();
 			_pointsFactory = new PointsFactory(_settings, cred);
 		}
@@ -32,7 +37,8 @@ namespace Nastya.Commands
 		private PointsFactory _pointsFactory;
 		private string _googleCreds;
 
-		[Command(nameof(GoogleCreds), "Имя ссылки на Yandex карты.")]
+		[Password]
+		[Command(Const.Coordinates.GoogleCreads, "creads")]
 		public string GoogleCreds
 		{
 			get => _googleCreds;
@@ -67,9 +73,6 @@ namespace Nastya.Commands
 		[Command(nameof(AddYandex), "Добавлять в координаты ссылку на yandex map.")]
 		public bool AddYandex { get => _settings.Yandex.LinkFor; set => _settings.Yandex.LinkFor = value; }
 
-		[Password]
-		[Command(nameof(GoogleToken), "Добавлять в координаты ссылку на yandex map.")]
-		public string GoogleToken { get; set; }
 
 		/*	[Command(nameof(Dontaddkml), "Не добавляет kml файл к сообщениям на координаты.", "{F8F5407E-64A7-483A-82C6-FA26740ABB48}")]
 		public bool Dontaddkml{ get; set; }*/
@@ -107,16 +110,16 @@ namespace Nastya.Commands
 //			GetCoordinate(msg, null, _pointsFactory.GetPlaces);
 
 		[Command(nameof(Route), "Построить маршрут по координатам из текста.")]
-		public IMessageToBot Route(IBotMessage msg, IChatFileFactory fWorker) =>  
+		public Task<IMessageToBot> Route(IBotMessage msg, IChatFileFactory fWorker) =>  
 			GetCommand(msg, nameof(Route), _pointsFactory.GetCoordinates, fWorker, !AddPicture);
 
 		[Command(nameof(Places), "Построить маршрут, по местам, разделлеными новой строкой или ';'")]
-		public IMessageToBot Places(IBotMessage msg, IChatFileFactory fWorker) =>
+		public Task<IMessageToBot> Places(IBotMessage msg, IChatFileFactory fWorker) =>
 			GetCommand(msg, nameof(Places), (x) => _pointsFactory.GetPlaces(x), fWorker, AddPicture);
 
 	
 		[Command(nameof(AddTextCoord), "Добавить построчно ссылки.")]
-		public IMessageToBot AddTextCoord(IBotMessage msg, IChatFileFactory fWorker) => 
+		public Task<IMessageToBot> AddTextCoord(IBotMessage msg, IChatFileFactory fWorker) => 
 			GetCommand(msg,  "/" + nameof(AddTextCoord), _pointsFactory.GetCoordinates, fWorker);
 
 		private string GetText(IBotMessage msg, string fName)
@@ -126,7 +129,7 @@ namespace Nastya.Commands
 				: string.IsNullOrEmpty(fName) ? msg.Text : msg.Text.Replace("/" + fName, "", true, CultureInfo.InvariantCulture);
 		}
 		
-		private IMessageToBot GetCommand<T>(IBotMessage msg, string fName, Func<string, PointWorker<T>> func, IChatFileFactory fWorker, bool addPicture = false) where T: Point
+		private async Task<IMessageToBot> GetCommand<T>(IBotMessage msg, string fName, Func<string, PointWorker<T>> func, IChatFileFactory fWorker, bool addPicture = false) where T: Point
 		{
 			var text = GetText(msg, fName);
 			Console.WriteLine("text:" + text);
@@ -138,7 +141,7 @@ namespace Nastya.Commands
 
 				var file = fWorker.NewResourcesFileByExt(".jpg");
 				//if (addPicture) _pointsFactory.GetPictureText(text, file);
-				_pointsFactory.SetPicture(file, pointWorker.Points());
+				await _pointsFactory.SetPicture(file, pointWorker.Points());
 
 				result = MessageToBot.GetHTMLPhototMsg(file, pointWorker.TotalPoints());
 			}

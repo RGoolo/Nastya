@@ -2,6 +2,18 @@
 {
 	public static class Const
 	{
+
+		public static class Film
+		{
+			public const string NameKinopoisk = "kp";
+			public const string NameImdb = "imdb";
+		}
+
+		public static class Google
+		{
+			public const string SheetUrl = "SheetUrl";
+		}
+
 		public static class Braille
 		{
 			public const string braille = "br";
@@ -18,6 +30,7 @@
 		{
 			public const string Coord = "coords";
 			public const string ShowYandex = "showya";
+			public const string GoogleCreads = "GoogleCreads";
 		}
 
 		public static class DzrGame

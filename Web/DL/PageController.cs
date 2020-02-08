@@ -90,6 +90,9 @@ namespace Web.DL.PageTypes
 			}
 
 			_lastPage = page;
+			if (_lastPage.IsSturm != _setting.DlGame.Sturm)
+				_setting.DlGame.Sturm = _lastPage.IsSturm;
+
 			if (lvlNumber != _lastPage.LevelNumber)
 				_setting.Page.LastLvl = _lastPage.LevelNumber;
 		}

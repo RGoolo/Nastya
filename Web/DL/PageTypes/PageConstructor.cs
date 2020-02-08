@@ -43,6 +43,8 @@ namespace Web.DL
 			page.Sectors = new SectorsCollection(contentBlock);
 			page.Hints = Hints(document);
 			page.Bonuses = Bonuses(document);
+			page.Levels = Levels(contentBlock);
+			page.IsSturm = page.Levels.Any();
 
 			return page;
 		}
@@ -78,8 +80,8 @@ namespace Web.DL
 			return TypePage.InProcess;
 		}
 
-		private static List<Link> Levels(HtmlNode documentNode) => documentNode.SelectNodes("//h3[@class='section level']/li/div/a[@class!='block']")
-			?.Select(x => new Link(x)).ToList() ?? new List<Link>();
+		private static List<string> Levels(HtmlNode documentNode) => documentNode.SelectNodes("//ul[@class='section level']/li/i")
+			?.Select(x => x.InnerText).ToList() ?? new List<string>();
 
 		private static DateTime? TimeToEnd(HtmlNode documentNode, TypePage pageType)
 		{
