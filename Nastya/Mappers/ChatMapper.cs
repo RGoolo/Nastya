@@ -50,8 +50,6 @@ namespace Nastya.Mappers
 			foreach (var instance in allClasses.Select(c => CreateInstance(c, sendMsg, chatId, settings)))
 			{
 				_instances.Add(instance);
-				if (instance is BaseCommand baseCommand)
-					baseCommand.SendMsg = sendMsg;
 				
 				all.AddInstance(instance);
 				props.AddInstance(instance);
@@ -90,10 +88,7 @@ namespace Nastya.Mappers
 		{
 			foreach (var instance in _instances)
 			{
-				if (instance is BaseCommand baseCommand)
-				{
-					//baseCommand.SendMsg -= BaseCommand_SendMsg;
-				}
+				
 			}
 		}
 	}

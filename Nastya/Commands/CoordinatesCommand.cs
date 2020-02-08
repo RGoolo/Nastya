@@ -19,7 +19,7 @@ namespace Nastya.Commands
 	//Display(Description = "Работа с сообщениями", Name = "coords"),
 
 	[CommandClass("coords", "Работа с координатами.", TypeUser.User)]
-	public class CoordinatesCommand : BaseCommand
+	public class CoordinatesCommand
 	{
 		public ISettings Settings { get; }
 

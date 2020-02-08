@@ -12,7 +12,7 @@ namespace Nastya.Commands
 {
 
 	[CommandClass(nameof(DlSettings), "Насторойки для дедлайна:", TypeUser.User)]
-	public class DlSettings : BaseCommand
+	public class DlSettings
 	{
 		[Command(nameof(Const.DlGame.Sturm), "Переводит строку в символы елементов.", TypeUser.User)]
 		public string TimeFormat { get; set; }

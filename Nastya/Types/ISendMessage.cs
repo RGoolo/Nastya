@@ -10,7 +10,6 @@ namespace Nastya
 	public interface ISendMessages
 	{
 		void Send(TransactionCommandMessage item);
-		void DownloadMessage(IBotMessage message);
 	}
 
 	public interface IMessageCollection : ISendMessages
@@ -36,10 +35,6 @@ namespace Nastya
 			SendMessages.Enqueue(item);
 		}
 
-		public void DownloadMessage(IBotMessage message)
-		{
-			throw new NotImplementedException();
-		}
 
 		public IBotId BotId { get; }
 		public IChatId ChatId { get; }

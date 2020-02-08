@@ -10,7 +10,7 @@ using Model.Logic.Google;
 namespace Nastya.Commands
 {
 	[CommandClass("SoundMsg", "Распознаем текст с войсом", TypeUser.User)]
-	public class RecognitionSounds : BaseCommand
+	public class RecognitionSounds
 	{
 		[Command("IsCheckVoice", "Расшифровывать текст с голоса.")]
 		public bool IsCheckVoice { get; set; }

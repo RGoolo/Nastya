@@ -23,8 +23,15 @@ namespace Nastya.Commands
 
 	[CustomHelp(HelpText.CustomHelp)]
 	[CommandClass("Game", "Дозор дедлайн", TypeUser.User)]
-	public class Game1 : BaseCommand, ISendSyncMsgs
+	public class Game1 : ISendSyncMsgs
 	{
+		private readonly ISendMessages _sendMessages;
+
+		public Game1(ISendMessages sendMessages)
+		{
+			_sendMessages = sendMessages;
+		}
+
 		[Command(Const.Game.Send, "Отправляет коды из чата.")]
 		public bool IsSendCoord { get; set; }
 
@@ -185,7 +192,7 @@ namespace Nastya.Commands
 		public void SendSync(IEnumerable<IMessageToBot> messages)
 		{
 			var transaction = new TransactionCommandMessage(messages.ToList());
-			SendMsg.Send(transaction);
+			_sendMessages.Send(transaction);
 		}
 
 		private void DeleteGame(IUser user, ISettings settings)

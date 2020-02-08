@@ -10,7 +10,7 @@ using Telegram.Bot.Types;
 namespace Nastya.Commands
 {
 	[CommandClass("SystemCommand", "Системные настройки.",  TypeUser.User)]
-	class SystemCommand : BaseCommand
+	class SystemCommand
 	{
 		[Command(nameof(WithoutPrefix), "Реагировать на комманды без префикса бота.")]
 		public bool WithoutPrefix { get; set; }
