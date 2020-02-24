@@ -37,14 +37,13 @@ namespace Web.DL
 
 	public class Hint
 	{
-		private const string TimeFormat = "HH:mm:ss"; // _setting.DlGame.TimeFormat
 		public string Name { get; }
 		public string Text { get; }
 		public bool IsReady { get; }
-		public DateTime TimeToEnd { get; }
+		public TimeSpan TimeToEnd { get; }
 		public int Number { get; }
 
-		public Hint(string name, string text, DateTime timeTo)
+		public Hint(string name, string text, TimeSpan timeTo)
 		{
 			Name = name?.Replace("&nbsp;", " ");
 			Text = text;
@@ -52,6 +51,7 @@ namespace Web.DL
 			{
 				if (!text.Contains('\n') && text.Contains('\r'))
 					Text = text.Replace("\r", "\r\n");
+				Text = text?.Replace("&nbsp;", " "); ;
 			}			
 			
 			TimeToEnd = timeTo;
@@ -72,6 +72,6 @@ namespace Web.DL
 
 		public override string ToString() => IsReady
 			? $"⏳{Name}: {Text}\n"
-			: $"⏳{Name} откроется через: {TimeToEnd.ToString(TimeFormat)}";
+			: $"⏳{Name} откроется через: {TimeToEnd.ToString()}";
 	}
 }

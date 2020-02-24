@@ -8,7 +8,7 @@ namespace Web.DZR.PageTypes
 	{
 		private HtmlNodeCollection nodes;
 
-		public Tasks(HtmlNodeCollection nodes, string defauiltUrl)
+		public Tasks(HtmlNodeCollection nodes)
 		{
 			List<HtmlNode> sendNodes = new List<HtmlNode>();
 
@@ -23,7 +23,7 @@ namespace Web.DZR.PageTypes
 
 				if (node.GetAttributeValue("class", "0") == "codeform")
 				{
-					Add(new DzrTask(sendNodes, defauiltUrl));
+					Add(new DzrTask(sendNodes));
 					sendNodes = new List<HtmlNode>();
 				}
 			}

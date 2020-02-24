@@ -83,7 +83,7 @@ namespace Web.DL
 		private static List<string> Levels(HtmlNode documentNode) => documentNode.SelectNodes("//ul[@class='section level']/li/i")
 			?.Select(x => x.InnerText).ToList() ?? new List<string>();
 
-		private static DateTime? TimeToEnd(HtmlNode documentNode, TypePage pageType)
+		private static TimeSpan? TimeToEnd(HtmlNode documentNode, TypePage pageType)
 		{
 			var classTimer = (pageType == TypePage.NotStarted) ? "//span[@id='Panel_TimerHolder']" : "//h3[@class='timer']";
 		
@@ -94,7 +94,7 @@ namespace Web.DL
 			try
 			{
 				var match = regexTimer.Matches(firstTimer.InnerHtml).First() as Match;
-				return new DateTime().AddSeconds(int.Parse(match.Groups[1].Value));
+				return TimeSpan.FromSeconds(int.Parse(match.Groups[1].Value));
 			}
 			catch (Exception ex)
 			{
@@ -114,7 +114,7 @@ namespace Web.DL
 			try
 			{
 				var match = regexTimer.Matches(hint.InnerHtml).First() as Match;
-				var timeToEnd = new DateTime().AddSeconds(int.Parse(match.Groups[1].Value));
+				var timeToEnd = TimeSpan.FromSeconds(int.Parse(match.Groups[1].Value));
 
 				return new Hint(hint.FirstChild.InnerText, null, timeToEnd);
 			}
@@ -176,7 +176,7 @@ namespace Web.DL
 						}
 					case "p":
 						{
-							hints.Add(new Hint(temp.InnerHtml, hint.InnerText, DateTime.MinValue));
+							hints.Add(new Hint(temp.InnerHtml, hint.InnerText, TimeSpan.MinValue));
 							temp = null;
 							break;
 						}
@@ -186,7 +186,7 @@ namespace Web.DL
 			if (temp != null)
 			{
 				var text = temp.InnerHtml;
-				hints.Add(new Hint(text, text, DateTime.MinValue));
+				hints.Add(new Hint(text, text, TimeSpan.MinValue));
 			}
 
 			return hints;

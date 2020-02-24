@@ -14,26 +14,22 @@ namespace Model.Logic.Google
 		driving, walking, bicycling, transit
 	}
 
-	public class FactoryMaps
+	public class GoogleImgForMaps
 	{
 		public static string GetSearchPhotoUrl(string url) => $@"https://www.google.com/searchbyimage?image_url={url}";
 
-
 		private static string _startImg = @"https://maps.googleapis.com/maps/api/staticmap?size=600x600";
-		private string _googleToken { get; }
-		private string Key => $"key={_googleToken}";
+		private string GoogleToken { get; }
+		private string Key => $"key={GoogleToken}";
 
-		public FactoryMaps(string googleToken) //
+		public GoogleImgForMaps(string googleToken)
 		{
-			
-			_googleToken = googleToken;
-			// _fileWorker = fileWorker;
+			GoogleToken = googleToken;
 		}
 
 		protected string GetUrlImg(IEnumerable<Point> points)
 		{
-			var i = 0;
-			return _startImg + "&" + string.Join("&", points.Select(x => new Marker(x, (++i).ToString()).ToString())) + "&" + Key;
+			return _startImg + "&" + string.Join("&", points.Select(x => new Marker(x, x.Alias).ToString())) + "&" + Key;
 		}
 
 		public async Task SaveImg(IChatFile file, IEnumerable<Point> points)
@@ -41,91 +37,25 @@ namespace Model.Logic.Google
 			var urlImg = GetUrlImg(points);
 			var request = WebRequest.Create(urlImg);
 			using var response = await request.GetResponseAsync();
-			using var stream =  response.GetResponseStream();
-			using var fileStream = file.WriteStream();
+			await using var stream =  response.GetResponseStream();
+			await using var fileStream = file.WriteStream();
 
-			stream?.CopyTo(fileStream); //ToDo stream
-		}
-
-		public static Maps GetMap(Coordinate coord)
-		{
-			return new Maps(new List<Coordinate> { coord });
-		}
-
-		public static Maps GetMap(string coord)
-		{
-			return new Maps(new List<string> { coord });
-		}
-		public static Maps GetMap(IEnumerable<Coordinate> coords)
-		{
-			return new Maps(coords);
-		}
-		public static Maps GetMap(IEnumerable<string> places)
-		{
-			return new Maps(places);
+			stream?.CopyTo(fileStream);
 		}
 	}
 
 	public class Marker
 	{
-
 		private const string url = "&markers=color:{0}%7Clabel:{1}%7C{2}";
 		public string Color { get; set; } = "green";
-		public string Label { get; set; } = "point";
+		public char Label { get; set; }
 		public Point Point { get;}
 
-
-		public Marker(Point point, string label)
+		public Marker(Point point, char label)
 		{
 			Point = point;
 			Label = label;
 		}
 		public override string ToString() => $"markers=color:{Color}%7Clabel:{Label}%7C{Point}";
-	}
-
-
-	public class Maps
-	{
-		private static string _startLink = @"https://www.google.com/maps/dir/?api=1";
-		public TravelMode TravelMode = TravelMode.driving;
-		public List<string> WayPoints = new List<string>();
-
-		public bool isDir_action;
-
-		public Maps(IEnumerable<Coordinate> coords)
-		{
-			if (!coords.Any())
-				return;
-
-			//Destination = coords.ElementAt(0);
-			WayPoints = coords.Select(x => x.ToString()).ToList();
-			//Destination = coords.Last().ToString();
-		}
-
-		public Maps(IEnumerable<string> places)
-		{
-			if (!places.Any())
-				return;
-
-			//Destination = coords.ElementAt(0);
-			WayPoints = places.ToList();
-		}
-
-		public string ToString(bool origin = true)
-		{
-			StringBuilder sb = new StringBuilder(_startLink);
-
-			if (origin)
-				sb.Append($"&origin={WayPoints.First()}");
-
-			sb.Append($"&destination={WayPoints.Last()}");
-
-			if (WayPoints.Count > 1)
-			{
-				var points = WayPoints.SkipLast(origin ? 1 : 0).Aggregate((x, y) => x + "%7C" + y);
-				sb.Append($"&waypoints={points}");
-			}
-			return sb.ToString();
-		}
 	}
 }

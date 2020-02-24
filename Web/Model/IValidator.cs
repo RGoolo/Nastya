@@ -11,17 +11,11 @@ namespace Web.Base
 {
 	public interface IController
 	{
-		event SendMsgsSyncDel SendMsgs;
-
+		event SendMsgsSyncDel SendMsgs; //ToDo to interface
 		ISettings Settings { get; }
-
 		void LogIn();
-
 		List<IEvent> GetCode(string str, IUser user, IMessageId replaceMsg);
-
 		void SendEvent(IEvent iEvent);
-
 		void Refresh();
-		
 	}
 }

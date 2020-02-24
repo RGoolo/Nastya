@@ -60,7 +60,7 @@ namespace Web.DL
 					break;
 
 				case EventTypes.GetTimeForEnd:
-					_pageController.SendMsg($"Времени до автоперехода: {_pageController.GetCurrentPage.TimeToEnd?.ToString(Settings.DlGame.TimeFormat)}");
+					_pageController.SendMsg($"Времени до автоперехода: {_pageController.GetCurrentPage.TimeToEnd?.ToString()}");
 					break;
 
 				case EventTypes.SendCode:

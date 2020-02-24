@@ -8,7 +8,7 @@ namespace Nastya.Mappers
 	{
 		protected bool CheckUsage(MapperMemberInfo info, IBotMessage msg)
 		{
-			if (!info.СheckUsage(msg))
+			if (!info.CheckUsage(msg))
 				return false;
 
 			return true;

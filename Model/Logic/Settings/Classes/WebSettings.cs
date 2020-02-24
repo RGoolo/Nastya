@@ -20,5 +20,11 @@
 			get => SettingsValues.GetValue(Const.Web.BodyRequest);
 			set => SettingsValues.SetValue(Const.Web.BodyRequest, value);
 		}
+		
+		public string DefaultUri
+		{
+			get => SettingsValues.GetValue(Const.Web.DefaultUri);
+			set => SettingsValues.SetValue(Const.Web.DefaultUri, value);
+		}
 	}
 }

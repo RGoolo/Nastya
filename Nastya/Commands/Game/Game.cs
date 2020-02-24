@@ -218,7 +218,7 @@ namespace Nastya.Commands
 
 		public bool CheckSystemMsg => true;
 
-		[CommandOnMsg(nameof(CheckSystemMsg), MessageType.SystemMessage, TypeUser.User)]
+		[CommandOnMsg(nameof(CheckSystemMsg), MessageType.All, TypeUser.Bot)]
 		public void CheckSystem(IBotMessage msg, ISettings settings)
 		{
 			if (msg.ReplyToCommandMessage == null)

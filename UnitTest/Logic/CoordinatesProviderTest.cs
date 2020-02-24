@@ -1,6 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using Model.BotTypes.Class;
+using Model.BotTypes.Class.Ids;
 using Model.Logic.Coordinates;
+using Model.Logic.Settings;
+using Model.Logic.Settings.Classes;
 using Xunit;
 
 namespace UnitTest.Logic
@@ -12,7 +16,10 @@ namespace UnitTest.Logic
 		[MemberData(nameof(OneCoordinate))]
 		public void OneCoordinateTest(string coords)
 		{
-			var factory = new PointsFactory(new SettingsPoints(), string.Empty);
+			var set = SettingsHelper.GetSetting(new ChatGuid(Guid.Empty));
+
+			set.Coordinates.GoogleCreads = SecurityEnvironment.GetTextPassword("google_maps_token");
+			var factory = set.PointsFactory;
 			var point = factory.GetCoordinates(coords);
 			var str = point.ReplacePoints();
 		}
@@ -21,7 +28,9 @@ namespace UnitTest.Logic
 		[MemberData(nameof(OneCoordinate))]
 		public void CoordinateTest(string coords)
 		{
-			var factory = new PointsFactory(new SettingsPoints(), string.Empty);
+			var set = SettingsHelper.GetSetting(new ChatGuid(Guid.Empty));
+
+			var factory = set.PointsFactory;
 			var point = factory.GetCoordinates(coords);
 			var str = point.TotalPoints();
 		}
@@ -39,7 +48,8 @@ namespace UnitTest.Logic
 		[MemberData(nameof(OnePlace))]
 		public void OnePlaceTest(string coords)
 		{
-			var factory = new PointsFactory(new SettingsPoints(), string.Empty);
+			var set = SettingsHelper.GetSetting(new ChatGuid(Guid.Empty));
+			var factory = set.PointsFactory;
 			var point = factory.GetPlaces(coords);
 			var str = point.ReplacePoints();
 			var str2 = str;

@@ -1,7 +1,31 @@
 ﻿namespace Model.Logic.Settings
 {
-	public static class Const
+	public  static partial class Const
 	{
+		public static class Coordinates
+		{
+			public static class Yandex
+			{
+				public const string NameLink = "NameYLink";
+				public const string NamePoints = "NameYPoints";
+				public const string NamePointsMe = "NameYPointsMe";
+				public const string Show = "showY";
+			}
+
+			public static class Google
+			{
+				public const string NameLink = "NameGLink";
+				public const string NamePoints = "NameGPoints";
+				public const string NamePointsMe = "NameGPointsMe";
+				public const string Show = "showG";
+
+				public const string GoogleCreads = "GoogleCreads";
+			}
+
+			public const string Coord = "coords";
+			public const string City = "city";
+			public const string AddPicture = "addPicture";
+		}
 
 		public static class Film
 		{
@@ -9,7 +33,7 @@
 			public const string NameImdb = "imdb";
 		}
 
-		public static class Google
+		public static class GoogleSheet
 		{
 			public const string SheetUrl = "SheetUrl";
 		}
@@ -25,14 +49,7 @@
 			public const string IsTest = "istest";
 			public const string TestUri = "testuri";
 		}
-
-		public static class Coordinates
-		{
-			public const string Coord = "coords";
-			public const string ShowYandex = "showya";
-			public const string GoogleCreads = "GoogleCreads";
-		}
-
+		
 		public static class DzrGame
 		{
 			public const string Prefix = "prefix";
@@ -92,6 +109,8 @@
 			public const string Domen = "domen";
 			public const string GameNumber = "gameNumber";
 			public const string BodyRequest = "bodyRequest";
+
+			public const string DefaultUri = "defaultUri";
 		}
 
 		public static class Page

@@ -18,13 +18,11 @@ namespace Web.DZR
 		private DzrPage _lastPage;
 		private DzrWebValidator _dzrWebValidator;
 
-
 		public DzrController(ISettings settings)
 		{
 			Settings = settings;
 			_dzrWebValidator = new DzrWebValidator(settings);
 		}
-
 
 		public event SendMsgsSyncDel SendMsgs;
 		public ISettings Settings { get; }
@@ -46,7 +44,8 @@ namespace Web.DZR
 				case EventTypes.SendSpoiler:
 					break;
 				case EventTypes.SendCode:
-					var page = _dzrWebValidator.SendCode(iEvent.Text, GetMainTask(_lastPage)).Result; //ToDo delete result
+					var page = _dzrWebValidator.SendCode(iEvent.Text, GetMainTask(_lastPage)).Result; //ToDo await
+					AfterSendCode(page, iEvent);
 					SetNewPage(page);
 					break;
 				case EventTypes.GetLvlInfo:
@@ -64,7 +63,7 @@ namespace Web.DZR
 					SendPageInfo(_lastPage, false);
 					break;
 				case EventTypes.GetTimeForEnd:
-					SendTimeTiEnd();
+					SendTimeToEnd();
 					break;
 			}
 		}
@@ -75,31 +74,26 @@ namespace Web.DZR
 			SetNewPage(page);
 		}
 
-		public void SendTimeTiEnd()
+		public void SendTimeToEnd()
 		{
 			var task = GetMainTask(_lastPage);
-			var time = _lastPage?.TimeToEnd?.ToString("HH:mm:ss");
+			var time = _lastPage?.TimeToEnd?.ToString();
 			var text = (task == null)? "⏳ Времени осталось: " + time : task.GetTextTimeToEnd(time);
 
-			SendTexttMsg(text);
+			SendTextMsg(text);
 		}
 
 
-	/*	public override void AfterSendCode(string html, IUser user, string code, Guid? idMsg)
+		public void AfterSendCode(DzrPage page, IEvent iEvent)
 		{
-			var page = new DzrPage(html, GetUrl());
-
 			//Controller(page, )
 			//var t = CommandMessage.GetTextMsg(new Texter(message, withHtml));
 			//t.OnIdMessage = replaceMsgId.GetValueOrDefault();
 
 			//Controller.SetGameAnswer( )
 
-			SendTexttMsg(page.GetAnswerText(code), idMsg);
-			SetNewPage(page);
-			SendSectors(page, false, false);
-			SendSectors(page, false, true);
-		}*/
+			SendTextMsg(page.GetAnswerText(iEvent.Text), iEvent.IdMsg, false);
+		}
 
 		public void SetNewPage(DzrPage page)
 		{
@@ -113,22 +107,12 @@ namespace Web.DZR
 			//Controller.SetNewLvl(lvlName);
 		}
 
-		private void SendDiffTime(DateTime? lastTime, DateTime? newTime , int minutes)
+		private void SendDiffTime(TimeSpan? lastTime, TimeSpan? newTime)
 		{
-			if (lastTime == null || newTime == null)
-				return;
-
-			var time = new DateTime().AddMinutes(minutes);
-
-			if (lastTime.Value > time && newTime.Value <= time)
-				SendTimeTiEnd();
-		}
-
-		private void SendDiffTime(DateTime? lastTime, DateTime? newTime)
-		{
-			//for (var i = 0; i < 15; ++i)
-			SendDiffTime(lastTime, newTime, 1);
-			SendDiffTime(lastTime, newTime, 5);
+			if (BaseCheckChanges.IsBorderValue(lastTime, newTime, 60))
+				SendTimeToEnd();
+			if (BaseCheckChanges.IsBorderValue(lastTime, newTime, 300))
+				SendTimeToEnd();
 		}
 
 		public void SendDifference(DzrPage lastPage, DzrPage newPage)
@@ -146,14 +130,14 @@ namespace Web.DZR
 
 			if (!checkOtherTask)
 			{ 
-				SendDifference(GetMainTask(newPage), GetMainTask(lastPage));
+				SendDifference(GetMainTask(newPage), GetMainTask(lastPage), newPage.TimeToEnd);
 			}
 			else
 			{
 				foreach (var task in newPage.Tasks)
 				{
 					var oldTask = lastPage.Tasks?.FirstOrDefault(x => x.LvlNumber == task.LvlNumber);
-					SendDifference(task, oldTask);
+					SendDifference(task, oldTask, newPage.TimeToEnd);
 				}
 			}
 		}
@@ -177,7 +161,7 @@ namespace Web.DZR
 					if (!diffs.Any())
 						continue;
 
-					SendTexttMsg($"⚠️Новые коды:\n{newTask.Codes[i].DiffText(diffs)}");
+					SendTextMsg($"⚠️Новые коды:\n{newTask.Codes[i].DiffText(diffs)}");
 
 					foreach (var diff in diffs)
 					{
@@ -190,13 +174,11 @@ namespace Web.DZR
 			else
 			{
 
-
-
 			}
 		}
 
 
-		private void SendDifference(DzrTask task, DzrTask oldTask)
+		private void SendDifference(DzrTask task, DzrTask oldTask, TimeSpan? newPageTimeToEnd)
 		{
 			if (task == null)
 				return;
@@ -205,7 +187,7 @@ namespace Web.DZR
 			
 			if (oldTask == null || task?.LvlNumber != oldTask?.LvlNumber)
 			{
-				msg.AddRange(GetTaskInfo(task, true));
+				msg.Add(MessageToBot.GetTextMsg(CheckChanges.GetTaskInfo(task, true, newPageTimeToEnd?.ToString())));
 				SndMsg(msg);
 				return;
 			}
@@ -216,15 +198,15 @@ namespace Web.DZR
 				{
 					if (!(i < oldTask.Spoilers?.Count)) continue;
 
-					if (!oldTask.Spoilers[i].IsComplited && task.Spoilers[i].IsComplited)
-						msg.AddRange(WebHelper.ReplaceTextOnPhoto($"{task.Alias}\n🔑Разгадан спойлер:\n{task.Spoilers[i].Text}", task.DefaulUri));
+					if (!oldTask.Spoilers[i].IsCompleted && task.Spoilers[i].IsCompleted)
+						msg.Add(MessageToBot.GetTextMsg(new Texter($"{task.Alias}\n🔑Разгадан спойлер:\n{task.Spoilers[i].Text}", true)));
 				}
 			}
 			if (oldTask.NumberHint != task.NumberHint)
 			{
 				var hint = task._hints.LastOrDefault();
 				if (hint != null && !hint.IsEmpty()) 
-					msg.AddRange(WebHelper.ReplaceTextOnPhoto($"{task.Alias}\n🔑Пришла подсказка:\n{hint.Name}\n{hint.Text}", task.DefaulUri));
+					msg.Add(MessageToBot.GetTextMsg(new Texter($"{task.Alias}\n🔑Пришла подсказка:\n{hint.Name}\n{hint.Text}", true)));
 			}
 			SndMsg(msg);
 		}
@@ -272,43 +254,18 @@ namespace Web.DZR
 			{
 				var task = GetMainTask(page);
 				if (task != null)
-					msg.AddRange(GetTaskInfo(task, timeForEnd: page.TimeToEnd?.ToString("HH:mm:ss")));
+				{
+					var text = CheckChanges.GetTaskInfo(task, false, timeForEnd: page.TimeToEnd?.ToString());
+					msg.Add(MessageToBot.GetTextMsg(text));
+				}
 			}
 			else
-				page.Tasks.ForEach(task => msg.AddRange(GetTaskInfo(task)));
+				page.Tasks.ForEach(task => msg.Add(MessageToBot.GetTextMsg(CheckChanges.GetTaskInfo(task, false, null))));
 
 			SndMsg(msg);
 		}
 
-		private List<IMessageToBot> GetTaskInfo(DzrTask task, bool newTask = false, string timeForEnd = null)
-		{
-			var msg = new List<IMessageToBot>();
-			StringBuilder taskText = new StringBuilder();
-
-			if (newTask)
-				taskText.Append("📩Новое Задание\n");
-
-			taskText.Append(task.TitleText + Environment.NewLine );
-
-			if (!string.IsNullOrEmpty(timeForEnd))
-				taskText.Append(timeForEnd);
-
-			taskText.Append(task.Text + Environment.NewLine);
-
-			if (task.Spoilers != null)
-				taskText.Append(task.Spoilers.Text());
-			
-			foreach (var hint in task._hints)
-				taskText.Append($"📖{hint.Name}\n{hint.Text}{Environment.NewLine}");
-			
-			taskText.Append($"Коды сложности /{Const.Game.Codes} остались /{Const.Game.LastCodes}:\n");
-
-			foreach (var codes in task.Codes)
-				taskText.AppendLine(codes.Text());
-
-			return WebHelper.ReplaceTextOnPhoto(taskText.ToString(), task.DefaulUri);
-		}
-
+	
 		private DzrTask GetMainTask(DzrPage page) => page?.Tasks?.Main(Settings.Game.Level);
 
 		public static List<string> GetCodes(string str, string prefix)
@@ -345,7 +302,7 @@ namespace Web.DZR
 			};
 		}
 
-		protected void SendTexttMsg(string message, IMessageId replaceMsgId = null, bool withHtml = false)
+		protected void SendTextMsg(string message, IMessageId replaceMsgId = null, bool withHtml = false)
 		{
 			var t = MessageToBot.GetTextMsg(new Texter(message, withHtml));
 			t.OnIdMessage = replaceMsgId;
@@ -365,6 +322,5 @@ namespace Web.DZR
 			};
 			SendMsgs?.Invoke(msg);
 		}
-
 	}
 }

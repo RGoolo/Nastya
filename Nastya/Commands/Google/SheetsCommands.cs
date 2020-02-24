@@ -103,7 +103,7 @@ namespace Nastya.Commands
 		public string NewLvlCell { get; set; } = "A101";
 
 
-		[CommandOnMsg(nameof(CreateSheetUp), MessageType.SystemMessage, typeUser: TypeUser.User)]
+		[CommandOnMsg(nameof(CreateSheetUp), MessageType.All, typeUser: TypeUser.Bot)]
 		public async Task Notifications(IBotMessage msg)
 		{
 			if (msg.ReplyToCommandMessage?.Notification != Notification.NewLevel)

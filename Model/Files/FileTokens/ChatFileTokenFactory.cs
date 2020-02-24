@@ -17,6 +17,7 @@ namespace Model.Files.FileTokens
 		IChatFile SystemFile(SystemChatFile type);
 		IChatFile GetChatFile(IChatFileToken fileToken);
 		IChatFile InternetFile(string uri);
+		IChatFile GetExistFileByPath(string fullFileName);
 	}
 
 	public static class UriHelper
@@ -87,7 +88,7 @@ namespace Model.Files.FileTokens
 
 		public IChatFile GetExistFileByPath(string fullFileName)
 		{
-			return new ChatFile(FileTypeFlags.IsChat | FileTypeFlags.IsCustomFile, Path.GetFileName(fullFileName),
+			return new ChatFile(FileTypeFlags.IsChat | FileTypeFlags.IsCustomFile | FileTypeFlags.IsLocal, Path.GetFileName(fullFileName),
 				_chatId, fullFileName);
 		}
 	}

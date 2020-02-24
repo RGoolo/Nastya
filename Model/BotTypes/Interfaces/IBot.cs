@@ -6,6 +6,8 @@ using Model.BotTypes.Class;
 using Model.BotTypes.Enums;
 using Model.BotTypes.Interfaces.Messages;
 using Model.Logger;
+using Model.TelegramBot;
+using Telegram.Bot.Types;
 
 namespace Model.BotTypes.Interfaces
 {
@@ -14,6 +16,7 @@ namespace Model.BotTypes.Interfaces
 
 	public interface IConcurrentBot : IDisposable
 	{
+		List<IMessageToBot> ChildrenMessage(IMessageToBot msg, IChatId chatId);
 		List<IBotMessage> GetMessages();
 		Task<IBotMessage> Message( IMessageToBot message, IChatId chatId);
 		Task<IBotMessage> DownloadFileAsync(IBotMessage msg);

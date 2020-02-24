@@ -2,6 +2,7 @@
 using Model.BotTypes.Class;
 using Model.BotTypes.Enums;
 using Model.Files.FileTokens;
+using Model.Logic.Coordinates;
 
 namespace Model.Logic.Settings
 {
@@ -30,6 +31,9 @@ namespace Model.Logic.Settings
 		ISettingsWeb Web { get; }
 		ISettingsPage Page { get;}
 
+		IPointsFactory PointsFactory { get; }
+
+
 		//List<Answer> Answers { get; }
 	}
 
@@ -47,15 +51,35 @@ namespace Model.Logic.Settings
 
 	public interface ISettingsCoordinates
 	{
-		bool Coord { get; set; }
-		string ShowYandex { get; }
+		// bool Coord { get; set; }
+		bool AddPicture { get; set; }
 
-		string GoogleCreads{ get; }
+		string GoogleCreads{ get; set; }
+		string City { get; set; }
+		IGoogleCoordinates Google { get; }
+		IYandexCoordinates Yandex { get; }
+	}
+
+	public interface IGoogleCoordinates : ICoordinates
+	{
+
+	}
+	
+	public interface IYandexCoordinates : ICoordinates
+	{
+
+	}
+
+	public interface ICoordinates
+	{
+		 string Name { get; set; }
+		 string PointNameMe { get; set; }
+		 string PointName { get; set; } 
+		 bool Show { get; set; }
 	}
 
 	public interface IDlSettingsGame
 	{
-		string TimeFormat { get; }
 		bool Sturm { get; set; }
 	}
 
@@ -107,6 +131,7 @@ namespace Model.Logic.Settings
 		string Domen { get; set; }
 		string GameNumber { get; set; }
 		string BodyRequest { get; set; }
+		string DefaultUri { get; set; }
 
 	}
 

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Globalization;
 using System.Linq;
 using System.Net;
@@ -12,6 +13,7 @@ using Model.BotTypes.Interfaces.Messages;
 using Model.Files.FileTokens;
 using Model.Logic.Coordinates;
 using Model.Logic.Settings;
+using Model.TelegramBot;
 
 namespace Nastya.Commands
 {
@@ -21,81 +23,60 @@ namespace Nastya.Commands
 	[CommandClass("coords", "Работа с координатами.", TypeUser.User)]
 	public class CoordinatesCommand
 	{
-		public ISettings Settings { get; }
+		private ISettings Settings { get; }
 
 		public CoordinatesCommand(ISettings settings)
 		{
 			Settings = settings;
 
-			//ToDo chat key
-			var cred = Settings.Coordinates.GoogleCreads;
-			_settings = new SettingsPoints();
-			_pointsFactory = new PointsFactory(_settings, cred);
+			_pointsFactory = settings.PointsFactory;
 		}
 
-		private SettingsPoints _settings;
-		private PointsFactory _pointsFactory;
+		private IPointsFactory _pointsFactory;
 		private string _googleCreds;
 
 		[Password]
-		[Command(Const.Coordinates.GoogleCreads, "creads")]
-		public string GoogleCreds
-		{
-			get => _googleCreds;
-			set
-			{
-				_googleCreds = value;
-				_pointsFactory = new PointsFactory(_settings, _googleCreds);
-			}
-		}
+		[Command(Const.Coordinates.Google.GoogleCreads, "creads")]
+		public string GoogleCreds { get; set; }
 
-		[Command(nameof(NameYLink), "Имя ссылки на Yandex карты.")]
-		public string NameYLink { get => _settings.Yandex.Name; set => _settings.Yandex.Name = value; }
-
-		[Command(nameof(NameGLink), "Имя ссылки на Google карты.")]
-		public string NameGLink { get => _settings.Google.Name; set => _settings.Google.Name = value; }
-
-		[Command(nameof(NameYPoints), "Имя ссылки на Yandex маршрут от меня.")]
-		public string NameYPoints { get => _settings.Yandex.PointName; set => _settings.Yandex.PointName = value; }
-
-		[Command(nameof(NameGPoints), "Имя ссылки на Google маршрут от меня.")]
-		public string NameGPoints { get => _settings.Google.PointName; set => _settings.Google.PointName = value; }
-
-		[Command(nameof(NameYPointsMe), "Имя ссылки на Yandex маршрут.")]
-		public string NameYPointsMe { get => _settings.Yandex.PointNameMe; set => _settings.Yandex.PointNameMe = value; }
-
-		[Command(nameof(NameGPointsMe), "Имя ссылки на Google точки.")]
-		public string NameGPointsMe { get => _settings.Google.PointNameMe; set => _settings.Google.PointNameMe = value; }
 
 		[Command(nameof(CheckCoordintate), "Проверять сообщения на координаты.")]
 		public bool CheckCoordintate { get; set; }
 
-		[Command(nameof(AddYandex), "Добавлять в координаты ссылку на yandex map.")]
-		public bool AddYandex { get => _settings.Yandex.LinkFor; set => _settings.Yandex.LinkFor = value; }
-
-
-		/*	[Command(nameof(Dontaddkml), "Не добавляет kml файл к сообщениям на координаты.", "{F8F5407E-64A7-483A-82C6-FA26740ABB48}")]
-		public bool Dontaddkml{ get; set; }*/
-
-		[Command(nameof(AddGoogle), "Добавлять в координаты ссылку на google map.")]
-		public bool AddGoogle { get => _settings.Google.LinkFor; set => _settings.Google.LinkFor = value; }
-
 		[Command(nameof(AddPicture), "Добавлять картинку координат, при построении маршрутов")]
-		public bool AddPicture 
-		{
-			get => _settings.AddPicture;
-			set => _settings.AddPicture = value;
-		}
+		public bool AddPicture { get; set; }
 
-		[Command(Const.Game.City, "Установить город, для карт.")]
-		public string City { get => _settings.City.ToString(); set => _settings.City = _pointsFactory.GetCoordinate(value); }
-
-		
 		[CommandOnMsg(nameof(CheckCoordintate), MessageType.Text, typeUser: TypeUser.User)]
 		public TransactionCommandMessage GetAllCoordinates(IBotMessage msg)
 		{
 			var result = new List<IMessageToBot>();
 			return new TransactionCommandMessage(_pointsFactory.GetCoordinates(msg.Text).Points().Select(CommandMessageWithDescription).ToList());
+		}
+
+		[CommandOnMsg(nameof(CheckCoordintate), MessageType.Text, typeUser: TypeUser.Bot)]
+		public async Task<TransactionCommandMessage> GetAllCoordinatesForBot(IBotMessage msg)
+		{
+			var result = new List<IMessageToBot>();
+			if (string.IsNullOrEmpty(msg.Text))
+				return null;
+
+			var text = TelegramHtml.RemoveAllTag(msg.Text);
+			var points = _pointsFactory.GetCoordinates(text).Points();
+			if (points.Count == 0)
+				return null;
+
+			result.AddRange(points.Select(CommandMessageWithDescription));
+		
+			if (AddPicture && points.Count > 1)
+			{
+				var file = Settings.FileChatFactory.NewResourcesFileByExt(".jpg");
+				await _pointsFactory.SetPicture(file, points);
+				
+				var textImg = string.Join("\n", points.Select(p => $"{p.Alias}) {p}"));
+				result.Add(MessageToBot.GetPhototMsg(file, (Texter)textImg));
+			}
+			
+			return new TransactionCommandMessage(result);
 		}
 
 		private IMessageToBot CommandMessageWithDescription(Coordinate coord) =>
@@ -162,7 +143,7 @@ namespace Nastya.Commands
 
 			coords.ToList().ForEach(x =>
 			{
-				result.Add(MessageToBot.GetTextMsg(x.OriginText + Environment.NewLine)); //+ _pointsFactory.GetUrlLink(x, true)));
+				result.Add(MessageToBot.GetTextMsg((Texter)(x.OriginText + Environment.NewLine))); //+ _pointsFactory.GetUrlLink(x, true)));
 				result.Add(MessageToBot.GetCoordMsg(x, x.OriginText));
 			});
 			return new TransactionCommandMessage(result) ;

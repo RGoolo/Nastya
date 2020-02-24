@@ -1,4 +1,6 @@
-﻿namespace Model.BotTypes.Enums
+﻿using System;
+
+namespace Model.BotTypes.Enums
 {
 	public enum TypeResource
 	{
@@ -8,4 +10,13 @@
 		Video = (int)MessageType.Video,
 		Document = (int)MessageType.Document,
 	}
+
+	public static class TypeResourceEx
+	{
+		public static TypeResource Convert(this MessageType type)
+		{
+			return (TypeResource)(int)((type & MessageType.WithResource));
+		}
+	}
+
 }

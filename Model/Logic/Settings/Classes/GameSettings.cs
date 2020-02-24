@@ -2,6 +2,10 @@
 
 namespace Model.Logic.Settings.Classes
 {
+
+
+
+
 	public class GameSettings : SettingValues2, ISettingsGame
 	{
 		public GameSettings(ISettingValues settingsValues) : base(settingsValues) { }

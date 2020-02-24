@@ -103,7 +103,7 @@ namespace Web.DL.PageTypes
 
 			var msg = new List<IMessageToBot>();
 			
-			var message = MessageToBot.GetTextMsg(page.ToTexter(newLvl, _setting.DlGame.TimeFormat));
+			var message = MessageToBot.GetTextMsg(page.ToTexter(newLvl));
 			
 			if (newLvl)
 			{
@@ -127,18 +127,11 @@ namespace Web.DL.PageTypes
 				sb.AppendLine(string.Join(Environment.NewLine,
 					isAll ? page.Bonuses.AllBonuses : page.Bonuses.ReadyBonuses));
 				
-			var msg = MessageToBot.GetTextMsg(new Texter(sb.ToString() == "" ? "Все бонусы закрыты." : WebHelper.ReplaceAudioLinks(sb.ToString()), true));
+			var msg = MessageToBot.GetTextMsg(new Texter(sb.ToString() == "" ? "Все бонусы закрыты." : sb.ToString(), true));
 			msg.Notification = Notification.SendSectors;
 			msgs.Add(msg);
 
-			var souds = WebHelper.GetAudioLinks(sb.ToString());
-
-			foreach (var sound in souds)
-			{
-				var vMsg = MessageToBot.GetVoiceMsg(sound.Url, sound.Name);//
-				vMsg.Notification = Notification.Sound;
-				msgs.Add(vMsg);
-			}
+			
 			SendMsg(msgs);
 		}
 

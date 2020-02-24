@@ -8,22 +8,19 @@ namespace Web.DZR
 {
 	public class Spoiler
 	{
-		public List<LinkStruct> Urls = new List<LinkStruct>();
-		public string GetPostForCode(string code) => postCode.Replace(_code_, code);
-		public bool IsComplited;
+		public string GetPostForCode(string code) => _postCode.Replace(_code_, code);
+		public bool IsCompleted;
 		public string Text;
 
 		private string _code_ = "_code_szxjkilzxscuijkl";
-		private readonly string _defaulUri;
-
-		private string postCode;
 		
-		public Spoiler(HtmlNode node, string defaulUri)
+		private string _postCode;
+		
+		public Spoiler(HtmlNode node)
 		{
-			_defaulUri = defaulUri;
-			IsComplited = node.InnerHtml.Contains("<!--beginSpoilerText-->");
+			IsCompleted = node.InnerHtml.Contains("<!--beginSpoilerText-->");
 
-			if (!IsComplited)
+			if (!IsCompleted)
 				SetSendForm(node);
 			else
 				SetText(node);
@@ -45,12 +42,12 @@ namespace Web.DZR
 
 		void SetSendForm(HtmlNode node)
 		{
-			StringBuilder sb = new StringBuilder();
+			var sb = new StringBuilder();
 
-			var name = "name";
-			var value = "value";
-			var text = "text";
-			bool first = false;
+			const string name = "name";
+			const string value = "value";
+			const string text = "text";
+			var first = false;
 
 			HtmlNodeCollection selectedSp = null;
 			foreach (var form in inputForms )
@@ -62,7 +59,7 @@ namespace Web.DZR
 
 			if (selectedSp == null)
 			{
-					postCode = "";
+					_postCode = "";
 					return;
 			}
 
@@ -83,7 +80,7 @@ namespace Web.DZR
 				first = true;
 			}
 
-			postCode = sb.ToString();
+			_postCode = sb.ToString();
 		}
 	}
 }

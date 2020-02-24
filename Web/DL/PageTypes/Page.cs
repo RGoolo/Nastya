@@ -34,7 +34,7 @@ namespace Web.DL
 		/// <summary>
 		/// Сколько времени до конца задания.
 		/// </summary>
-		public DateTime? TimeToEnd { get; set; }
+		public TimeSpan? TimeToEnd { get; set; }
 
 		/// <summary>
 		/// Заголовок задания.
@@ -80,14 +80,14 @@ namespace Web.DL
 
 	public static class DlPageExtension
 	{
-		public static Texter ToTexter(this DLPage page, bool newLvl, string timeFormat)
+		public static Texter ToTexter(this DLPage page, bool newLvl)
 		{
 			StringBuilder sb = new StringBuilder();
 
 			if (page.Type == TypePage.NotStarted)
 			{
 				sb.AppendLine(page.Body);
-				sb.AppendLine($"⏳ Времени до старта: " + page.TimeToEnd?.ToString(timeFormat));
+				sb.AppendLine($"⏳ Времени до старта: " + page.TimeToEnd);
 
 				return new Texter(sb.ToString());
 			}
@@ -101,8 +101,8 @@ namespace Web.DL
 				sb.AppendLine();
 			}
 
-			if (page.TimeToEnd != default(DateTime))
-				sb.AppendLine($"⏳ Времени для автоперехода: " + page.TimeToEnd?.ToString(timeFormat));
+			if (page.TimeToEnd != default(TimeSpan))
+				sb.AppendLine($"⏳ Времени для автоперехода: " + page.TimeToEnd);
 
 			sb.AppendLine(page.LevelTitle);
 			sb.AppendLine(page.Body);

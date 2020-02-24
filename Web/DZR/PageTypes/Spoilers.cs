@@ -9,17 +9,17 @@ namespace Web.DZR
 	{
 		//public List<Spoiler> SpoilersList { get; } = new List<Spoiler>();
 
-		public string GetPostForCode(string code) => this.FirstOrDefault(x => !x.IsComplited)?.GetPostForCode(code);	
+		public string GetPostForCode(string code) => this.FirstOrDefault(x => !x.IsCompleted)?.GetPostForCode(code);	
 		
-		public Spoilers(HtmlNode node, string defaulUri)
+		public Spoilers(HtmlNode node)
 		{
-			var spoilers = node?.SelectNodes("div")?.Where(x => x.ChildNodes.Any(y => y.InnerHtml.Contains("<!--beginSpoilerText-->") || y.InnerHtml.Contains("<form "))).ToList();
+			var spoilers = node?.SelectNodes("div")?.Where(x => x.ChildNodes.Any(y => y.InnerHtml.Contains("<!--beginSpoilerText-->") || y.Name == "form")).ToList();
 
 			if (spoilers == null)
 				return;
 
 			foreach (var htmlspoiler in spoilers)
-				Add(new Spoiler(htmlspoiler, defaulUri));
+				Add(new Spoiler(htmlspoiler));
 		}
 
 		public string Text()
@@ -27,7 +27,7 @@ namespace Web.DZR
 			var sb = new StringBuilder();
 			foreach (var spoiler in this)
 			{
-				sb.Append(spoiler.IsComplited
+				sb.Append(spoiler.IsCompleted
 					? $"➕Спойлер разгадан:\n{spoiler.Text}\n"
 					: $"➖Спойлер не разгадан.\n");
 			}

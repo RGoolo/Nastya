@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using Model.BotTypes.Class;
 using Model.BotTypes.Class.Ids;
 using Model.BotTypes.Interfaces.Messages;
@@ -25,7 +26,7 @@ namespace Model.Logic.Settings
 			return Settings[chatId];
 		}
 
-		public static string Directory { get; set; }
+		public static string Directory { get; set; } = System.IO.Directory.GetCurrentDirectory();
 
 		// public static IChatFileWorker FileWorker => _fileWorker ??= new LocalChatFileWorker(new ChatGuid(Guid.Empty));
 	}

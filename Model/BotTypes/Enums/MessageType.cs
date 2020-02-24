@@ -6,16 +6,18 @@ namespace Model.BotTypes.Enums
 	public enum MessageType : long
 	{
 		Undefined = 0x0, 
-		Text = 0x2,
-		Coordinates = 0x4,
-		Photo = 0x8,
-		Voice = 0x10,
-		Video = 0x20,
-		Document = 0x40,
-		SystemMessage = 0x80,
-		Edit = 0x100,
+		Text = 1 << 2,
+		Coordinates = 1 << 3,
+		
+		Photo = 1 << 4,
+		Voice = 1 << 5,
+		Video = 1 << 6,
+		Document = 1 << 7,
+		
+		SystemMessage = 1 << 8,
+		Edit = 1 << 9,
 
 		WithResource = Photo | Voice | Video | Document,
-		All = Undefined | Text | Photo | Coordinates | Voice | Video | Document
+		All = ~0,
 	}
 }

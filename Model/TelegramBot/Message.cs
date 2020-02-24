@@ -6,6 +6,8 @@ using Model.BotTypes.Class.Ids;
 using Model.BotTypes.Enums;
 using Model.BotTypes.Interfaces;
 using Model.BotTypes.Interfaces.Messages;
+using Model.Logic.Settings;
+using Telegram.Bot.Types;
 
 namespace Model.TelegramBot
 {
@@ -35,6 +37,8 @@ namespace Model.TelegramBot
 						return MessageType.Text;
 					case Telegram.Bot.Types.Enums.MessageType.Document:
 						return MessageType.Document;
+					case Telegram.Bot.Types.Enums.MessageType.Venue:
+						return MessageType.Coordinates; //ToDo or add new?
 					default:
 						return MessageType.Undefined;
 				}
@@ -53,16 +57,26 @@ namespace Model.TelegramBot
 
 		public IResource Resource { get ; set; }
 
-		public IMessageToBot ReplyToCommandMessage => null; // throw new NotImplementedException(); ToDo
+		public IMessageToBot ReplyToCommandMessage { get; } // throw new NotImplementedException(); ToDo
 
-		public TelegramMessage(Telegram.Bot.Types.Message msg, TypeUser typeUser)
+		public TelegramMessage(Message msg, TypeUser typeUser, IMessageToBot message = null)
 		{
 			ChatId = new ChatLong(msg.Chat.Id);
 
 			Message = msg;
 			TypeUser = typeUser;
 			User = new TelegramUser(msg.From, typeUser);
-			TryCreateCommand(msg);
+			if ((typeUser & TypeUser.Bot) == 0)
+				TryCreateCommand(msg);
+
+			ReplyToCommandMessage = message;
+			
+			if (message?.FileToken != null && (message.TypeMessage & MessageType.WithResource) != MessageType.Undefined)
+			{
+				var setting = SettingsHelper.GetSetting(ChatId);
+				var file = setting.FileChatFactory.GetChatFile(message.FileToken);
+				Resource = new Resource(file, message.TypeMessage.Convert());
+			}
 		}
 
 		private void TryCreateCommand(Telegram.Bot.Types.Message msg)

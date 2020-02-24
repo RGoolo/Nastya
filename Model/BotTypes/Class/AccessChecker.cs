@@ -1,4 +1,5 @@
-﻿using Model.BotTypes.Enums;
+﻿using System.Reflection.Metadata;
+using Model.BotTypes.Enums;
 
 namespace Model.BotTypes.Class
 {
@@ -6,17 +7,24 @@ namespace Model.BotTypes.Class
 	{
 		public static bool CheckAccess(TypeUser @class, TypeUser method, TypeUser user)
 		{
-			return CheckAccess(@class, user) && CheckAccess(method, user);
+			return CheckAccess(@class | TypeUser.Bot, user) && CheckAccess(method, user);
 		}
 
 		public static bool CheckAccess(TypeUser method, TypeUser user)
 		{
-			return ContainsType(method, TypeUser.User) || (method & user) != 0;
-		}
+			if (user.IsBot())
+				return method.IsBot();
 
-		public static bool ContainsType(TypeUser t, TypeUser t2)
-		{
-			return (t & t2) == t2;
+			if (user.IsAdmin() && user.IsDeveloper())
+				return method.IsAdmin() || method.IsUser() || method.IsDeveloper();
+
+			if (user.IsAdmin())
+				return method.IsAdmin() || method.IsUser();
+
+			if (user.IsDeveloper())
+				return method.IsDeveloper();
+
+			return user.IsUser() && method.IsUser();
 		}
 	}
 }

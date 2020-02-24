@@ -9,11 +9,6 @@
 
 		}
 
-		public string TimeFormat {
-			get => SettingsValues.GetValue(Const.DlGame.TimeFormat, "hh:mm:ss");
-			set => SettingsValues.SetValue(Const.DlGame.TimeFormat, value);
-		}
-
 		public bool Sturm
 		{
 			get => SettingsValues.GetValueBool(Const.DlGame.Sturm);

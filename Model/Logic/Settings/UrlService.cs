@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Text;
+using Model.BotTypes;
 using Model.BotTypes.Enums;
 using Model.Logic.Model;
 
@@ -24,8 +25,22 @@ namespace Model.Logic.Settings
 			return false;
 		}
 
+		public static string GetDefaultUrl(ISettings settings, TypeGame result)
+		{
+			var url = settings.Web.Domen;
+			if (result == TypeGame.Unknown) return string.Empty;
 
-		public static TypeGame PrivateSetUri(ISettings settings, string uri)
+			if (result.IsDummy())
+				return url.Replace('/', '\\').Split('\\').SkipLast(1).Aggregate((x, y) => x + "\\" + y); //ToDo wtf?
+			
+
+			if ((result & TypeGame.Dzzzr) == TypeGame.Dzzzr)
+				return $@"http://{settings.Web.Domen}/{settings.Web.BodyRequest}/go/";
+
+			return string.Empty;
+		}
+
+		public static TypeGame SetUri(ISettings settings, string uri)
 		{
 			var dummy = "dummy:";
 			var lite = "lite:";

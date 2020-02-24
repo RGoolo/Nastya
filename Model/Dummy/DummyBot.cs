@@ -51,6 +51,11 @@ namespace Model.Dummy
 
 		public  void Dispose() => throw new NotImplementedException();
 
+		public List<IMessageToBot> ChildrenMessage(IMessageToBot msg, IChatId chatId)
+		{
+			return new List<IMessageToBot>();
+		}
+
 		public List<IBotMessage> GetMessages()
 		{
 			var text = Console.ReadLine();

@@ -5,6 +5,7 @@ using Model.BotTypes.Class;
 using Model.BotTypes.Enums;
 using Model.BotTypes.Interfaces.Messages;
 using Model.Logic.Settings;
+using Web.Base;
 
 namespace Web.DL
 {
@@ -38,11 +39,11 @@ namespace Web.DL
 		{
 			var msg = new List<IMessageToBot>();
 
-			if (IsBorderValue(page.TimeToEnd, lastPage.TimeToEnd, 300))
-				msg.Add(MessageToBot.GetTextMsg($"⏳ Осталось меньше 5 минут"));
+			if (BaseCheckChanges.IsBorderValue(page.TimeToEnd, lastPage.TimeToEnd, 300))
+				msg.Add(MessageToBot.GetTextMsg("⏳ Осталось: " + page.TimeToEnd.Value.ToString("HH: mm:ss")));
 
-			if (IsBorderValue(page.TimeToEnd, lastPage.TimeToEnd, 60))
-				msg.Add(MessageToBot.GetTextMsg($"⏳ Осталось меньше минуты"));
+			if (BaseCheckChanges.IsBorderValue(page.TimeToEnd, lastPage.TimeToEnd, 60))
+				msg.Add(MessageToBot.GetTextMsg($"⏳ Осталось: " + page.TimeToEnd.Value.ToString("HH: mm:ss")));
 
 			foreach (var newHint in page.Hints)
 			{
@@ -52,38 +53,14 @@ namespace Web.DL
 				if (lastHint == null)
 					continue;
 
-				if (IsBorderValue(newHint.TimeToEnd, lastHint.TimeToEnd, 300))
+				if (BaseCheckChanges.IsBorderValue(newHint.TimeToEnd, lastHint.TimeToEnd, 300))
 					msg.Add(MessageToBot.GetTextMsg(newHint.ToString()));
 
-				if (IsBorderValue(newHint.TimeToEnd, lastHint.TimeToEnd, 60))
+				if (BaseCheckChanges.IsBorderValue(newHint.TimeToEnd, lastHint.TimeToEnd, 60))
 					msg.Add(MessageToBot.GetTextMsg(newHint.ToString()));
 			}
 
 			return msg;
-
-		}
-
-		private static bool IsBorderValue(DateTime? dt1, DateTime? dt2, int second)
-		{
-			if (!dt1.HasValue || !dt2.HasValue)
-				return false;
-
-			DateTime maxDt;
-			DateTime minDt;
-			if (dt1 > dt2)
-			{
-				maxDt = dt1.Value;
-				minDt = dt2.Value;
-			}
-			else
-			{
-				maxDt = dt2.Value;
-				minDt = dt1.Value;
-			}
-
-			var difTime = new DateTime().AddSeconds(second);
-		
-			return ((maxDt - difTime).TotalSeconds > second && (minDt - difTime).TotalSeconds <= second);
 		}
 
 		public static List<IMessageToBot> Sectors (DLPage page, DLPage lastPage, ISettings settings)

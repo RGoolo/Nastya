@@ -57,7 +57,7 @@ namespace Model.BotTypes.Class.Reflection
 		}
 
 		public object Invoke(IBotMessage msg) => Invoke(msg, null);
-		public override bool СheckUsage(IBotMessage msg) => (CommandOnMsg.TypeMessages & msg.TypeMessage) == msg.TypeMessage && base.СheckUsage(msg);
+		public override bool CheckUsage(IBotMessage msg) => (CommandOnMsg.TypeMessages & msg.TypeMessage) == msg.TypeMessage && base.CheckUsage(msg);
 	}
 
 	public class MapperMethodInfo : BaseMapperMethodInfo, IPay
@@ -114,6 +114,7 @@ namespace Model.BotTypes.Class.Reflection
 			[typeof(IChatId)] = (mess, command) => mess.ChatId,
 			[typeof(ISettings)] = (mess, command) => SettingsHelper.GetSetting(mess.ChatId),
 			[typeof(IChatFileFactory)] = (mess, command) => SettingsHelper.GetSetting(mess.ChatId).FileChatFactory,
+			[typeof(IMessageToBot)] = (mess, command) => mess.ReplyToCommandMessage,
 			//[typeof(ISendMessage)] = (mess, command) => mess.User,
 		};
 
@@ -138,7 +139,7 @@ namespace Model.BotTypes.Class.Reflection
 					else
 					{
 						var desc = param.GetCustomAttribute<DescriptionAttribute>();
-						throw new ArgumentNeedException(desc.Description ?? param.Name);
+						throw new ArgumentNeedException(desc?.Description ?? param.Name);
 					}
 						
 					// parameters.Add(StandardStructureMapper.GetDefault(param.ParameterType));
@@ -153,55 +154,59 @@ namespace Model.BotTypes.Class.Reflection
 	public abstract class MapperMemberInfo : IPay
 	{
 		public string Name { get; }
-		public CommandClassAttribute InstanceAttribute;
+		public CommandClassAttribute InstanceAttribute { get; }
 		public Guid Guid { get; }
 		public bool Paid { get; }
-
 		protected object Instance { get; }
-		protected MemberInfo _memberInfo { get; }
-		protected TypeUser _accessUser { get; }
-		protected List<PropertyInfo> _checkAttributes;
+		protected MemberInfo MemberInfo { get; }
+		protected TypeUser AccessUser { get; }
+		protected List<PropertyInfo> CheckAttributes  { get; }
 
 		protected MapperMemberInfo(MemberInfo memberInfo, object instance)
 		{
 			Instance = instance;
-			_memberInfo = memberInfo;
+			MemberInfo = memberInfo;
 			InstanceAttribute = instance.GetType().GetCustomAttribute<CommandClassAttribute>(true);
-			_accessUser = memberInfo.GetCustomAttributes(true).OfType<ITypeUserAttribute>().First().TypeUser;
+			AccessUser = memberInfo.GetCustomAttributes(true).OfType<ITypeUserAttribute>().First().TypeUser;
 
 			var paid = memberInfo.GetCustomAttributes(true).OfType<IPay>().FirstOrDefault();
 			Guid = paid?.Guid ?? default(Guid);
 			Paid = paid != null;
 
+			CheckAttributes = new List<PropertyInfo>();
 			FillCheckAttributes();
 		}
 
 		private void FillCheckAttributes()
 		{
-			_checkAttributes = new List<PropertyInfo>();
-
-			var checkPropNames = _memberInfo.GetCustomAttributes(true)?.OfType<ICheckAttribute>()?.Select(x => x.BoolPropertyName)?.ToList();
+			
+			var checkPropNames = MemberInfo.GetCustomAttributes(true)?.OfType<ICheckAttribute>()?.Select(x => x.BoolPropertyName)?.ToList();
 			foreach (var checkPropName in checkPropNames)
-				_checkAttributes.AddRange(Instance.GetType().GetProperties().Where(x => x.Name == checkPropName && x.PropertyType == typeof(bool)));
+				CheckAttributes.AddRange(Instance.GetType().GetProperties().Where(x => x.Name == checkPropName && x.PropertyType == typeof(bool)));
 		}
 
-		public virtual bool СheckUsage(IBotMessage msg)
+		public virtual bool CheckUsage(IBotMessage msg)
 		{
 			if (!NeedUse(msg))
 				return false;
 
-			if (!CheckAccess(msg.User.Type))
-			{
-				//ToDo:  
-				if (AccessChecker.ContainsType(msg.User.Type, TypeUser.Admin))
-					throw new MessageException(msg, $"Доступно только для разработчика.");
+			if (CheckAccess(msg.User.Type))
+				return true;
+
+			if (msg.User.Type.IsBot())
+				return false;
+
+			if (AccessUser.IsAdmin() && !msg.User.Type.IsAdmin())
 				throw new MessageException(msg, $"Доступно только для администраторов группы.");
-			}
-			return true;
+
+			if (AccessUser.IsDeveloper() && !msg.User.Type.IsDeveloper())
+				throw new MessageException(msg, $"Доступно только для разработчиков.");
+
+			return false;
 		}
 
-		protected bool CheckAccess(TypeUser user) => AccessChecker.CheckAccess(InstanceAttribute.TypeUser, _accessUser, user);
-		protected virtual bool NeedUse(IBotMessage msg) =>	(_checkAttributes.All(x => (bool)x.GetValue(Instance)));
+		protected bool CheckAccess(TypeUser user) => AccessChecker.CheckAccess(InstanceAttribute.TypeUser, AccessUser, user);
+		protected virtual bool NeedUse(IBotMessage msg) =>	(CheckAttributes.All(x => (bool)x.GetValue(Instance)));
 		protected object GetValuesWithEnum(Type type, string value) => StandardStructureMapper.GetType(type, value);
 	}
 }

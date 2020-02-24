@@ -30,7 +30,7 @@ namespace UnitTest.GoogleApi
 			settings.Clear();
 			
 			var file = settings.FileChatFactory.NewResourcesFileByExt(".jpg");
-			var factoryMaps = new FactoryMaps(password);
+			var factoryMaps = new GoogleImgForMaps(password);
 
 			var points = new List<Point>
 			{

@@ -10,29 +10,28 @@ namespace Web.DZR
 {
 	public class DzrWebValidator
 	{
-		private ISettings _settings { get; }
-		public IHttpMessages messages;
+		private readonly ISettings _settings;
+		public IHttpMessages Messages;
 		private string _url;
 		private readonly string _tempDzrUrl =  new DzrUrl().ToString();
 		public DzrWebValidator(ISettings settings)
 		{
 			_settings = settings;
 			Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
-
-			messages = HttpMessagesFactory.Dzzzr();
+			Messages = HttpMessagesFactory.Dzzzr();
 		}
 
-		public async Task<DzrPage> SendCode(string code, DzrTask task) => GetNextPage(await messages.GetText(GetUrl(), GetContextSetCode(code, task)));
+		public async Task<DzrPage> SendCode(string code, DzrTask task) => GetNextPage(await Messages.GetText(GetUrl(), GetContextSetCode(code, task)));
 
 		public async Task<DzrPage> LogIn()
 		{
-			await messages.Response(LogInUrl(), LogInContext());
+			await Messages.Response(LogInUrl(), LogInContext());
 			return await GetNextPage();
 		}
 
-		private DzrPage GetNextPage(string html) => new DzrPage(html, GetUrl());
+		private DzrPage GetNextPage(string html) => new DzrPage(html);
 
-		public async Task<DzrPage> GetNextPage() => new DzrPage(await messages.GetText(GetUrl()), GetUrl());
+		public async Task<DzrPage> GetNextPage() => new DzrPage(await Messages.GetText(GetUrl()));
 
 		public bool IsLogOut(DzrPage page) => page == null || page.Type == PageType.NotFound;
 
@@ -42,18 +41,7 @@ namespace Web.DZR
 
 		public string GetUrl() => GetBaseUrl() + "?" + _tempDzrUrl;
 
-		private string GetBaseUrl()
-		{
-			if (_url != null)
-				return _url;
-
-			if ((_settings.TypeGame & TypeGame.Dummy) == TypeGame.Dummy)
-				return _settings.Web.Domen.Split('\\').SkipLast(1).Aggregate((x, y) => x + "\\" + y);
-
-			_url = $@"http://{_settings.Web.Domen}/{_settings.Web.BodyRequest}/go/";
-
-			return _url;
-		}
+		private string GetBaseUrl() => _url ??= _settings.Web.DefaultUri;
 
 		public string LogInUrl() => GetBaseUrl();
 	}

@@ -7,6 +7,7 @@ using Model.BotTypes.Class.Ids;
 using Model.BotTypes.Enums;
 using Model.Logic.Settings;
 using Model.TelegramBot;
+using Web.Base;
 using Web.DL;
 using Web.DL.PageTypes;
 using Xunit;
@@ -56,8 +57,7 @@ namespace UnitTest.Web
 			var page2 = PageConstructor.GetNewPage(GetFile(nameFirstLvlHtml));
 			_pageController.SetNewPage(page2);
 
-			(var text, var mod) =
-				TelegramBot.GetText(notifications._messages.First(x => x.Notification == Notification.NewLevel).Text);
+			var text = TelegramBot.GetNormalizeText(notifications._messages.First(x => x.Notification == Notification.NewLevel).Text, testGuid);
 			
 			Assert.Equal(page.Bonuses.Count, 0);
 		}
@@ -68,6 +68,14 @@ namespace UnitTest.Web
 			var page = PageConstructor.GetNewPage(GetFile(nameSecondLvlHtml));
 
 			Assert.False(page.Hints.IsEmpty);
+		}
+
+		[Fact]
+		public void DlTestBorderValue()
+		{
+			var dt1 = TimeSpan.FromMinutes(5);
+			var dt2 = TimeSpan.FromSeconds(255);
+			Assert.True(BaseCheckChanges.IsBorderValue(dt1, dt2, 300));
 		}
 
 	}

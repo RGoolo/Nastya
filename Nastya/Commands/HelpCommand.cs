@@ -24,7 +24,7 @@ namespace Nastya.Commands
 			var sb = new StringBuilder();
 			sb.AppendLine($"Для получения полной информации: /{nameof(Help)}.");
 			
-			return MessageToBot.GetTextMsg(sb.ToString());
+			return MessageToBot.GetTextMsg((Texter)sb.ToString());
 		}
 
 		[Command(nameof(Help), "Что я умею.", TypeUser.User)]
@@ -40,7 +40,7 @@ namespace Nastya.Commands
 			if (string.IsNullOrEmpty(classAlias))
 			{
 				sb.Append("Вас приветствует бот, для игр дозора и дедлайна. Что я умею:\n");
-				result.Add(MessageToBot.GetTextMsg(sb.ToString()));
+				result.Add(MessageToBot.GetTextMsg((Texter)sb.ToString()));
 				sb.Clear();
 
 				foreach (var refCommand in refCommands)
@@ -117,10 +117,10 @@ namespace Nastya.Commands
 
 				sb.AppendLine();
 			}
-			result.Add(MessageToBot.GetTextMsg(sb.ToString()));
+			result.Add(MessageToBot.GetTextMsg((Texter)sb.ToString()));
 
 			foreach(var custmAttr in refCommand.GetCustomAttributes<CustomHelpAttribute>(true))
-				result.Add(MessageToBot.GetTextMsg(custmAttr.CustomHelp));
+				result.Add(MessageToBot.GetTextMsg((Texter)custmAttr.CustomHelp));
 			
 			
 			return result;

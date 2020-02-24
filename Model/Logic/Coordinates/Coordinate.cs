@@ -1,27 +1,24 @@
-﻿using Model.Logic.Yandex;
+﻿using System;
+using System.Globalization;
+using Model.Logic.Yandex;
 
 namespace Model.Logic.Coordinates
 {
-
-	public enum TypePoint
-	{
-		Coordinate, Place
-	}
-
 	public abstract class Point
 	{
-		public abstract TypePoint TypePoint { get; }
+		public char Alias { get; set; } = ' ';
+
 		public abstract string OriginText { get; }
 		public string Urls { get; set; }
 	}
 
 	public class Coordinate : Point
 	{
+		
 		public float Latitude { get; }
 		public float Longitude{ get; }
 		public override string OriginText { get;}
-		public override TypePoint TypePoint => TypePoint.Coordinate;
-
+		
 		public Coordinate(float lat , float @long, string originText)
 		{
 			Latitude = lat;
@@ -36,7 +33,8 @@ namespace Model.Logic.Coordinates
 			OriginText = originText;
 		}
 
-		public override string ToString() => $"{Latitude},{Longitude}";
+		public override string ToString() => string.Format(CultureInfo.InvariantCulture, "{0:G}", Latitude) + "," +
+		                                     string.Format(CultureInfo.InvariantCulture, "{0:G}", Longitude);
 	}
 
 	public class Place : Point
@@ -49,6 +47,5 @@ namespace Model.Logic.Coordinates
 		}
 
 		public override string ToString() => OriginText;
-		public override TypePoint TypePoint => TypePoint.Place;
 	}
 }

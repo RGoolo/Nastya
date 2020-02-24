@@ -23,7 +23,7 @@ namespace Web.DZR
 		public List<Hint> _hints { get; } = new List<Hint>();
 		//public List<LinkStruct> Urls { get; } = new List<LinkStruct>();
 
-		public string DefaulUri { get; }
+
 
 		private string _postForCode;
 		public string GetPostForCode(string code)
@@ -31,9 +31,8 @@ namespace Web.DZR
 			return _postForCode.Replace(_code_, code);
 		}
 
-		public DzrTask(List<HtmlNode> nodes, string defaultUri)
+		public DzrTask(List<HtmlNode> nodes)
 		{
-			DefaulUri = defaultUri;
 			HtmlNode nodeTitle = null;
 			bool wasTask = false;
 
@@ -65,24 +64,24 @@ namespace Web.DZR
 		private void SetTask(HtmlNode nodeTitle, HtmlNode node)
 		{
 			TitleText = WebHelper.RemoveAllTag(nodeTitle.InnerHtml).Trim();
-			var levelNumberEnd = nodeTitle.InnerHtml.IndexOf("<!--levelNumberEnd-->");
+			var levelNumberEnd = nodeTitle.InnerHtml.IndexOf("<!--levelNumberEnd-->", StringComparison.OrdinalIgnoreCase);
 			if (levelNumberEnd != -1)
 			{
-				var levelNumberBegin = nodeTitle.InnerHtml.IndexOf("<!--levelNumberBegin-->");
+				var levelNumberBegin = nodeTitle.InnerHtml.IndexOf("<!--levelNumberBegin-->", StringComparison.OrdinalIgnoreCase);
 				var startNumber = levelNumberBegin + "<!--levelNumberBegin-->".Length;
 
 				LvlNumber = nodeTitle.InnerHtml.Substring(startNumber, levelNumberEnd - startNumber);
 				Alias = nodeTitle.InnerHtml.Substring(0, levelNumberEnd).Replace("<!--levelNumberBegin-->", "");
 			}
 
-			Spoilers = new Spoilers(node, DefaulUri);
+			Spoilers = new Spoilers(node);
 
 			SetCodes(node);
 
-			var levelTextEnd = node.InnerHtml.IndexOf("<!--levelTextEnd-->");
+			var levelTextEnd = node.InnerHtml.IndexOf("<!--levelTextEnd-->", StringComparison.OrdinalIgnoreCase);
 			if (levelTextEnd != -1)
 			{
-				var levelTextBegin = node.InnerHtml.IndexOf("<!--levelTextBegin-->");
+				var levelTextBegin = node.InnerHtml.IndexOf("<!--levelTextBegin-->", StringComparison.OrdinalIgnoreCase);
 				var startNumber = levelTextBegin + "<!--levelTextBegin-->".Length;
 
 				Text = node.InnerHtml.Substring(startNumber, levelTextEnd - startNumber);

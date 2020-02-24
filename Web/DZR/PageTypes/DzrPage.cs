@@ -35,13 +35,10 @@ namespace Web.DZR
 		public string SysMessage;
 		private string CommentBeforeSystemMsg;
 		public Tasks Tasks;
-		public DateTime? TimeToEnd;
+		public TimeSpan? TimeToEnd;
 		
 		protected HtmlDocument htmlDocument;
-	
-		private readonly string _defaultUrl;
-
-		public DzrPage(string html, string DefaultUrl)
+		public DzrPage(string html)
 		{
 			Html = html;
 			if (string.IsNullOrEmpty(html))
@@ -51,14 +48,12 @@ namespace Web.DZR
 				return;
 			}
 
-			_defaultUrl = DefaultUrl;
-
 			html = html.Trim();
 			htmlDocument = new HtmlDocument {OptionDefaultStreamEncoding = Encoding.GetEncoding(1251)};
 			htmlDocument.LoadHtml(html);
+			
 			SetSysMessage();
 			SetAnswerType();
-
 			SetTimerToEnd();
 
 			Type = CheckType();
@@ -99,10 +94,6 @@ namespace Web.DZR
 			if (nodeScripts == null)
 				return;
 
-			//   <script>
-		//window.setTimeout('countDown(694)',1000);
-			//</script>
-
 			foreach(var scrits in nodeScripts)
 			{
 				var timeStart = scrits.InnerText.IndexOf(setTimeout, StringComparison.InvariantCultureIgnoreCase);
@@ -115,7 +106,7 @@ namespace Web.DZR
 				var timeToEnd = scrits.InnerText.Substring(timeStart, timeEnd - timeStart);
 				try
 				{
-					TimeToEnd = new DateTime().AddSeconds(long.Parse(timeToEnd) );
+					TimeToEnd = TimeSpan.FromSeconds(long.Parse(timeToEnd) );
 				}
 				catch
 				{
@@ -148,8 +139,8 @@ namespace Web.DZR
 			var sysMsg = htmlDocument.DocumentNode.SelectSingleNode("//div[@class='sysmsg']");
 			if (sysMsg == null)
 			{
-				var NotDeclared = htmlDocument.DocumentNode.SelectSingleNode($"//body/table/tr/td[text() = '{YouAreNotDeclared}']");
-				if (NotDeclared != null)
+				var notDeclared = htmlDocument.DocumentNode.SelectSingleNode($"//body/table/tr/td[text() = '{YouAreNotDeclared}']");
+				if (notDeclared != null)
 					SysMessage = YouAreNotDeclared;
 
 				return;
@@ -164,7 +155,7 @@ namespace Web.DZR
 			var nodes = htmlDocument.DocumentNode.SelectNodes("//div[(@class='title' or @class='zad' or @class='codeform') and (not(../@class) or ../@class!='zad')]");
 			if (nodes == null) return;
 
-			Tasks = new Tasks(nodes, _defaultUrl);
+			Tasks = new Tasks(nodes);
 		}
 	
 		public enum TypeNode

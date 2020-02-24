@@ -8,6 +8,7 @@ using Model.BotTypes.Class.Ids;
 using Model.BotTypes.Enums;
 using Model.Files;
 using Model.Files.FileTokens;
+using Model.Logic.Coordinates;
 using Model.Logic.Model;
 using Model.Logic.Settings.Classes;
 
@@ -15,10 +16,9 @@ namespace Model.Logic.Settings
 {
 	public class SettingHelper : ISettings, ISettingValues
 	{
-		private readonly object _lockobj = new object();
-		private IChatFile _settingsFile;
+		private readonly object _lockObj = new object();
+		private readonly IChatFile _settingsFile;
 
-		private string Path; // ToDo fromSetting
 		public string GetValue(string name, string @default = default) => Settings.GetValue(name.ToLower(), @default);
 		public bool GetValueBool(string name, bool @default = default) => Settings.GetValueBool(name.ToLower(), @default);
 		public long GetValueLong(string name, long @default = default) => Settings.GetValueLong(name.ToLower(), @default);
@@ -39,6 +39,7 @@ namespace Model.Logic.Settings
 
 		public ISettingsWeb Web { get; }
 		public ISettingsPage Page { get; }
+		public IPointsFactory PointsFactory { get; }
 		public IChatFileFactory FileChatFactory { get; }
 		
 		public string NotExistFile(string ext) => NotExistFile(ext, ChatGuid);
@@ -55,7 +56,7 @@ namespace Model.Logic.Settings
 		{
 			FileChatFactory = new ChatFileFactory(chatId, directory); //This 
 			_settingsFile = FileChatFactory.SystemFile(SystemChatFile.Settings);
-			Path = directory;
+		
 
 			// FileChatWorker = new LocalChatFileWorker(chatId);
 			Braille = new BrailleSettings(this);
@@ -75,20 +76,23 @@ namespace Model.Logic.Settings
 				Save();
 			}
 
-			lock (_lockobj)
+			lock (_lockObj)
 			{
 				Settings = _settingsFile.Read<Settings>();
 				Settings.SetDictionary();
 			}
+
+			PointsFactory = new PointsFactory(this);
 		}
 
 		public TypeGame SetUri(string uri)
 		{
-			TypeGame result = TypeGame.Unknown;
+			var result = TypeGame.Unknown;
 			try
 			{
-				Settings.SetValue(Const.Game.Site, uri.ToString());
-				result = UrlService.PrivateSetUri(this, uri);
+				Settings.SetValue(Const.Game.Site, uri);
+				result = UrlService.SetUri(this, uri);
+				Settings.SetValue(Const.Web.DefaultUri, UrlService.GetDefaultUrl(this, result));
 			}
 			catch (GameException)
 			{
@@ -106,12 +110,10 @@ namespace Model.Logic.Settings
 		
 		public void Clear()
 		{
-			// var file = System.IO.Path.Combine(directory, chatId +".xml");
-
 			Settings.Clear();
 			Settings.SetList();
 
-			lock (_lockobj)
+			lock (_lockObj)
 			{
 				_settingsFile.Delete();
 			}
@@ -119,13 +121,12 @@ namespace Model.Logic.Settings
 
 		private void Save()
 		{
-			string chatId =  Settings.ChatGuid.ToString();
-
-			var directory = System.IO.Path.Combine(Path, chatId.ToString());
-			var file = System.IO.Path.Combine(directory, chatId + ".xml");
 			Settings.SetList();
 			
-			_settingsFile.Save(Settings);
+			lock (_lockObj)
+			{
+				_settingsFile.Save(Settings);
+			}
 		}
 	}
 }

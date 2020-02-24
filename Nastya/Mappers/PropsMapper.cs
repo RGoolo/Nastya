@@ -121,6 +121,7 @@ namespace Nastya.Mappers
 					return result;
 
 				var value = _needAnswers[message.User.Id];
+				_needAnswers.Remove(message.User.Id);
 				cMessages.AddRange(SetAttribute(message, new MessageCommand(value.Item1, message.Text)));
 			}
 			else

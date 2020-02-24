@@ -4,11 +4,13 @@ using System.Threading.Tasks;
 using System.Linq;
 using Telegram.Bot.Types.Enums;
 using System.Net;
+using System.Runtime.CompilerServices;
 using Model.Logic.Settings;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.InputFiles;
 using System.Threading;
 using System.Security;
+using Model.BotTypes;
 using Model.BotTypes.Class;
 using Model.BotTypes.Enums;
 using Model.BotTypes.Interfaces;
@@ -21,19 +23,6 @@ namespace Model.TelegramBot
 {
 	public class TelegramBot : IConcurrentBot
 	{
-		private class Resource : IResource
-		{
-			public Resource(IChatFile file, TypeResource type)
-			{
-				File = file;
-				Type = type;
-			}
-
-			public IChatFile File { get; }
-			public TypeResource Type { get; }
-		}
-
-		private readonly SecureString _token;
 		protected readonly ILogger _log;
 		private readonly CancellationToken _cancellationToken = default(CancellationToken);
 		private const int UpdatetimesTimeMinutes = 5;
@@ -42,7 +31,7 @@ namespace Model.TelegramBot
 
 		private int _offset;
 		private Dictionary<long, ChatAdministrations> _chatAdministations = new Dictionary<long, ChatAdministrations>();
-		private TelegramHTML _telegramHtml = new TelegramHTML();
+		private TelegramHtml _telegramHtml = new TelegramHtml();
 		private Telegram.Bot.TelegramBotClient _bot;
 
 		private IChatFileFactory _chatFileWorker(IChatId chatId) => SettingsHelper.GetSetting(chatId).FileChatFactory;
@@ -61,10 +50,6 @@ namespace Model.TelegramBot
 			_log.Info(".ctor");
 			var cred = new NetworkCredential(string.Empty, token).Password;
 			_bot = new Telegram.Bot.TelegramBotClient(cred);//, WebProxyExtension.Create());
-			//ToDo: SetWebHook 
-			//ToDo: GetMeAsync
-			_token = token;
-
 
 			_bot.SetWebhookAsync(string.Empty);
 			_log.Warning($"{nameof(_bot.SetWebhookAsync)} successfully");
@@ -92,7 +77,7 @@ namespace Model.TelegramBot
 			foreach (var update in updates)
 			{
 				if (update.Type == UpdateType.Message)
-					msgs.Add(TelegramMessage(update.Message));
+					msgs.Add(TelegramMessage(update.Message, false));
 
 				if ((update.Id + 1) > _offset)
 					_offset = update.Id + 1;
@@ -103,8 +88,11 @@ namespace Model.TelegramBot
 			return msgs;
 		}
 
-		private TypeUser GetTypeUser(Message msg)
+		private TypeUser GetTypeUser(Message msg, bool isBot)
 		{
+			if (isBot)
+				return TypeUser.Bot;
+			
 			if (msg.Chat.Type == ChatType.Private)
 				return GetTypeUser(true, msg);
 
@@ -138,30 +126,82 @@ namespace Model.TelegramBot
 			//throw new NotImplementedException();
 		}
 
-		protected TelegramMessage TelegramMessage(Message msg) =>  new TelegramMessage(msg, GetTypeUser(msg));
+		protected TelegramMessage TelegramMessage(Message msg, bool isBot, IMessageToBot message = null) =>  new TelegramMessage(msg, GetTypeUser(msg, isBot), message);
 
-		public static (string text, ParseMode mode) GetText(Texter text)
+		public static Texter GetNormalizeText(Texter text, IChatId chatId)
 		{
+			if (text?.Html != true)
+				return text;
+
 			try
 			{
-				var t = TelegramHTML.RemoveTag(text); //, GetParseMod(text));
-				if (TelegramHTML.CheckPaarTags(t))
-					return (t, GetParseMod(text));
+				if (text.ReplaceCoordinates)
+				{
+					var set = SettingsHelper.GetSetting(chatId);
+					var points = set.PointsFactory.GetCoordinates(text.Text);
+					text.Replace(points.ReplacePoints(), true);
+				}
+
+				
+
+				var t = TelegramHtml.RemoveTag(text); //, GetParseMod(text));
+				if (TelegramHtml.CheckPaarTags(t))
+					return text.Replace(t, true);
 			}
 			catch (Exception e)
 			{
 				{ Logger.Logger.CreateLogger(nameof(CookieContainer)).Warning(e); }
 			}
-			return (TelegramHTML.RemoveAllTag(text?.Text), ParseMode.Default);
+			return text.Replace(TelegramHtml.RemoveAllTag(text?.Text), false);
 		}
 
 		private static ParseMode GetParseMod(Texter text) => text?.Html == true ? ParseMode.Html : ParseMode.Default;
 
-		public Task<IBotMessage> Message(IMessageToBot message, IChatId chatId)
+		//ToDo do it easy 
+		public List<IMessageToBot> ChildrenMessage(IMessageToBot msg, IChatId chatId)
+		{
+			var result = new List<IMessageToBot>();
+			if (msg.Text?.Html != true || (msg.TypeMessage & MessageType.Text) == 0 || string.IsNullOrEmpty(msg.Text.Text))
+				return result;
+
+			var setting = SettingsHelper.GetSetting(chatId);
+			var defaultUrl = setting.Web.DefaultUri;
+
+			var links = TelegramHtml.GetLinks(msg.Text.Text, defaultUrl);
+			if (links.Count == 0 || !msg.Text.ReplaceResources)
+				return result;
+
+			var str = TelegramHtml.ReplaceTagsToHref(msg.Text.Text, links);
+
+			msg.Text.Replace(str, true);
+			var img = 0;
+			foreach (var link in links)
+			{
+				switch (link.TypeUrl)
+				{
+					case TypeUrl.Img:
+						if (img++ > msg.Text.Settings.MaxParsePicture)
+							continue;
+
+						var file = setting.TypeGame.IsDummy()
+							? setting.FileChatFactory.GetExistFileByPath(link.Url)
+							: setting.FileChatFactory.InternetFile(link.Url);
+						result.Add(MessageToBot.GetPhototMsg(file, (Texter)link.Name));
+						break;
+					case TypeUrl.Sound:
+						result.Add(MessageToBot.GetVoiceMsg(link.Url, link.Name));
+						break;
+				}
+			}
+
+			return result;
+		}
+
+		public async Task<IBotMessage> Message(IMessageToBot message, IChatId chatId)
 		{
 			try
 			{
-				return InternalMessage(message, chatId);
+				return await InternalMessage(message, chatId); //ToDo delete try and cath on lvl up
 			}
 			catch (Exception ex)
 			{
@@ -173,14 +213,17 @@ namespace Model.TelegramBot
 		
 		public async Task<IBotMessage> InternalMessage(IMessageToBot message, IChatId chatId)
 		{
-
 			_log.Info($"{nameof(message.TypeMessage)}:{message.TypeMessage} type:{message.Text?.Html} message:{ message.Text?.Text}");
 
 			var longChatId = IdsMapper.ToLong(chatId.GetId); // ToDo is
-			if (longChatId != 62779148)
+			if (longChatId != MyChat)
 				return null;
 
-			var (text, mode) = GetText(message.Text);
+			var texter = GetNormalizeText(message.Text, chatId);
+
+			var text = texter?.Text;
+			var mode = GetParseMod(texter);
+
 			var replaceMsg = IdsMapper.ToInt(message.OnIdMessage?.GetId); // ToDo is
 			var editMsg = IdsMapper.ToInt(message.EditMsg?.GetId); // ToDo is
 
@@ -189,13 +232,13 @@ namespace Model.TelegramBot
 			switch (message.TypeMessage)
 			{
 				case MessageType.Edit:
-					if (!string.IsNullOrEmpty(text))
+					if (!string.IsNullOrWhiteSpace(text))
 						senderMsg = await _bot.EditMessageTextAsync(longChatId, editMsg, text, mode,
 							true, cancellationToken: _cancellationToken);
 					break;
 
 				case MessageType.Text:
-					if (!string.IsNullOrEmpty(text))
+					if (!string.IsNullOrWhiteSpace(text))
 						senderMsg = await _bot.SendTextMessageAsync(longChatId, text, mode,
 							replyToMessageId: replaceMsg, disableWebPagePreview: true,
 							cancellationToken: _cancellationToken);
@@ -205,7 +248,7 @@ namespace Model.TelegramBot
 					_log.Warning($"{message.Coordinate.Latitude}:{message.Coordinate.Longitude} replyToMessageId:{replaceMsg} longChatId:{longChatId}");
 
 					senderMsg = await _bot.SendVenueAsync(longChatId, message.Coordinate.Latitude,
-						message.Coordinate.Longitude, "title", "adress", replyToMessageId: replaceMsg,
+						message.Coordinate.Longitude, message.Coordinate.Alias.ToString() ?? "", text, replyToMessageId: replaceMsg,
 						cancellationToken: _cancellationToken);
 					break;
 
@@ -230,7 +273,7 @@ namespace Model.TelegramBot
 					throw new ArgumentOutOfRangeException();
 			}
 
-			return senderMsg == null ? null : new NotificationMessage(TelegramMessage(senderMsg), message);
+			return senderMsg == null ? null : TelegramMessage(senderMsg, true, message);
 		}
 
 		private async Task<IBotMessage> DownloadFileAsync(string fileId, IChatFile token, IBotMessage msg, TypeResource type)

@@ -7,6 +7,7 @@ using Model.BotTypes.Enums;
 using Model.BotTypes.Interfaces;
 using Model.BotTypes.Interfaces.Messages;
 using Model.Logger;
+using Model.TelegramBot;
 
 namespace Model.BotTypes.Class
 {
@@ -17,6 +18,8 @@ namespace Model.BotTypes.Class
 		private readonly ConcurrentQueue<IBotMessage> _messagesQueue = new ConcurrentQueue<IBotMessage>();
 
 		private readonly IConcurrentBot _bot;
+
+
 		public TypeBot TypeBot => _bot.TypeBot;
 		public IBotId Id => _bot.Id;
 
@@ -91,8 +94,8 @@ namespace Model.BotTypes.Class
 		{
 			if (message.SystemType == SystemType.NeedResource)
 				DownloadResource((IBotMessage)message.SystemResource);
-			else if(senderMsg.TypeMessage == MessageType.SystemMessage)
-				EnqueueMessage(senderMsg);
+			// else if(senderMsg.TypeMessage == MessageType.SystemMessage)
+			EnqueueMessage(senderMsg);
 			
 			/*switch (message.TypeMessage)
 			{
@@ -121,23 +124,29 @@ namespace Model.BotTypes.Class
 				}
 				catch (Exception e)
 				{
-					_toSendQueue.Enqueue(msg);
+					_toSendQueue.Enqueue( (msg.Item1, new TransactionCommandMessage(e.Message)));// ToDo retra
 					_log.Error(e);
 					throw;
 				}
 			}
 		}
 
-		private async Task MessagesSyncAsync(IChatId chatId, TransactionCommandMessage tMessage)
+		private async Task MessagesSyncAsync(IChatId chatId, IEnumerable<IMessageToBot> tMessage)
 		{
+			if (tMessage == null) return;
+
 			foreach (var msg in tMessage)
 			{
 				if (msg.SystemType == SystemType.NeedResource)
-					DownloadResource((IBotMessage)msg.SystemResource);
+					 DownloadResource((IBotMessage)msg.SystemResource);
 				else
 				{
+					var cms = _bot.ChildrenMessage(msg, chatId);
+					
 					var botMsg = await _bot.Message(msg, chatId);
 					if (botMsg != null) AfterSendMessage(msg, botMsg);
+					
+					await MessagesSyncAsync(chatId, cms);
 				}
 			}
 		}

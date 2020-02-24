@@ -51,6 +51,7 @@ namespace Model.Dummy
 				return;
 			
 			var cc = new CreatorCommands(new string[] { "/","-"});
+			
 			MessageCommands = cc.CreateCommands(Text, cc.GetCommands(Text));
 		}
 	}

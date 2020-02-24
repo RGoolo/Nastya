@@ -21,7 +21,7 @@ namespace Model.BotTypes.Class
 		
 		public TransactionCommandMessage(string text)
 		{
-			var msg = MessageToBot.GetTextMsg(text);
+			var msg = MessageToBot.GetTextMsg((Texter)text);
 			_messages = new List<IMessageToBot>{ msg };
 		}
 
@@ -33,6 +33,11 @@ namespace Model.BotTypes.Class
 		public TransactionCommandMessage(IEnumerable<IMessageToBot> messages)
 		{
 			_messages = messages.ToList();	
+		}
+
+		public void AddMessage(IMessageToBot msg)
+		{
+			_messages.Add(msg);
 		}
 
 		public IEnumerator<IMessageToBot> GetEnumerator() => _messages.GetEnumerator();
@@ -83,6 +88,9 @@ namespace Model.BotTypes.Class
 		public static IMessageToBot GetSystemMsg(object obj, SystemType systemType)
 			=> new MessageToBot(systemType, obj);
 
+		public static IMessageToBot GetTextMsg(string texter)
+			=> GetTextMsg((Texter)texter);
+
 		public static IMessageToBot GetTextMsg(Texter texter)
 			=> new MessageToBot(MessageType.Text) { Text = texter };
 
@@ -107,7 +115,7 @@ namespace Model.BotTypes.Class
 		public static IMessageToBot GetCoordMsg(Coordinate coord, string text = null)
 			=> new MessageToBot(MessageType.Coordinates) { Text = new Texter(text), Coordinate = coord};
 
-		public static IMessageToBot GetInfoMsg(string text) => GetTextMsg(text);
+		public static IMessageToBot GetInfoMsg(string text) => GetTextMsg((Texter)text);
 		public static IMessageToBot GetWarningMsg(string text) => GetInfoMsg(text);
 		public static IMessageToBot GetErrorMsg(string text) => GetInfoMsg(text);
 		public static IMessageToBot GetErrorMsg(ModelException ex) => GetErrorMsg(ex.Message);
