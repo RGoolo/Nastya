@@ -3,6 +3,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Google.Apis.Auth.OAuth2;
 using Google.Cloud.Vision.V1;
+using Grpc.Auth;
 using Model.Files.FileTokens;
 
 namespace Model.Logic.Google
@@ -18,25 +19,18 @@ namespace Model.Logic.Google
 
 		private static Image GetImg(IChatFile file) => file.FileType.IsLocal() ? Image.FromStream(file.ReadStream()) : Image.FromUri(file.Location);
 
-		public static async Task<string> GetTextAsync(IChatFile file)
+		private static ImageAnnotatorClient CreateClient(IChatFile creadFile)
 		{
-			var image = GetImg(file);
+			var credential = GoogleCredential.FromFile(creadFile.Location).CreateScoped(ImageAnnotatorClient.DefaultScopes);
+			var channel = new Grpc.Core.Channel(ImageAnnotatorClient.DefaultEndpoint.ToString(), credential.ToChannelCredentials());
+			// Instantiates a client
+			return ImageAnnotatorClient.Create(channel);
+		}
 
-			/*Credentials myCredentials = ServiceAccountCredentials.fromStream(
-				new FileInputStream("path/to/credentials.json"));
-
-			ImageAnnotatorSettings imageAnnotatorSettings =
-				ImageAnnotatorSettings.newBuilder()
-					.setCredentialsProvider(FixedCredentialsProvider.create(myCredentials))
-					.build();*/
-
-			/*ServiceAccountCredential.FromServiceAccountData()
-
-			ImageAnnotatorClient imageAnnotatorClient =
-				ImageAnnotatorClient.create(imageAnnotatorSettings);
-
-			var credential = GoogleCredential.FromFile(jsonPath);*/
-			var client = ImageAnnotatorClient.Create();
+		public static async Task<string> GetTextAsync(IChatFile fileTo, IChatFile creadFile)
+		{
+			var image = GetImg(fileTo);
+			var client = CreateClient(creadFile);
 			
 			StringBuilder sb = new StringBuilder();
 			var responce = await client.DetectTextAsync(image);
@@ -49,12 +43,12 @@ namespace Model.Logic.Google
 			return sb.ToString();
 		}
 
-		public static async Task<string> GetWebAsync(IChatFile file)
+		public static async Task<string> GetWebAsync(IChatFile file, IChatFile creadFile)
 		{
 			StringBuilder sb = new StringBuilder();
 			var image = GetImg(file);
 
-			var client = ImageAnnotatorClient.Create();
+			var client = CreateClient(creadFile);
 			var annotation = await client.DetectWebInformationAsync(image);
 			if (annotation == null)
 				return string.Empty;
@@ -78,13 +72,13 @@ namespace Model.Logic.Google
 			return sb.ToString();
 		}
 
-		public static async Task<string> GetLogoAsync(IChatFile file)
+		public static async Task<string> GetLogoAsync(IChatFile file, IChatFile creadFile)
 		{
 			StringBuilder sb = new StringBuilder();
 
 			var image = GetImg(file);
 
-			var client = ImageAnnotatorClient.Create();
+			var client = CreateClient(creadFile);
 
 			var responce = await client.DetectLogosAsync(image);
 			if (responce != null)
@@ -94,14 +88,14 @@ namespace Model.Logic.Google
 			return sb.ToString();
 		}
 
-		public static async Task<string> GetLandmarkAsync(IChatFile file)
+		public static async Task<string> GetLandmarkAsync(IChatFile file, IChatFile creadFile)
 		{
 			StringBuilder sb = new StringBuilder();
 			var image = GetImg(file);
 
 			
 
-			var client = ImageAnnotatorClient.Create();
+			var client = CreateClient(creadFile);
 
 			var responce = await client.DetectLandmarksAsync(image);
 			if (responce != null)
@@ -111,12 +105,12 @@ namespace Model.Logic.Google
 			return sb.ToString();
 		}
 
-		public static async Task<string> GetDocAsync(IChatFile file)
+		public static async Task<string> GetDocAsync(IChatFile file, IChatFile creadFile)
 		{
 			StringBuilder sb = new StringBuilder();
 			var image = GetImg(file);
 
-			var client = ImageAnnotatorClient.Create();
+			var client = CreateClient(creadFile);
 			var response = await client.DetectDocumentTextAsync(image);
 			if (response != null)
 				foreach (var page in response.Pages)

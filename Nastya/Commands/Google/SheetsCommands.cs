@@ -21,14 +21,12 @@ namespace Nastya.Commands
 	[CommandClass(nameof(SheetsCommands), "Работа с Google Sheets.", TypeUser.User)]
 	public class SheetsCommands
 	{
-		private readonly IChatId _chatId;
 		private WorkerSheets _workerSheets;
 		private string _sheetsUrl;
 		private readonly IChatFileFactory _fileFactory;
 
-		public SheetsCommands(ISettings settings, IChatId chatId)
+		public SheetsCommands(ISettings settings)
 		{
-			_chatId = chatId;
 			_fileFactory = settings.FileChatFactory;
 		}
 
@@ -65,21 +63,7 @@ namespace Nastya.Commands
 			return "Успешно получено";
 		}
 
-		[Command(nameof(CopyCreadFromPM), "Скопировать файл с токеном для доступа из лички", TypeUser.Admin)]
-		public string CopyCreadFromPM(IUser user)
-		{
-			if (user.Id != _chatId.GetId)
-			{
-				var userFiles = SettingsHelper.GetSetting(user).FileChatFactory;
-				userFiles.SystemFile(SystemChatFile.SheetCredentials)
-					.CopyFrom(_fileFactory.SystemFile(SystemChatFile.SheetCredentials));
-				userFiles.SystemFile(SystemChatFile.SheetToken).CopyFrom(_fileFactory.SystemFile(SystemChatFile.SheetToken));
-			}
-
-			RecreateSheets(_sheetsUrl);
-			return "Успешно скопировано";
-		}
-
+		
 		[Command(nameof(CreateSheetUp), "Создает страницу в Google sheets когда появляется новый уровень.")]
 		public bool CreateSheetUp { get; set; }
 

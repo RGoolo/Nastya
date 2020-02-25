@@ -17,7 +17,7 @@ namespace Model.BotTypes
 	public class ArgumentNeedException : ModelException
 	{
 		public string ArgumentName{ get; }
-		public ArgumentNeedException(string arg) : base($"Не хватает параметра {arg}.")
+		public ArgumentNeedException(string arg) : base($"Не хватает параметра: {arg}.")
 		{
 			ArgumentName = arg;
 		}

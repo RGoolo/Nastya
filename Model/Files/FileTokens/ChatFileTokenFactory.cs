@@ -8,7 +8,7 @@ namespace Model.Files.FileTokens
 {
 	public enum SystemChatFile
 	{
-		Settings, SheetToken, SheetCredentials
+		Settings, SheetToken, SheetCredentials, RecognizeCredentials
 	}
 
 	public interface IChatFileFactory
@@ -59,6 +59,7 @@ namespace Model.Files.FileTokens
 			{
 				SystemChatFile.Settings => $"{type}.xml",
 				SystemChatFile.SheetCredentials => $"{type}.json",
+				SystemChatFile.RecognizeCredentials => $"{type}.json",
 				SystemChatFile.SheetToken => $"Google.Apis.Auth.OAuth2.Responses.TokenResponse-user",
 				_ => $"{type}.xml",
 			};

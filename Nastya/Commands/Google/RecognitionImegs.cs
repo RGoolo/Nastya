@@ -7,6 +7,7 @@ using Model.BotTypes.Enums;
 using Model.BotTypes.Interfaces;
 using Model.BotTypes.Interfaces.Messages;
 using Model.Files.FileTokens;
+using Model.Logic.Settings;
 
 namespace Nastya.Commands
 {
@@ -14,6 +15,13 @@ namespace Nastya.Commands
 	[CommandClass("VisionMsg", "Распознаем текст с картинки", TypeUser.User)]
 	public class RecognitionImegs
 	{
+		private readonly ISettings _settings;
+
+		public RecognitionImegs(ISettings settings)
+		{
+			_settings = settings;
+		}
+
 		public enum TypeEnum
 		{
 			Text, Web, Logo, Landmark, Doc,
@@ -37,7 +45,6 @@ namespace Nastya.Commands
 		[Command("imgdoc", "Получить список Landmark с изображения.", resource: TypeResource.Photo)]
 		public Task<string> GetDoc(IChatFile token) => ConvertToText(Vision.GetDocAsync, token);
 
-		//private Coordinates _coord = new CheckCoordinates();// ToDo to voice
 		[CommandOnMsg(nameof(GetTextMsg), MessageType.Photo, typeUser: TypeUser.User)]
 		public void GetTextMsg(IBotMessage msg)
 		{
@@ -45,9 +52,9 @@ namespace Nastya.Commands
 			GetText(msg.Resource.File);
 		}
 
-		private async Task<string> ConvertToText(Func<IChatFile, Task<string>> toText, IChatFile token)
+		private async Task<string> ConvertToText(Func<IChatFile, IChatFile, Task<string>> toText, IChatFile token)
 		{
-			return await toText(token);
+			return await toText(token, _settings.FileChatFactory.SystemFile(SystemChatFile.RecognizeCredentials));
 			//return MessageToBot.GetTextMsg(new Texter(text));
 			//var transaction = new TransactionCommandMessage(command);
 			//	SendMsg.Send(transaction);

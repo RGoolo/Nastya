@@ -6,27 +6,32 @@ using Model.BotTypes.Enums;
 using Model.BotTypes.Interfaces.Messages;
 using Model.Files.FileTokens;
 using Model.Logic.Google;
+using Model.Logic.Settings;
 
 namespace Nastya.Commands
 {
 	[CommandClass("SoundMsg", "Распознаем текст с войсом", TypeUser.User)]
 	public class RecognitionSounds
 	{
+		private readonly ISettings _settings;
+
+		public RecognitionSounds(ISettings settings)
+		{
+			_settings = settings;
+		}
+
 		[Command("IsCheckVoice", "Расшифровывать текст с голоса.")]
 		public bool IsCheckVoice { get; set; }
 
 		[Command("text", "Получить текст из голосового файла.", resource: TypeResource.Voice)]
 		public Task<string> GetVoiceText(IChatFile token) => ConvertToText(Voice.GetText, token);
 
-		//private Coordinates _coord = new CheckCoordinates();
 		[CommandOnMsg(nameof(IsCheckVoice), MessageType.Photo, typeUser: TypeUser.User)]
 		public void GetTextMsg(IBotMessage msg)
 		{
 			if (msg.Resource == null) return;
 			GetVoiceText(msg.Resource.File);
 		}
-
-		//private Coordinates _coord = new CheckCoordinates();
 
 		[CommandOnMsg(nameof(IsCheckVoice), MessageType.Voice, typeUser: TypeUser.User)]
 		public void GetTextMsgVoice(IBotMessage msg)
@@ -46,11 +51,10 @@ namespace Nastya.Commands
 			return GetVoiceText(factory.GetChatFile(msg.ReplyToCommandMessage.FileToken));
 		}
 
-		private async Task<string> ConvertToText(Func<IChatFile, Task<string>> toText, IChatFile token)
+		private async Task<string> ConvertToText(Func<IChatFile, IChatFile, Task<string>> toText, IChatFile token)
 		{
-			var text = await toText(token);
+			var text = await toText(token, _settings.FileChatFactory.SystemFile(SystemChatFile.RecognizeCredentials));
 			return string.IsNullOrEmpty(text) ? "не удалось распознать сообщение" : text;
-			//SendMsg.SendMsg(transaction);
 		}
 	}
 }

@@ -12,7 +12,7 @@ namespace Model.Logic.Settings
 
 		void SetValue(string name, string value);
 		string GetValue(string name, string @default = default(string));
-		IChatId ChatGuid { get; }
+		IChatId ChatId { get; }
 
 		TypeGame SetUri(string uri);	
 		TypeGame TypeGame { get;  }

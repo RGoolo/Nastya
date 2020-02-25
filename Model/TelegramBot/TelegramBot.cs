@@ -117,6 +117,7 @@ namespace Model.TelegramBot
 				else
 					_chatAdministations.TryAdd(msg.Chat.Id, chatAdmins);
 			}
+
 			return GetTypeUser(_chatAdministations[msg.Chat.Id].UserIds.Contains(msg.From.Id), msg);
 		}
 
@@ -141,8 +142,6 @@ namespace Model.TelegramBot
 					var points = set.PointsFactory.GetCoordinates(text.Text);
 					text.Replace(points.ReplacePoints(), true);
 				}
-
-				
 
 				var t = TelegramHtml.RemoveTag(text); //, GetParseMod(text));
 				if (TelegramHtml.CheckPaarTags(t))
@@ -216,8 +215,8 @@ namespace Model.TelegramBot
 			_log.Info($"{nameof(message.TypeMessage)}:{message.TypeMessage} type:{message.Text?.Html} message:{ message.Text?.Text}");
 
 			var longChatId = IdsMapper.ToLong(chatId.GetId); // ToDo is
-			if (longChatId != MyChat)
-				return null;
+			//if (longChatId != MyChat)
+			//	return null;
 
 			var texter = GetNormalizeText(message.Text, chatId);
 

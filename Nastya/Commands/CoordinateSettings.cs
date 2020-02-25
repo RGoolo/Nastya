@@ -42,6 +42,7 @@ namespace Nastya.Commands
 
 		[Command(Const.Coordinates.Google.NameLink, "Имя ссылки на Google карты.")]
 		public string NameGLink { get; set; }
+		
 
 		[Command(Const.Coordinates.Google.NamePoints, "Имя ссылки на Google маршрут от меня.")]
 		public string NameGPoints { get; set; }

@@ -19,25 +19,30 @@ namespace Model.Logic.Google
 
 		private static readonly string[] Scopes = { SheetsService.Scope.Spreadsheets };
 		private const string ApplicationName = "Nastya SheetsService";
-
 		private readonly SheetsService _service;
 
 		public Sheets(IChatFile fileCred, IChatFileToken token, string sheetsUrl)
 		{
 			_sheetsUrl = sheetsUrl;
+
 			UserCredential credential;
+			var dir = Directory.GetParent(token.Location).FullName;
+			using (var stream = fileCred.ReadStream())
+			{
+				var clientSecret = GoogleClientSecrets.Load(stream).Secrets;
+				credential = GoogleWebAuthorizationBroker.AuthorizeAsync(
+					clientSecret,
+					Scopes,
+					"user",
+					CancellationToken.None,
+					new FileDataStore(dir, true)).Result;
+			}
 
-
-
-			var credential1 = GoogleCredential.GetApplicationDefault();
-
-			// Create Google Sheets API service.
 			_service = new SheetsService(new BaseClientService.Initializer()
 			{
-				HttpClientInitializer = credential1,
+				HttpClientInitializer = credential,
 				ApplicationName = ApplicationName,
 			});
-
 		}
 
 		//ToDo: acync

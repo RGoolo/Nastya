@@ -50,7 +50,7 @@ namespace Nastya.Commands
 		}
 
 		[Command(nameof(Const.Game.CopyFromPM), "Скопировать данные по игре с лички (логин, пароль, сайт).", TypeUser.Admin)]
-		public string copyFromPM(ISettings chatSettings, IUser user)
+		public string CopyFromPM(ISettings chatSettings, IUser user)
 		{
 			var userSettings = SettingsHelper.GetSetting(user);
 			chatSettings.Game.Password = userSettings.Game.Password;
@@ -200,7 +200,6 @@ namespace Nastya.Commands
 			if (_game == null)
 				return;
 
-			//привет, параноя
 			GetGame(settings)?.Stop();
 			_game.Dispose();
 			_game = null;

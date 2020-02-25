@@ -26,7 +26,7 @@ namespace Model.Logic.Settings
 		public IMessageId GetIMessageId(string name, IMessageId @default = null) => Settings.GetMessageId(name.ToLower(), @default);
 
 		public Settings Settings { get; }
-		public IChatId ChatGuid  => new ChatGuid(Settings.ChatGuid);
+		public IChatId ChatId  => new ChatGuid(Settings.ChatGuid);
 		public TypeGame TypeGame => Settings.TypeGame;
 		public ISettingsBraille Braille { get; }
 		public ISettingsTest Test { get; }
@@ -42,7 +42,7 @@ namespace Model.Logic.Settings
 		public IPointsFactory PointsFactory { get; }
 		public IChatFileFactory FileChatFactory { get; }
 		
-		public string NotExistFile(string ext) => NotExistFile(ext, ChatGuid);
+		public string NotExistFile(string ext) => NotExistFile(ext, ChatId);
 
 		public static string NotExistFile(string ext, IChatId chatId) => FileHelper.GetNotExistFile(ext, chatId.ToString());
 
