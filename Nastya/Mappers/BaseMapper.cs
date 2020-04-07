@@ -1,6 +1,6 @@
-﻿using Model.BotTypes;
-using Model.BotTypes.Class.Reflection;
-using Model.BotTypes.Interfaces.Messages;
+﻿using Model.Bots.BotTypes;
+using Model.Bots.BotTypes.Class.Reflection;
+using Model.Bots.BotTypes.Interfaces.Messages;
 
 namespace Nastya.Mappers
 {

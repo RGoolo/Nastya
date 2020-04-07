@@ -1,6 +1,6 @@
 ﻿using System.Linq;
-using Model.BotTypes.Attribute;
-using Model.BotTypes.Enums;
+using Model.Bots.BotTypes.Attribute;
+using Model.Bots.BotTypes.Enums;
 using Model.Logic.PereodicTable;
 
 namespace Nastya.Commands

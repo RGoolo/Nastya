@@ -3,33 +3,34 @@ using System.Text;
 using System.Timers;
 using System.Threading.Tasks;
 using System.Collections.Generic;
-using Web.Game.Model;
 using System.Collections.Concurrent;
+using System.Threading;
+using Model.Bots.BotTypes.Class;
+using Model.Bots.BotTypes.Enums;
+using Model.Bots.BotTypes.Interfaces.Ids;
+using Model.Bots.BotTypes.Interfaces.Messages;
 using Model.Logic.Model;
 using Model.Logic.Settings;
-using Model.BotTypes.Class;
-using Model.BotTypes.Enums;
-using Model.BotTypes.Interfaces;
-using Model.BotTypes.Interfaces.Messages;
 using Model.Logger;
+using Web.Entitiy;
+using Timer = System.Timers.Timer;
 
 namespace Web.Base
 {
 	//public delegate void SendMsgSyncDel(IEnumerable<IMessage> messages, long chatId);
-	public class ConcurrentGame : IGame
+	public class ConcurrentGame : IGameControl
 	{
-		public event SendMsgsSyncDel SendMsgs;
+		public Guid GameId { get; }
 
-		ILogger logger = Logger.CreateLogger(nameof(ConcurrentGame));
-		private readonly Timer _refreshTimer;// = new Timer(5000);
+		private readonly ILogger _logger = Logger.CreateLogger(nameof(ConcurrentGame));
+		private readonly Timer _refreshTimer;
 		private readonly ConcurrentQueue<IEvent> _queue = new ConcurrentQueue<IEvent>();
 		
 		private bool _gameIsStarted;
 		private bool _refreshPage;
-		private readonly System.Threading.CancellationTokenSource _source;
-		private readonly System.Threading.CancellationToken _token;
+		private readonly CancellationToken _token;
 		private readonly IController _controller;
-		private readonly ISendSyncMsgs _sendSyncMessage;
+		private readonly ISenderSyncMsgs _sendSyncMessage;
 		private readonly object _locker = new object();
 		
 		private void Cycle()
@@ -84,20 +85,23 @@ namespace Web.Base
 
 		public void SetEvent(IEvent iEvent) => _queue.Enqueue(iEvent);
 	
-		public ConcurrentGame(IController concreteGame, ISendSyncMsgs sendSyncMessage)
+		public ConcurrentGame(IController concreteGame, ISenderSyncMsgs sendSyncMessage, Guid gameId)
 		{
+			GameId = gameId;
 			_controller = concreteGame;
 			_sendSyncMessage = sendSyncMessage;
 
-			concreteGame.SendMsgs += ConcreteGame_SendMsgs; ;
+			// concreteGame.SendMsgs += SendSimpleMsg;
+			concreteGame.SendMsg += SendSimpleMsg; 
 
 			Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
-			_source = new System.Threading.CancellationTokenSource();
-			_token = _source.Token;
+			var source = new System.Threading.CancellationTokenSource();
+			_token = source.Token;
 
 			_refreshTimer = new Timer(3000);
 			_refreshTimer.Elapsed += _refreshTimer_Elapsed;
 		}
+
 
 		private bool TryStart()
 		{
@@ -116,7 +120,7 @@ namespace Web.Base
 					return false;
 				}*/
 
-				var msg = MessageToBot.GetTextMsg("Успешно подключилась.");
+				var msg = MessageToBot.GetTextMsg($"Успешно подключилась. Для подключения к игре в другом чате или личке введите: /connect {GameId} (можно просто сделать форворд этого сообщения)");
 				msg.Notification = Notification.GameStarted;
 				SendSimpleMsg(msg);
 
@@ -127,7 +131,7 @@ namespace Web.Base
 			}
 			catch (AuthorizationFailedException ex)
 			{
-				logger.Error(ex);
+				_logger.Error(ex);
 				_gameIsStarted = false;
 				var msgError = MessageToBot.GetTextMsg(ex.Message);
 				SendSimpleMsg(msgError);
@@ -136,7 +140,7 @@ namespace Web.Base
 			}
 			catch (Exception ex)
 			{
-				logger.Error(ex);
+				_logger.Error(ex);
 				
 				_gameIsStarted = false;
 
@@ -165,24 +169,22 @@ namespace Web.Base
 			await Task.Run(Cycle, _token);
 		}
 
-		private void ConcreteGame_SendMsgs(IEnumerable<IMessageToBot> messages) => SendSimpleMsg(messages);
-
 		private void _refreshTimer_Elapsed(object sender, ElapsedEventArgs e)
 		{
 			if (_queue.IsEmpty)
 				_refreshPage = true;
 		}
 
-		protected void SendSimpleMsg(string s, IMessageId idMsg = null)
+		private void SendSimpleMsg(string s, IMessageId idMsg = null)
 		{
 			var msg = MessageToBot.GetTextMsg(s);
 			msg.OnIdMessage = idMsg;
 			SendSimpleMsg(msg);
 		}
 
-		protected void SendSimpleMsg(IMessageToBot msg) => SendSimpleMsg(new List<IMessageToBot>() { msg });
+		private void SendSimpleMsg(IMessageToBot msg) => _sendSyncMessage.Send(msg);
 
-		protected void SendSimpleMsg(IEnumerable<IMessageToBot> msgs) => _sendSyncMessage.SendSync(msgs);
+		// protected void SendSimpleMsg(IList<IMessageToBot> msgs) => _sendSyncMessage.SendSync(msgs);
 		
 		public void Stop()
 		{

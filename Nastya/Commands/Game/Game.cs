@@ -1,16 +1,17 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
-using Model.BotTypes.Attribute;
-using Model.BotTypes.Class;
-using Model.BotTypes.Class.Ids;
-using Model.BotTypes.Enums;
-using Model.BotTypes.Interfaces;
-using Model.BotTypes.Interfaces.Messages;
+using Google.Protobuf;
+using Model.Bots.BotTypes.Attribute;
+using Model.Bots.BotTypes.Class;
+using Model.Bots.BotTypes.Enums;
+using Model.Bots.BotTypes.Interfaces.Ids;
+using Model.Bots.BotTypes.Interfaces.Messages;
 using Model.Logic.Settings;
-using Web.Base;
-using Web.Game.Model;
+using Nastya.Service;
+using Web.Entitiy;
 
-namespace Nastya.Commands
+namespace Nastya.Commands.Game
 {
 	public static class HelpText
 	{
@@ -23,15 +24,35 @@ namespace Nastya.Commands
 
 	[CustomHelp(HelpText.CustomHelp)]
 	[CommandClass("Game", "Дозор дедлайн", TypeUser.User)]
-	public class Game1 : ISendSyncMsgs
+	public class Game1 : ISenderSyncMsgs
 	{
 		private readonly ISendMessages _sendMessages;
+		private readonly ISettings _settings;
 
-		public Game1(ISendMessages sendMessages)
+		public Game1(ISendMessages sendMessages, IChatId chatId, ISettings settings)
 		{
+			_gamePool = new GamesPool();
 			_sendMessages = sendMessages;
+			_settings = settings;
+			ChatId = chatId;
 		}
 
+		private readonly GamesPool _gamePool;
+		private IControl _control;
+		private IGame _game;
+
+		[Command(nameof(Connect), "Присоединиться к игре")]
+		public string Connect(Guid gameId, IBotMessage msg)
+		{
+			_game = _gamePool.GetGame(gameId, this, msg);
+			if (_game == null) return "Не удалось подключится";
+			GameIsStart = true;
+			return "подключилась";
+		}
+
+		[Command(nameof(Const.Game.AllowConnect), "Позволять присоединятся к игре в других чатах")]
+		public bool AllowConnect { get; set; }
+		
 		[Command(Const.Game.Send, "Отправляет коды из чата.")]
 		public bool IsSendCoord { get; set; }
 
@@ -60,31 +81,37 @@ namespace Nastya.Commands
 			return $"Скопировано. Логин = {userSettings.Game.Login}, сайт = {chatSettings.Game.Site}";
 		}
 
-
 		[Command(Const.Game.Level, "Номер задания, куда бить коды")]
 		public string Level { get; set; }
-
-		private IGame _game;
 
 		public bool GameIsStart { get; private set; }
 
 		[Command(Const.Game.Start, "Коннектится к сайту")]
-		public void Start(IUser user, ISettings settings)
+		public void Start(IUser user, IBotMessage messageBot)
 		{
-			GetGame(settings)?.Start();
-			//GameIsStart = true;
+			var gc = _gamePool.CreateGame(_settings, this, messageBot.MessageId);
+
+			_game = gc;
+			_control = gc;
+			_control.Start();
+
+			GameIsStart = true;
 		}
 
 		[CheckProperty(nameof(GameIsStart))]
 		[Command(Const.Game.Stop, "Заканчивает игру")]
-		public void Stop(IUser user, ISettings settings)
+		public void Stop(IUser user)
 		{
-			if (!GameIsStart)
-				return;
-
-			GetGame(settings)?.Stop();
 			GameIsStart = false;
-			_game = null;
+
+			if (_game != null)
+			{
+				_gamePool.RemoveReceiver(_game.GameId, this);
+				_game = null;
+			}
+
+			_control?.Stop();
+			_control = null;
 		}
 
 		[Command(Const.Game.Clear, "Удаляет игру из памяти.")]
@@ -95,44 +122,44 @@ namespace Nastya.Commands
 
 		[CheckProperty(nameof(GameIsStart))]
 		[Command(Const.Game.LvlText, "Прислать текст текущего уровня в чат", TypeUser.User)]
-		public void LvlText(IUser user, ISettings settings)
+		public void LvlText(IUser user)
 		{
-			GetGame(settings)?.SetEvent(new SimpleEvent(EventTypes.GetLvlInfo, user));
+			GetGame()?.SetEvent(new SimpleEvent(EventTypes.GetLvlInfo, user));
 		}
 
 		[CheckProperty(nameof(GameIsStart))]
 		[Command(Const.Game.LvlAllText, "Прислать всю инфу по уровню", TypeUser.User)]
-		public void LvlAllText(IUser user, ISettings settings)
+		public void LvlAllText(IUser user)
 		{
-			GetGame(settings)?.SetEvent(new SimpleEvent(EventTypes.GetAllInfo, user));
+			GetGame()?.SetEvent(new SimpleEvent(EventTypes.GetAllInfo, user));
 		}
 
 		[CheckProperty(nameof(GameIsStart))]
 		[Command(Const.Game.LastCodes, "Оставшиеся сектора", TypeUser.User)]
-		public void LastCodes(IUser user, ISettings settings)
+		public void LastCodes(IUser user)
 		{
-			GetGame(settings)?.SetEvent(new SimpleEvent(EventTypes.GetSectors, user));
+			GetGame()?.SetEvent(new SimpleEvent(EventTypes.GetSectors, user));
 		}
 
 		[CheckProperty(nameof(GameIsStart))]
 		[Command(Const.Game.Codes, "Секторы на уровне", TypeUser.User)]
-		public void Codes(IUser user, ISettings settings)
+		public void Codes(IUser user)
 		{
-			GetGame(settings)?.SetEvent(new SimpleEvent(EventTypes.GetAllSectors, user));
+			GetGame()?.SetEvent(new SimpleEvent(EventTypes.GetAllSectors, user));
 		}
 
 		[CheckProperty(nameof(GameIsStart))]
 		[Command(Const.Game.Bonus, "Оставшиеся бонусы", TypeUser.User)]
-		public void Bonus(IUser user, ISettings settings)
+		public void Bonus(IUser user)
 		{
-			GetGame(settings)?.SetEvent(new SimpleEvent(EventTypes.GetBonus, user));
+			GetGame()?.SetEvent(new SimpleEvent(EventTypes.GetBonus, user));
 		}
 
 		[CheckProperty(nameof(GameIsStart))]
 		[Command(Const.Game.AllBonus, "Бонусы на уровне", TypeUser.User)]
-		public void AllBonus(IUser user, ISettings settings)
+		public void AllBonus(IUser user)
 		{
-			GetGame(settings)?.SetEvent(new SimpleEvent(EventTypes.GetAllBonus, user));
+			GetGame()?.SetEvent(new SimpleEvent(EventTypes.GetAllBonus, user));
 		}
 
 		[CheckProperty(nameof(GameIsStart))]
@@ -147,64 +174,53 @@ namespace Nastya.Commands
 
 		[CheckProperty(nameof(GameIsStart))]
 		[Command(nameof(GoToTheNextLevel), "Перейти на следующий уровень")]
-		public void GoToTheNextLevel(IUser user, ISettings settings)
+		public void GoToTheNextLevel(IUser user)
 		{
-			GetGame(settings)?.SetEvent(new SimpleEvent(EventTypes.GoToTheNextLevel, user));
+			GetGame()?.SetEvent(new SimpleEvent(EventTypes.GoToTheNextLevel, user));
 		}
 
 		[CheckProperty(nameof(GameIsStart))]
 		[Command(nameof(Time), "Сколько времени осталось", TypeUser.User)]
-		public void Time(IUser user, ISettings settings)
+		public void Time(IUser user)
 		{
-			GetGame(settings)?.SetEvent(new SimpleEvent(EventTypes.GetTimeForEnd, user));
+			GetGame()?.SetEvent(new SimpleEvent(EventTypes.GetTimeForEnd, user));
 		}
 
 		[CheckProperty(nameof(GameIsStart))]
 		[Command(nameof(TakeBreak), "Взять перерыв", TypeUser.Admin)]
-		public void TakeBreak(IUser user, ISettings settings)
+		public void TakeBreak(IUser user)
 		{
-			GetGame(settings)?.SetEvent(new SimpleEvent(EventTypes.TakeBreak, user));
+			GetGame()?.SetEvent(new SimpleEvent(EventTypes.TakeBreak, user));
 		}
 
 		[CheckProperty(nameof(GameIsStart))]
 		[Command(nameof(Code), "Отправить код", TypeUser.User)]
-		public void Code(IUser user, IBotMessage msg, ISettings settings, string code)
+		public void Code(IBotMessage msg, string code)
 		{
-			GetGame(settings)?.SendCode(code, msg.User, msg.MessageId);
+			GetGame()?.SendCode(code, msg.User, msg.MessageId);
 		}
 
 		// private ISettings SettingHelper => SettingsHelper.GetSetting(ChatId);
-
-		private IGame GetGame(ISettings settings)
+		private IGame GetGame(Guid? gameId = null, IMessage msg = null, IMessageId messageId = null)
 		{
-			if (_game != null)
-				return _game;
-
-			_game = GameFactory.NewGame(settings, this);
-
-			if (_game != null)
-			{
-				GameIsStart = true;
-			}
 			return _game;
 		}
 
-		public void SendSync(IEnumerable<IMessageToBot> messages)
+		public IChatId ChatId { get; }
+
+		public void Send(IMessageToBot messages)
+		{
+			var transaction = new TransactionCommandMessage(messages);
+			_sendMessages.Send(transaction);
+		}
+
+		public void SendSync(IList<IMessageToBot> messages)
 		{
 			var transaction = new TransactionCommandMessage(messages.ToList());
 			_sendMessages.Send(transaction);
 		}
 
-		private void DeleteGame(IUser user, ISettings settings)
-		{
-			if (_game == null)
-				return;
-
-			GetGame(settings)?.Stop();
-			_game.Dispose();
-			_game = null;
-		}
-
+	
 		[CheckProperty(nameof(GameIsStart))]
 		[CommandOnMsg(nameof(IsSendCoord), MessageType.Text, TypeUser.User)]
 		public void Command(IBotMessage msg, ISettings settings)
@@ -212,13 +228,13 @@ namespace Nastya.Commands
 			if (msg.MessageCommands != null && msg.MessageCommands.Count() != 0)
 				return;
 
-			GetGame(settings)?.SendCode(msg.Text, msg.User, msg.MessageId);
+			GetGame()?.SendCode(msg.Text, msg.User, msg.MessageId);
 		}
 
 		public bool CheckSystemMsg => true;
 
 		[CommandOnMsg(nameof(CheckSystemMsg), MessageType.All, TypeUser.Bot)]
-		public void CheckSystem(IBotMessage msg, ISettings settings)
+		public void CheckSystem(IBotMessage msg)
 		{
 			if (msg.ReplyToCommandMessage == null)
 				return;
@@ -226,16 +242,16 @@ namespace Nastya.Commands
 			switch(msg.ReplyToCommandMessage.Notification)
 			{
 				case Notification.SendAllSectors:
-					settings.Game.AllSectorsMsg = msg.MessageId;
+					_settings.Game.AllSectorsMsg = msg.MessageId;
 					break;
 				case Notification.SendSectors:
-					settings.Game.SectorsMsg = msg.MessageId;
+					_settings.Game.SectorsMsg = msg.MessageId;
 					break;
 				case Notification.GameStarted:
 					GameIsStart = true;
 					break;
 				case Notification.GameStoped:
-					Stop(msg.User, settings);
+					Stop(msg.User);
 					break;
 			};
 		}

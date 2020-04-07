@@ -1,21 +1,15 @@
-﻿
-using System;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.Threading.Tasks;
-using Microsoft.VisualStudio.TestPlatform.Utilities.Helpers.Interfaces;
-using Model.BotTypes.Attribute;
-using Model.BotTypes.Class;
-using Model.BotTypes.Class.Ids;
-using Model.BotTypes.Enums;
-using Model.BotTypes.Interfaces;
-using Model.BotTypes.Interfaces.Messages;
+using Model.Bots.BotTypes.Attribute;
+using Model.Bots.BotTypes.Enums;
+using Model.Bots.BotTypes.Interfaces.Messages;
 using Model.Files.FileTokens;
 using Model.Logic.Google;
 using Model.Logic.Model;
 using Model.Logic.Settings;
 using Web.DL;
 
-namespace Nastya.Commands
+namespace Nastya.Commands.Google
 {
 	
 	[CommandClass(nameof(SheetsCommands), "Работа с Google Sheets.", TypeUser.User)]

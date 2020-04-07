@@ -2,13 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Model;
+using Model.Bots.BotTypes;
+using Model.Bots.BotTypes.Class;
+using Model.Bots.BotTypes.Class.Ids;
+using Model.Bots.BotTypes.Interfaces;
+using Model.Bots.BotTypes.Interfaces.Ids;
+using Model.Bots.BotTypes.Interfaces.Messages;
 using Model.Logic.Model;
-using Model.BotTypes;
-using Model.BotTypes.Class;
-using Model.BotTypes.Class.Ids;
-using Model.BotTypes.Interfaces;
-using Model.BotTypes.Interfaces.Messages;
 using Model.Logger;
 using Nastya.Mappers;
 
@@ -66,14 +66,14 @@ namespace Nastya
 
 		private void Bot_OnMessage(IBotMessage msg, IBotId botId)
 		{
-			if (!_chats.TryGetValue(msg.ChatId, out var mapper))
+			if (!_chats.TryGetValue(msg.Chat.Id, out var mapper))
 			{
-				var msgColl = new MessageCollection(msg.ChatId, botId);
+				var msgColl = new MessageCollection(msg.Chat.Id, botId);
 
-				var chatMapper = new ChatMapper(_bots[botId].TypeBot, msg.ChatId, msgColl);
-				_messages.Add(msg.ChatId, msgColl);
+				var chatMapper = new ChatMapper(_bots[botId].TypeBot, msg.Chat.Id, msgColl);
+				_messages.Add(msg.Chat.Id, msgColl);
 				mapper = new BotChatMapper(botId, chatMapper);
-				_chats.Add(msg.ChatId, mapper);
+				_chats.Add(msg.Chat.Id, mapper);
 			}
 			try
 			{
@@ -82,7 +82,7 @@ namespace Nastya
 				foreach (var iCMsg in messages.SelectMany(x => x))
 					iCMsg.OnIdMessage = msg.MessageId;
 
-				_bots[botId].SendMessages(msg.ChatId, messages);
+				_bots[botId].SendMessages(msg.Chat.Id, messages);
 			}
 			catch (MessageException mEx)
 			{
@@ -90,7 +90,7 @@ namespace Nastya
 				{
 					var message = MessageToBot.GetErrorMsg(mEx);
 					message.OnIdMessage = mEx.IMessage.MessageId;
-					LogAndSendException(message, mEx, botId, msg.ChatId, msg.MessageId);
+					LogAndSendException(message, mEx, botId, msg.Chat.Id, msg.MessageId);
 				}
 				catch (Exception ex)
 				{
@@ -102,7 +102,7 @@ namespace Nastya
 				try
 				{
 					var message = MessageToBot.GetErrorMsg(mEx);
-					LogAndSendException(message, mEx, botId, msg.ChatId, msg.MessageId);
+					LogAndSendException(message, mEx, botId, msg.Chat.Id, msg.MessageId);
 				}
 				catch (Exception ex)
 				{
@@ -114,7 +114,7 @@ namespace Nastya
 				try
 				{
 					var message = MessageToBot.GetErrorMsg("Не удалось выполнить комманду");
-					LogAndSendException(message, mEx, botId, msg.ChatId, msg.MessageId);
+					LogAndSendException(message, mEx, botId, msg.Chat.Id, msg.MessageId);
 				}
 				catch (Exception ex)
 				{

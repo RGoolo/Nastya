@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Text;
-using Model.BotTypes.Class;
+using Model.Bots.BotTypes.Class;
 using Model.Logic.Settings;
 using Web.Base;
 

@@ -1,5 +1,4 @@
-﻿using Model.BotTypes.Class;
-using Model.Logic.Google;
+﻿using Model.Logic.Google;
 using Xunit;
 
 namespace UnitTest.GoogleApi

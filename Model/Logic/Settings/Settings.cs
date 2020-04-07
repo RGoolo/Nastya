@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using Model.BotTypes.Class;
-using Model.BotTypes.Class.Ids;
-using Model.BotTypes.Enums;
+using Model.Bots.BotTypes.Class.Ids;
+using Model.Bots.BotTypes.Enums;
+using Model.Bots.BotTypes.Interfaces.Ids;
 
 namespace Model.Logic.Settings
 {
@@ -124,8 +124,9 @@ namespace Model.Logic.Settings
 			lock (_lock)
 			{
 				if (!_properties.ContainsKey(name)) return @default;
+
 				var guid = Guid.TryParse(_properties.GetValueOrDefault(name), out var b) ? b :Guid.Empty;
-				return new MessageGuid(guid);
+				return new MessageGuid(guid, new ChatGuid(ChatGuid));
 			}
 		}
 	}

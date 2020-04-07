@@ -2,8 +2,8 @@
 using System.IO;
 using System.Net;
 using System.Xml.Serialization;
-using Model.BotTypes.Class;
-using Model.BotTypes.Enums;
+using Model.Bots.BotTypes.Enums;
+using Model.Bots.BotTypes.Interfaces.Ids;
 using Model.Logic.Settings;
 
 namespace Model.Files.FileTokens

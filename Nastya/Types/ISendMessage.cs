@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Concurrent;
-using System.ComponentModel.DataAnnotations;
-using Model.BotTypes.Class;
-using Model.BotTypes.Interfaces.Messages;
-using Telegram.Bot.Types;
+﻿using System.Collections.Concurrent;
+using Model.Bots.BotTypes.Class;
+using Model.Bots.BotTypes.Interfaces.Ids;
 
 namespace Nastya
 {

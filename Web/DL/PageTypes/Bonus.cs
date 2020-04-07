@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Linq;
 using HtmlAgilityPack;
-using Model.BotTypes.Class;
 
 namespace Web.DL
 {

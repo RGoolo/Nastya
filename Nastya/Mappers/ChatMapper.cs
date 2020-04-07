@@ -1,18 +1,13 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Threading.Tasks;
-using Model.BotTypes;
-using Model.BotTypes.Attribute;
-using Model.BotTypes.Class;
-using Model.BotTypes.Class.Reflection;
-using Model.BotTypes.Enums;
-using Model.BotTypes.Interfaces.Messages;
-using Model.Logic.Model;
+using Model.Bots.BotTypes.Attribute;
+using Model.Bots.BotTypes.Class;
+using Model.Bots.BotTypes.Enums;
+using Model.Bots.BotTypes.Interfaces.Ids;
+using Model.Bots.BotTypes.Interfaces.Messages;
 using Model.Logic.Settings;
-using Nastya.Commands;
 
 namespace Nastya.Mappers
 {

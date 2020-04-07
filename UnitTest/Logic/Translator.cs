@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using Model.BotTypes.Class;
+using Model.Bots.BotTypes.Class;
 using Xunit;
 
 namespace UnitTest.Logic

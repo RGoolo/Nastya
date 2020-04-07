@@ -1,19 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Globalization;
 using System.Linq;
-using System.Net;
 using System.Threading.Tasks;
-using Model.BotTypes.Attribute;
-using Model.BotTypes.Class;
-using Model.BotTypes.Enums;
-using Model.BotTypes.Interfaces;
-using Model.BotTypes.Interfaces.Messages;
+using Model.Bots.BotTypes.Attribute;
+using Model.Bots.BotTypes.Class;
+using Model.Bots.BotTypes.Enums;
+using Model.Bots.BotTypes.Interfaces.Messages;
+using Model.Bots.TelegramBot.HtmlParse;
 using Model.Files.FileTokens;
 using Model.Logic.Coordinates;
 using Model.Logic.Settings;
-using Model.TelegramBot;
 
 namespace Nastya.Commands
 {

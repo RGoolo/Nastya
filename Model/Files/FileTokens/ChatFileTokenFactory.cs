@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
-using Model.BotTypes.Class;
-using Model.BotTypes.Enums;
+using Model.Bots.BotTypes.Enums;
+using Model.Bots.BotTypes.Interfaces.Ids;
 
 namespace Model.Files.FileTokens
 {

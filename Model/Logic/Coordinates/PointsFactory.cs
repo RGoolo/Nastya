@@ -23,7 +23,6 @@ namespace Model.Logic.Coordinates
 		private readonly YandexPointProvider _yandexPlacesProvider;
 		private List<IPointProvider<Coordinate>> CoordinatesProvider;
 		private List<IPointProvider<Place>> PlacesProvider;
-		private readonly ICoordinateWorker _coordinateWorker;
 
 		private string creads => _settings.Coordinates.GoogleCreads;
 
@@ -41,11 +40,11 @@ namespace Model.Logic.Coordinates
 
 		public Coordinate To(Place place) => GetCoordinate(place.OriginText);
 
-		public PointWorker<Coordinate> GetCoordinates(string text) => new CoordinatesWorker(CoordinatesProvider.Where(x => x.Use).ToList(), text, _coordinateWorker);
+		public PointWorker<Coordinate> GetCoordinates(string text) => new CoordinatesWorker(CoordinatesProvider.Where(x => x.Use).ToList(), text);
 
 		public Task SetPicture(IChatFile file, IEnumerable<Point> points) => new GoogleImgForMaps(creads).SaveImg(file, points);
 
-		public PointWorker<Place> GetPlaces(string text) => new PlacesWorker(PlacesProvider.Where(x => x.Use).ToList(), text, _coordinateWorker);
+		public PointWorker<Place> GetPlaces(string text) => new PlacesWorker(PlacesProvider.Where(x => x.Use).ToList(), text);
 
 		public Coordinate GetCoordinate(string str) => _yandexPlacesProvider.GetCoordinate(str);
 

@@ -1,4 +1,4 @@
-﻿using Model.BotTypes.Class;
+﻿using Model.Bots.BotTypes.Interfaces.Ids;
 
 namespace Model.Logic.Settings.Classes
 {
@@ -117,6 +117,12 @@ namespace Model.Logic.Settings.Classes
 		{
 			get => SettingsValues.GetValueBool(Const.Game.IsSendVoice);
 			set => SettingsValues.SetValue(Const.Game.IsSendVoice, value.ToString());
+		}
+
+		public bool AllowConnect
+		{
+			get => SettingsValues.GetValueBool(Const.Game.AllowConnect, true);
+			set => SettingsValues.SetValue(Const.Game.AllowConnect, value.ToString());
 		}
 
 		public IMessageId SectorsMsg

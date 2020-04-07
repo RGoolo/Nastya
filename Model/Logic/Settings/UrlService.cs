@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Linq;
 using System.Text;
-using Model.BotTypes;
-using Model.BotTypes.Enums;
+using Model.Bots.BotTypes;
+using Model.Bots.BotTypes.Enums;
 using Model.Logic.Model;
 
 namespace Model.Logic.Settings

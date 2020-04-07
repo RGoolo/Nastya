@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Security;
-using Model.BotTypes.Class;
-using Model.BotTypes.Class.Ids;
-using Model.BotTypes.Interfaces;
-using Model.Dummy;
-using Model.TelegramBot;
+using Model.Bots.BotTypes.Class;
+using Model.Bots.BotTypes.Class.Ids;
+using Model.Bots.BotTypes.Interfaces;
+using Model.Bots.BotTypes.Interfaces.Ids;
+using Model.Bots.CmdBot;
+using Model.Bots.TelegramBot.Entity;
 
 namespace Nastya
 {
@@ -15,7 +16,7 @@ namespace Nastya
 		{
 			var bots = new List<IBot>
 			{
-				new ConcurrentBot(new DummyBot(adminGuid)),
+				new ConcurrentBot(new CmdBot(adminGuid)),
 				new ConcurrentBot(new TelegramBot(GetBotToken(), new BotGuid(Guid.NewGuid()))),
 			};
 			

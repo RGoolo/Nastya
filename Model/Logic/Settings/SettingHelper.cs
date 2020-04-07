@@ -3,9 +3,9 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Xml.Serialization;
-using Model.BotTypes.Class;
-using Model.BotTypes.Class.Ids;
-using Model.BotTypes.Enums;
+using Model.Bots.BotTypes.Class.Ids;
+using Model.Bots.BotTypes.Enums;
+using Model.Bots.BotTypes.Interfaces.Ids;
 using Model.Files;
 using Model.Files.FileTokens;
 using Model.Logic.Coordinates;
@@ -68,7 +68,6 @@ namespace Model.Logic.Settings
 
 			DlGame = new GameDlSettings(this);
 			DzzzrGame = new GameDzzzrSettings(this);
-
 
 			if (!_settingsFile.Exists())
 			{

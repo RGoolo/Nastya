@@ -6,7 +6,7 @@ namespace Model.Logic.Coordinates
 {
 	public class PlacesWorker : PointWorker<Place>
 	{
-		public PlacesWorker(List<IPointProvider<Place>> providers, string text, ICoordinateWorker coordinateWorker) : base(providers, text, coordinateWorker)
+		public PlacesWorker(List<IPointProvider<Place>> providers, string text) : base(providers, text)
 		{
 
 		}

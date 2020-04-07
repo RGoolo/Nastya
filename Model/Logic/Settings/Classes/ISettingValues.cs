@@ -1,5 +1,5 @@
 ﻿using System;
-using Model.BotTypes.Class;
+using Model.Bots.BotTypes.Interfaces.Ids;
 
 namespace Model.Logic.Settings.Classes
 {

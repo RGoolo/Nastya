@@ -3,13 +3,14 @@ using System.Linq;
 using System.Collections.Generic;
 using System.Text;
 using System.Text.RegularExpressions;
-using Model.BotTypes.Class;
-using Model.BotTypes.Interfaces;
-using Model.BotTypes.Interfaces.Messages;
+using Model.Bots.BotTypes.Class;
+using Model.Bots.BotTypes.Interfaces.Ids;
+using Model.Bots.BotTypes.Interfaces.Messages;
 using Model.Logic.Settings;
 using Web.Base;
-using Web.Game.Model;
 using Model.Logic.Model;
+using Web.DZR.PageTypes;
+using Web.Entitiy;
 
 namespace Web.DZR
 {
@@ -24,7 +25,8 @@ namespace Web.DZR
 			_dzrWebValidator = new DzrWebValidator(settings);
 		}
 
-		public event SendMsgsSyncDel SendMsgs;
+		// public event SendMsgsSyncDel SendMsgs;
+		public event SendMsgDel SendMsg;
 		public ISettings Settings { get; }
 		public void LogIn() => _lastPage = _dzrWebValidator.LogIn().Result; //ToDo delete result
 
@@ -183,12 +185,11 @@ namespace Web.DZR
 			if (task == null)
 				return;
 
-			var msg = new List<IMessageToBot>();
+			
 			
 			if (oldTask == null || task?.LvlNumber != oldTask?.LvlNumber)
 			{
-				msg.Add(MessageToBot.GetTextMsg(CheckChanges.GetTaskInfo(task, true, newPageTimeToEnd?.ToString())));
-				SndMsg(msg);
+				SndMsg(MessageToBot.GetTextMsg(CheckChanges.GetTaskInfo(task, true, newPageTimeToEnd?.ToString())));
 				return;
 			}
 
@@ -199,16 +200,16 @@ namespace Web.DZR
 					if (!(i < oldTask.Spoilers?.Count)) continue;
 
 					if (!oldTask.Spoilers[i].IsCompleted && task.Spoilers[i].IsCompleted)
-						msg.Add(MessageToBot.GetTextMsg(new Texter($"{task.Alias}\n🔑Разгадан спойлер:\n{task.Spoilers[i].Text}", true)));
+						SndMsg(MessageToBot.GetTextMsg(new Texter($"{task.Alias}\n🔑Разгадан спойлер:\n{task.Spoilers[i].Text}", true)));
 				}
 			}
 			if (oldTask.NumberHint != task.NumberHint)
 			{
 				var hint = task._hints.LastOrDefault();
-				if (hint != null && !hint.IsEmpty()) 
-					msg.Add(MessageToBot.GetTextMsg(new Texter($"{task.Alias}\n🔑Пришла подсказка:\n{hint.Name}\n{hint.Text}", true)));
+				if (hint != null && !hint.IsEmpty())
+					SndMsg(MessageToBot.GetTextMsg(new Texter($"{task.Alias}\n🔑Пришла подсказка:\n{hint.Name}\n{hint.Text}", true)));
 			}
-			SndMsg(msg);
+		
 		}
 
 		public void SendSectors(DzrPage page, bool update, bool all)
@@ -231,22 +232,19 @@ namespace Web.DZR
 			//SndMsg(msg);
 		}
 
-		public void SendPageInfo(DzrPage page, bool onlyMain)
+		private void SendPageInfo(DzrPage page, bool onlyMain)
 		{
-			var msg = new List<IMessageToBot>();
-
 			if (page == null)
 			{
-				msg.Add(MessageToBot.GetTextMsg("Не получить данные об игре"));
-
-				SndMsg(msg);
+				
+				SndMsg(MessageToBot.GetTextMsg("Не получить данные об игре"));
 				return;
 			}
 
 			if (page.Type != PageType.GameGo)
 			{
-				msg.Add(MessageToBot.GetTextMsg(new Texter(page.SysMessage)));
-				SndMsg(msg);
+				SndMsg(MessageToBot.GetTextMsg(new Texter(page.SysMessage)));
+		
 				return;
 			}
 			
@@ -256,13 +254,11 @@ namespace Web.DZR
 				if (task != null)
 				{
 					var text = CheckChanges.GetTaskInfo(task, false, timeForEnd: page.TimeToEnd?.ToString());
-					msg.Add(MessageToBot.GetTextMsg(text));
+					SndMsg(MessageToBot.GetTextMsg(text));
 				}
 			}
 			else
-				page.Tasks.ForEach(task => msg.Add(MessageToBot.GetTextMsg(CheckChanges.GetTaskInfo(task, false, null))));
-
-			SndMsg(msg);
+				page.Tasks.ForEach(task => SndMsg(MessageToBot.GetTextMsg(CheckChanges.GetTaskInfo(task, false, null))));
 		}
 
 	
@@ -302,25 +298,21 @@ namespace Web.DZR
 			};
 		}
 
-		protected void SendTextMsg(string message, IMessageId replaceMsgId = null, bool withHtml = false)
+		private void SendTextMsg(string message, IMessageId replaceMsgId = null, bool withHtml = false)
 		{
 			var t = MessageToBot.GetTextMsg(new Texter(message, withHtml));
 			t.OnIdMessage = replaceMsgId;
 			SndMsg(t);
 		}
 
-		protected void SndMsg(IEnumerable<IMessageToBot> messages)
+		/*protected void SndMsg(IList<IMessageToBot> messages)
 		{
 			SendMsgs?.Invoke(messages);
-		}
+		}*/
 
-		protected void SndMsg(IMessageToBot messages)
+		private void SndMsg(IMessageToBot messages)
 		{
-			var msg = new List<IMessageToBot>
-			{
-				messages,
-			};
-			SendMsgs?.Invoke(msg);
+			SendMsg?.Invoke(messages);
 		}
 	}
 }

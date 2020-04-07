@@ -1,14 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
 using System.Text;
-using Model.BotTypes.Attribute;
-using Model.BotTypes.Class;
-using Model.BotTypes.Enums;
-using Model.BotTypes.Interfaces.Messages;
-using Model.Logic.Settings;
+using Model.Bots.BotTypes.Attribute;
+using Model.Bots.BotTypes.Class;
+using Model.Bots.BotTypes.Enums;
+using Model.Bots.BotTypes.Interfaces.Messages;
 
 namespace Nastya.Commands
 {

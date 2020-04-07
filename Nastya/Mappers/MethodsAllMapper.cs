@@ -1,11 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using Model.BotTypes.Attribute;
-using Model.BotTypes.Class;
-using Model.BotTypes.Class.Reflection;
-using Model.BotTypes.Enums;
-using Model.BotTypes.Interfaces.Messages;
+using Model.Bots.BotTypes.Attribute;
+using Model.Bots.BotTypes.Class;
+using Model.Bots.BotTypes.Class.Reflection;
+using Model.Bots.BotTypes.Enums;
+using Model.Bots.BotTypes.Interfaces.Messages;
 using Model.Logic.Settings;
 
 namespace Nastya.Mappers

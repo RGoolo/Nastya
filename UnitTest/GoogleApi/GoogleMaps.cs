@@ -3,8 +3,8 @@ using Model.Logic.Google;
 using Model.Logic.Settings;
 using System;
 using System.Collections.Generic;
-using Model.BotTypes.Class;
-using Model.BotTypes.Class.Ids;
+using Model.Bots.BotTypes.Class;
+using Model.Bots.BotTypes.Class.Ids;
 using Xunit;
 using Xunit.Abstractions;
 

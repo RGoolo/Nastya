@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
-using Model.BotTypes.Class;
-using Model.BotTypes.Interfaces.Messages;
+using Model.Bots.BotTypes.Class;
+using Model.Bots.BotTypes.Interfaces.Messages;
 
 namespace Nastya.Mappers
 {

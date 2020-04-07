@@ -1,14 +1,10 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Google.Rpc;
-using Model.BotTypes.Attribute;
-using Model.BotTypes.Class;
-using Model.BotTypes.Enums;
-using Model.Logic.PereodicTable;
+﻿using System.Text;
+using Model.Bots.BotTypes.Attribute;
+using Model.Bots.BotTypes.Class;
+using Model.Bots.BotTypes.Enums;
 using Model.Logic.Settings;
 
-namespace Nastya.Commands
+namespace Nastya.Commands.Game
 {
 
 	[CommandClass(nameof(DlSettings), "Насторойки для дедлайна:", TypeUser.User)]

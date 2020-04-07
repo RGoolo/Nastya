@@ -24,7 +24,9 @@ namespace Model.Logic.Google
 			var credential = GoogleCredential.FromFile(creadFile.Location).CreateScoped(ImageAnnotatorClient.DefaultScopes);
 			var channel = new Grpc.Core.Channel(ImageAnnotatorClient.DefaultEndpoint.ToString(), credential.ToChannelCredentials());
 			// Instantiates a client
-			return ImageAnnotatorClient.Create(channel);
+			//todo
+			//return ImageAnnotatorClient.Create(channel);
+			return null;
 		}
 
 		public static async Task<string> GetTextAsync(IChatFile fileTo, IChatFile creadFile)
@@ -92,8 +94,6 @@ namespace Model.Logic.Google
 		{
 			StringBuilder sb = new StringBuilder();
 			var image = GetImg(file);
-
-			
 
 			var client = CreateClient(creadFile);
 

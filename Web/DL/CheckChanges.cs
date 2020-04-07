@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Model.BotTypes.Class;
-using Model.BotTypes.Enums;
-using Model.BotTypes.Interfaces.Messages;
+using Model.Bots.BotTypes.Class;
+using Model.Bots.BotTypes.Enums;
 using Model.Logic.Settings;
 using Web.Base;
+using Web.DL.PageTypes;
 
 namespace Web.DL
 {

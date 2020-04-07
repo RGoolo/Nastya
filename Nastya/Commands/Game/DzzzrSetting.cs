@@ -1,9 +1,7 @@
-﻿using System.Collections.Generic;
-using System.Text;
-using Google.Rpc;
-using Model.BotTypes.Attribute;
-using Model.BotTypes.Class;
-using Model.BotTypes.Enums;
+﻿using System.Text;
+using Model.Bots.BotTypes.Attribute;
+using Model.Bots.BotTypes.Class;
+using Model.Bots.BotTypes.Enums;
 using Model.Logic.Settings;
 
 namespace Nastya.Commands

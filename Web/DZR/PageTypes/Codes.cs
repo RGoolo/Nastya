@@ -1,8 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Model.BotTypes.Class;
+using Model.Bots.BotTypes.Class;
 using Web.Base;
+using Web.Entitiy;
 
 namespace Web.DZR
 {

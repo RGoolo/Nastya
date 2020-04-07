@@ -1,4 +1,4 @@
-﻿using Model.BotTypes.Class;
+﻿using Model.Bots.BotTypes.Class;
 
 namespace Web.DZR
 {
@@ -33,11 +33,9 @@ namespace Web.DZR
 		public string ToString(bool useAnswer)
 		{
 			if (useAnswer && Answer != null)
-				return $"{Count}✅{Name} прислал:" + (string.IsNullOrEmpty(Answer.User.Display) ? "-" : Answer.User.Display) + (Answer == null ? string.Empty : $" ({Answer})");
-			else if (Accepted)
-				return $"{Count}✅{Name}" + (Answer == null ? string.Empty : $"({Answer})");
-			else
-				return $"{Count}❌{Name}";
+				return $"{Count}✅{Name} прислал:" + (string.IsNullOrEmpty(Answer.User.Display) ? "-" : Answer.User.Display) + (Answer == null ? string.Empty : $" ({(Answer)})");
+
+			return Accepted ? $"{Count}✅{Name}" + (Answer == null ? string.Empty : $"({(Answer)})") : $"{Count}❌{Name}";
 		}
 	}
 }

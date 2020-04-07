@@ -7,6 +7,7 @@ using System.Text.RegularExpressions;
 using Model.Logger;
 using Web.Base;
 using Web.DL.PageTypes;
+using Web.Entitiy;
 
 namespace Web.DL
 {

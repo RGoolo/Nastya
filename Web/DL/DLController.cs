@@ -2,25 +2,27 @@
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
-using Model.BotTypes.Class;
-using Model.BotTypes.Interfaces;
-using Model.BotTypes.Interfaces.Messages;
+using Model.Bots.BotTypes.Class;
+using Model.Bots.BotTypes.Interfaces.Ids;
+using Model.Bots.BotTypes.Interfaces.Messages;
 using Model.Logic.Settings;
 using Web.Base;
 using Web.DL.PageTypes;
-using Web.Game.Model;
+using Web.Entitiy;
 
 namespace Web.DL
 {
 
 	public interface ISendMsgDl
 	{
-		void SendMsg(IEnumerable<IMessageToBot> msgs);
+		// void SendMsg2(IList<IMessageToBot> msgs);
+		void SendMsg2(IMessageToBot msg);
 	}
 
 	public class DlController : IController, ISendMsgDl
 	{
-		public event SendMsgsSyncDel SendMsgs;
+		// public event SendMsgsSyncDel SendMsgs;
+		public event SendMsgDel SendMsg;
 
 		public ISettings Setting { get; }
 
@@ -97,10 +99,16 @@ namespace Web.DL
 			_pageController.SetNewPage(page);
 		}
 
-		public void SendMsg(IEnumerable<IMessageToBot> msgs)
+	/*	public void SendMsg2(IList<IMessageToBot> msgs)
 		{
 			SendMsgs?.Invoke(msgs);
+		}*/
+
+		public void SendMsg2(IMessageToBot msg)
+		{
+			SendMsg?.Invoke(msg);
 		}
+
 	}
 }
  

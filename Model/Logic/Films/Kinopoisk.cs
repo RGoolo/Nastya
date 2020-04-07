@@ -2,7 +2,6 @@
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using HtmlAgilityPack;
-using Model.BotTypes.Class;
 using Model.HttpMessages;
 using Model.Logic.Settings;
 

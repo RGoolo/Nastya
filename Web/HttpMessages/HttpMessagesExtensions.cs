@@ -3,7 +3,7 @@ using System.Net;
 using Model.HttpMessages.Simple;
 using Web.DL;
 
-namespace Web.HttpMessages.Simple
+namespace Web.HttpMessages
 {
 	public static class HttpMessagesExtensions
 	{

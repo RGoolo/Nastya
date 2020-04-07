@@ -18,7 +18,9 @@ namespace Model.Logic.Google
 			var credential = GoogleCredential.FromFile(creadFile.Location).CreateScoped(SpeechClient.DefaultScopes);
 			var channel = new Grpc.Core.Channel(SpeechClient.DefaultEndpoint.ToString(), credential.ToChannelCredentials());
 			// Instantiates a client
-			return SpeechClient.Create(channel);
+			//todo
+			//return SpeechClient.Create(channel);
+			return null;
 		}
 
 		private static RecognitionConfig CreateConfig(IChatFileToken file) => new RecognitionConfig()

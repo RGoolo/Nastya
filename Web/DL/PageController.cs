@@ -1,15 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using Model.BotTypes.Class;
-using Model.BotTypes.Enums;
+using Model.Bots.BotTypes.Class;
+using Model.Bots.BotTypes.Enums;
+using Model.Bots.BotTypes.Interfaces.Ids;
 using Model.Logic.Model;
 using Model.Logic.Settings;
-using Web.Base;
-using Web.Game.Model;
+using Web.DL.PageTypes;
+using Web.Entitiy;
 
-namespace Web.DL.PageTypes
+namespace Web.DL
 {
 	public class PageController
 	{
@@ -24,20 +23,16 @@ namespace Web.DL.PageTypes
 			SendMsg(t);
 		}
 
-		private void SendMsg(IReadOnlyCollection<IMessageToBot> msgs)
+		/*private void SendMsg(IList<IMessageToBot> msgs)
 		{
 			if (msgs == null) return;
 			if (!msgs.Any()) return;
-			_sendMsgDl.SendMsg(msgs);
-		}
+			_sendMsgDl.SendMsg2(msgs);
+		}*/
 
 		public void SendMsg(IMessageToBot msg)
 		{
-			var msgs = new List<IMessageToBot>
-			{
-				msg,
-			};
-			SendMsg(msgs);
+			_sendMsgDl.SendMsg2(msg);
 		}
 
 		public PageController(ISendMsgDl sendMsgDl, ISettings settings)
@@ -83,9 +78,14 @@ namespace Web.DL.PageTypes
 					SendNewLevelInfo(page, true);
 				else
 				{
-					SendMsg(CheckChanges.Time(page, _lastPage));
-					SendMsg(CheckChanges.Hints(page, _lastPage));
-					SendMsg(CheckChanges.Sectors(page, _lastPage, _setting));
+					foreach (var msg in CheckChanges.Time(page, _lastPage))
+						SendMsg(msg);
+
+					foreach (var msg in CheckChanges.Hints(page, _lastPage))
+						SendMsg(msg);
+
+					foreach (var msg in CheckChanges.Sectors(page, _lastPage, _setting))
+						SendMsg(msg);
 				}
 			}
 
@@ -101,8 +101,6 @@ namespace Web.DL.PageTypes
 		{
 			if (page == null) return;
 
-			var msg = new List<IMessageToBot>();
-			
 			var message = MessageToBot.GetTextMsg(page.ToTexter(newLvl));
 			
 			if (newLvl)
@@ -111,14 +109,11 @@ namespace Web.DL.PageTypes
 				message.NotificationObject = new[] { _lastPage, page };
 			}
 
-			msg.Add(message);
-
-			SendMsg(msg);
+			SendMsg(message);
 		}
 
 		public void SendBonus(DLPage page, bool isAll = false)
 		{
-			var msgs = new List<IMessageToBot>();
 			StringBuilder sb = new StringBuilder("");
 
 			if (page.Bonuses.IsEmpty)
@@ -129,10 +124,7 @@ namespace Web.DL.PageTypes
 				
 			var msg = MessageToBot.GetTextMsg(new Texter(sb.ToString() == "" ? "Все бонусы закрыты." : sb.ToString(), true));
 			msg.Notification = Notification.SendSectors;
-			msgs.Add(msg);
-
-			
-			SendMsg(msgs);
+			SendMsg(msg);
 		}
 
 		public void SendSectors(DLPage page, bool isAll = false)

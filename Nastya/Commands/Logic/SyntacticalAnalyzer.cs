@@ -2,10 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Model.BotTypes.Attribute;
-using Model.BotTypes.Enums;
-using Model.BotTypes.Interfaces;
-using Model.BotTypes.Interfaces.Messages;
+using Model.Bots.BotTypes.Attribute;
+using Model.Bots.BotTypes.Enums;
+using Model.Bots.BotTypes.Interfaces.Messages;
 
 namespace Nastya.Commands
 {

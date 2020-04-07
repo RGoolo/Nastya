@@ -3,7 +3,6 @@ using System.Linq;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using Model.BotTypes.Class;
 using Model.Logic.Yandex;
 
 namespace Web.DL

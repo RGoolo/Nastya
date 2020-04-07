@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Web.Base;
+using Web.Entitiy;
 
 namespace Web.DZR
 {

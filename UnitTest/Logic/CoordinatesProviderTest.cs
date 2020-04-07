@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using Model.BotTypes.Class;
-using Model.BotTypes.Class.Ids;
+using Model.Bots.BotTypes.Class;
+using Model.Bots.BotTypes.Class.Ids;
 using Model.Logic.Coordinates;
 using Model.Logic.Settings;
 using Model.Logic.Settings.Classes;

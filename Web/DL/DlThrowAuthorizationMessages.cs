@@ -3,7 +3,6 @@ using System.Net;
 using System.Security.Authentication;
 using System.Threading.Tasks;
 using Model.HttpMessages.Simple;
-using Web.HttpMessages.Simple;
 
 namespace Web.DL
 {

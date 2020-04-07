@@ -1,9 +1,7 @@
-﻿using System.Linq;
-using System.Threading.Tasks;
-using Model.BotTypes.Attribute;
-using Model.BotTypes.Class;
-using Model.BotTypes.Enums;
-using Model.Logic.Braille;
+﻿using System.Threading.Tasks;
+using Model.Bots.BotTypes.Attribute;
+using Model.Bots.BotTypes.Class;
+using Model.Bots.BotTypes.Enums;
 using Model.Logic.Films;
 using Model.Logic.Settings;
 

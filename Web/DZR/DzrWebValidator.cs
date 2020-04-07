@@ -1,7 +1,6 @@
 ﻿using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Model.BotTypes.Enums;
 using Model.HttpMessages;
 using Model.Logic.Settings;
 using HttpMessagesFactory = Web.HttpMessages.HttpMessagesFactory;

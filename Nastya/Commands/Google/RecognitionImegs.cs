@@ -1,15 +1,13 @@
-﻿using Model.Logic.Google;
-using System;
+﻿using System;
 using System.Threading.Tasks;
-using Model.BotTypes.Attribute;
-using Model.BotTypes.Class;
-using Model.BotTypes.Enums;
-using Model.BotTypes.Interfaces;
-using Model.BotTypes.Interfaces.Messages;
+using Model.Bots.BotTypes.Attribute;
+using Model.Bots.BotTypes.Enums;
+using Model.Bots.BotTypes.Interfaces.Messages;
 using Model.Files.FileTokens;
+using Model.Logic.Google;
 using Model.Logic.Settings;
 
-namespace Nastya.Commands
+namespace Nastya.Commands.Google
 {
 
 	[CommandClass("VisionMsg", "Распознаем текст с картинки", TypeUser.User)]

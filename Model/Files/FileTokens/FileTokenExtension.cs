@@ -1,6 +1,6 @@
 ﻿using System;
 using System.IO;
-using Model.BotTypes.Enums;
+using Model.Bots.BotTypes.Enums;
 
 namespace Model.Files.FileTokens
 {

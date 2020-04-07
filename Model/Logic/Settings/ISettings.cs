@@ -1,6 +1,6 @@
 ﻿using System;
-using Model.BotTypes.Class;
-using Model.BotTypes.Enums;
+using Model.Bots.BotTypes.Enums;
+using Model.Bots.BotTypes.Interfaces.Ids;
 using Model.Files.FileTokens;
 using Model.Logic.Coordinates;
 
@@ -121,6 +121,7 @@ namespace Model.Logic.Settings
 
 		bool IsSendImg { get; set; }
 		bool IsSendVoice { get; set; }
+		bool AllowConnect { get; set; }
 
 		IMessageId SectorsMsg { get; set; }
 		IMessageId AllSectorsMsg { get; set; }

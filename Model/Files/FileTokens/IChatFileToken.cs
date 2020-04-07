@@ -1,6 +1,5 @@
 ﻿using System;
-using Model.BotTypes.Class;
-using Model.BotTypes.Enums;
+using Model.Bots.BotTypes.Enums;
 using Telegram.Bot.Types;
 
 namespace Model.Files.FileTokens

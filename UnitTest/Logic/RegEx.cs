@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using Model.Bots.BotTypes.Class;
+using Model.Bots.BotTypes.Class.Ids;
+using Model.Bots.TelegramBot.HtmlParse;
+using Model.Bots.TelegramBot.Services;
 using Xunit;
-using Model.BotTypes.Class;
-using Model.BotTypes.Class.Ids;
-using Model.TelegramBot;
 
-namespace UnitTest
+namespace UnitTest.Logic
 {
 	public class RegexTest
 	{
@@ -17,7 +18,7 @@ namespace UnitTest
 		{
 			//var 
 			var texter = new Texter(input, true, false);
-			var str = TelegramBot.GetNormalizeText(texter, new ChatGuid(Guid.Empty)).Text;
+			var str = TexterService.GetNormalizeText(texter, new ChatGuid(Guid.Empty)).Text;
 			Assert.Equal(str, output);
 		}
 

@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Model.BotTypes.Class;
-using Model.BotTypes.Class.Ids;
-using Model.BotTypes.Enums;
+using Model.Bots.BotTypes.Class;
+using Model.Bots.BotTypes.Class.Ids;
+using Model.Bots.BotTypes.Enums;
+using Model.Bots.TelegramBot.Services;
 using Model.Logic.Settings;
-using Model.TelegramBot;
 using Web.Base;
 using Web.DL;
 using Web.DL.PageTypes;
@@ -20,13 +20,18 @@ namespace UnitTest.Web
 		private const string nameFirstLvlHtml = "первый уровень.html";
 		private const string nameSecondLvlHtml = "куча бонусов.html";
 
-		private class CollectionNotofication : ISendMsgDl
+		private class CollectionNotification : ISendMsgDl
 		{
 			public readonly List<IMessageToBot> _messages = new List<IMessageToBot>();
 
-			public void SendMsg(IEnumerable<IMessageToBot> msgs)
+			public void SendMsg2(IList<IMessageToBot> msgs)
 			{
 				_messages.AddRange(msgs);
+			}
+
+			public void SendMsg2(IMessageToBot msg)
+			{
+				_messages.Add(msg);
 			}
 		}
 
@@ -45,7 +50,7 @@ namespace UnitTest.Web
 		public void DLTest()
 		{
 			var testGuid =new ChatGuid( new Guid("C5121271-CF33-4EFA-B1E0-EE3486B1E724"));
-			var notifications = new CollectionNotofication();
+			var notifications = new CollectionNotification();
 		
 			var settings = SettingsHelper.GetSetting(testGuid);
 			settings.Clear();
@@ -57,7 +62,7 @@ namespace UnitTest.Web
 			var page2 = PageConstructor.GetNewPage(GetFile(nameFirstLvlHtml));
 			_pageController.SetNewPage(page2);
 
-			var text = TelegramBot.GetNormalizeText(notifications._messages.First(x => x.Notification == Notification.NewLevel).Text, testGuid);
+			var text = TexterService.GetNormalizeText(notifications._messages.First(x => x.Notification == Notification.NewLevel).Text, testGuid);
 			
 			Assert.Equal(page.Bonuses.Count, 0);
 		}

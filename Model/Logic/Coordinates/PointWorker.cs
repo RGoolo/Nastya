@@ -8,16 +8,14 @@ namespace Model.Logic.Coordinates
 	{
 		internal readonly List<IPointProvider<T>> Providers;
 		internal readonly string Text;
-		internal readonly ICoordinateWorker CoordinateWorker;
 		private List<T> _points;
 		private string _totalPoints;
 		protected abstract List<T> GetPoints();
 
-		protected PointWorker(List<IPointProvider<T>> providers, string text, ICoordinateWorker coordinateWorker)
+		protected PointWorker(List<IPointProvider<T>> providers, string text)
 		{
 			Providers = providers;
 			Text = text;
-			CoordinateWorker = coordinateWorker;
 		}
 
 		public List<T> Points()

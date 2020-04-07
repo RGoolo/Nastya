@@ -1,11 +1,9 @@
 ﻿using System.Text;
-using Model.BotTypes.Attribute;
-using Model.BotTypes.Class;
-using Model.BotTypes.Enums;
-using Model.BotTypes.Interfaces.Messages;
-using Model.Files.FileTokens;
+using Model.Bots.BotTypes.Attribute;
+using Model.Bots.BotTypes.Enums;
+using Model.Bots.BotTypes.Interfaces.Ids;
+using Model.Bots.BotTypes.Interfaces.Messages;
 using Model.Logic.Settings;
-using Telegram.Bot.Types;
 
 namespace Nastya.Commands
 {

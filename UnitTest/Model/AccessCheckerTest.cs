@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
-using Model.BotTypes.Class;
-using Model.BotTypes.Enums;
+using Model.Bots.BotTypes.Class;
+using Model.Bots.BotTypes.Enums;
 using Xunit;
 
 namespace UnitTest.Model

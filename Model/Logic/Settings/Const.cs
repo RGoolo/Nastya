@@ -102,6 +102,8 @@
 
 			public const string SectorsMsg = "SectorsMsg";
 			public const string AllSectorsMsg = "AllSectorsMsg";
+
+			public const string AllowConnect = "allowConnect";
 		}
 
 		public static class Web

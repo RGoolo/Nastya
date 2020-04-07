@@ -3,8 +3,7 @@ using System;
 using System.Globalization;
 using System.Linq;
 using System.Text;
-using Model.BotTypes.Class;
-using Model.BotTypes.Enums;
+using Model.Bots.BotTypes.Class;
 using Model.Logic.Settings;
 using Web.DL.PageTypes;
 

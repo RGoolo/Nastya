@@ -1,25 +1,25 @@
-﻿using Model.Dummy;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using Model.BotTypes.Class;
-using Model.BotTypes.Class.Ids;
+using Model.Bots.BotTypes.Class.Ids;
+using Model.Bots.BotTypes.Interfaces.Ids;
+using Model.Bots.CmdBot;
 using Xunit;
 
 namespace UnitTest.LoadTest
 {
 	public  class BotLoadTest
 	{
-		private Dictionary<IBotId, DummyBot> _bots;
+		private Dictionary<IBotId, CmdBot> _bots;
 
 		[Fact]
 		public void LoadTest()
 		{
 			var dt = DateTime.Now;
-			_bots = new Dictionary<IBotId, DummyBot>();
+			_bots = new Dictionary<IBotId, CmdBot>();
 			for (int i = 0; i < 100; i++)
 			{
 				var guid = new BotGuid(Guid.NewGuid());
-				_bots.Add(guid, new DummyBot(guid));
+				_bots.Add(guid, new CmdBot(guid));
 			}
 			FillBots();
 			Assert.True((DateTime.Now - dt).TotalSeconds < 1);
