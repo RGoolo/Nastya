@@ -4,6 +4,7 @@
 	{
 		Cmd,
 		Telegram,
+		UnitTest,
 		Skype,
 		Discord,
 	}

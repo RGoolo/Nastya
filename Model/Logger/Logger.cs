@@ -13,7 +13,7 @@ namespace Model.Logger
 	{
 		private readonly string _className;
 		private readonly StreamWriter _file;
-		public static string FileLog { get; set; } = "log.txt";
+		public static string FileLog { get; set; } = "./log.txt";
 
 		private static StreamWriter Staticfile;
 

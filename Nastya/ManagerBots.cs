@@ -34,12 +34,9 @@ namespace Nastya
 
 		private readonly ILogger _logger = Logger.CreateLogger(nameof(ManagerBots));
 
-		public ManagerBots()
+		public ManagerBots(List<IBot> bots)
 		{
-			var adminBot = new BotGuid(Guid.NewGuid());
-			var bots = BotsFactory.Bots(adminBot);
-			
-			_bots = bots.ToDictionary(x => x.Id, x => x);
+            _bots = bots.ToDictionary(x => x.Id, x => x);
 			FillBots();
 		}
 
@@ -89,7 +86,6 @@ namespace Nastya
 				try
 				{
 					var message = MessageToBot.GetErrorMsg(mEx);
-					message.OnIdMessage = mEx.IMessage.MessageId;
 					LogAndSendException(message, mEx, botId, msg.Chat.Id, msg.MessageId);
 				}
 				catch (Exception ex)
@@ -154,20 +150,7 @@ namespace Nastya
 			}
 		}
 
-		private void GetFromBotTask()
-		{
-			while (true)
-			{
-				
-			}
-		}
-
-		public Task Wait()
-		{
-			var t1 = new Task(SendToBotTask);
-			t1.Start();
-			return t1;
-		}
-	}
+		public Task StartTask() => Task.Run(SendToBotTask);
+    }
 }
 

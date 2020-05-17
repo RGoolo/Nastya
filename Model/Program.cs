@@ -1,7 +1,4 @@
-﻿using System;
-using System.IO;
-using Microsoft.Extensions.Configuration;
-namespace Model
+﻿namespace Model
 {
 	class Program
 	{

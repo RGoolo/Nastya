@@ -19,5 +19,5 @@ namespace Model.Bots.BotTypes.Enums
 
 		WithResource = Photo | Voice | Video | Document,
 		All = ~0,
-	}
+    }
 }

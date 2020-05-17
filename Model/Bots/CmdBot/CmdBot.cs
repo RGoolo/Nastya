@@ -16,7 +16,7 @@ namespace Model.Bots.CmdBot
 
 		public ILogger Log { get; }
 
-		public TypeBot TypeBot => TypeBot.Cmd;
+		public TypeBot TypeBot { get; } = TypeBot.Cmd;
 
 		public CmdBot(IBotId id) 
 		{

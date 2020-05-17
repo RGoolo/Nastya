@@ -7,17 +7,18 @@ using Model.Bots.BotTypes.Interfaces;
 using Model.Bots.BotTypes.Interfaces.Ids;
 using Model.Bots.CmdBot;
 using Model.Bots.TelegramBot.Entity;
+using Model.Bots.UnitTestBot;
 
 namespace Nastya
 {
 	public static class BotsFactory
 	{
-		public static List<IBot> Bots(IBotId adminGuid)
+		public static List<IBot> Bots()
 		{
 			var bots = new List<IBot>
 			{
-				new ConcurrentBot(new CmdBot(adminGuid)),
-				new ConcurrentBot(new TelegramBot(GetBotToken(), new BotGuid(Guid.NewGuid()))),
+				new ConcurrentBot(new CmdBot(new BotGuid(Guid.NewGuid()))),
+                new ConcurrentBot(new TelegramBot(GetBotToken(), new BotGuid(Guid.NewGuid()))),
 			};
 			
 			return bots;
