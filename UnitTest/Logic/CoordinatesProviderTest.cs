@@ -18,7 +18,7 @@ namespace UnitTest.Logic
 		{
 			var set = SettingsHelper.GetSetting(new ChatGuid(Guid.Empty));
 
-			set.Coordinates.GoogleCreads = SecurityEnvironment.GetTextPassword("google_maps_token");
+			set.Coordinates.GoogleCreads = SecurityEnvironment.GetTextPassword("google", "maps", "token");
 			var factory = set.PointsFactory;
 			var point = factory.GetCoordinates(coords);
 			var str = point.ReplacePoints();

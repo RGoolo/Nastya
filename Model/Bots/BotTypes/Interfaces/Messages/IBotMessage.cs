@@ -16,7 +16,6 @@ namespace Model.Bots.BotTypes.Interfaces.Messages
 		List<IMessageCommand> MessageCommands { get;}
 		IBotMessage ReplyToMessage { get; }
 
-
 		IMessageToBot ReplyToCommandMessage { get; }
 		IResource Resource { get; set; }
 	}

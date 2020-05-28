@@ -25,7 +25,7 @@ namespace UnitTest.GoogleApi
 		[Fact]
 		public void Test()
 		{
-			var password = SecurityEnvironment.GetTextPassword("google_maps_token");
+			var password = SecurityEnvironment.GetTextPassword("google", "maps", "token");
 			var settings = SettingsHelper.GetSetting(new ChatGuid(TestGuid));
 			settings.Clear();
 			
