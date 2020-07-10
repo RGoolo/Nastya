@@ -13,22 +13,22 @@ namespace Model.Logger
 	{
 		private readonly string _className;
 		private readonly StreamWriter _file;
-		public static string FileLog { get; set; } = "./log.txt";
+		public static string FileLog { get; set; } = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "NightGameBot", "Log",$"log_{DateTime.Now}.txt");
 
-		private static StreamWriter Staticfile;
+		private static StreamWriter _staticFile;
 
 		public static ILogger CreateLogger(string className)
 		{
-			if (Staticfile == null)
+			if (_staticFile == null)
 			{
 				var path = Path.GetDirectoryName(FileLog);
 				if (!Directory.Exists(path))
 					Directory.CreateDirectory(path);
 
-				Staticfile = new StreamWriter(FileLog, true);
+				_staticFile = new StreamWriter(FileLog, true);
 			}
 
-			return new Logger(className, Staticfile);
+			return new Logger(className, _staticFile);
 		}
 
 		private Logger(string className, StreamWriter file)

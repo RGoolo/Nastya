@@ -37,8 +37,21 @@ namespace Nastya
             var config = builder.Build();
             var appConfig = config.GetSection("main").Get<Configuration>();
 
-            SettingsHelper.Directory = appConfig.SettingsPath;
-            Logger.FileLog = Path.Combine(appConfig.LogPath, DateTime.Now.ToString("HH.mm.ss") + ".txt");
+            if (!string.IsNullOrEmpty(appConfig.SettingsPath)) 
+                SettingsHelper.Directory = appConfig.SettingsPath;
+
+            if (!string.IsNullOrEmpty(appConfig.LogPath))
+                Logger.FileLog = Path.Combine(appConfig.LogPath, $"log_{DateTime.Now}.txt");
+
+            Console.OutputEncoding = Encoding.UTF8;
+        }
+
+        //ToDo: move to test.proj, Delete tmp folder;
+        private void ConfigureTest()
+        {
+            var tempFolder = Guid.NewGuid().ToString();
+            SettingsHelper.Directory = Path.Combine(Path.GetTempPath(), tempFolder,  "Resources");
+            Logger.FileLog = Path.Combine(Path.GetTempPath(), tempFolder, "Log", $"log_{DateTime.Now}.txt");
 
             Console.OutputEncoding = Encoding.UTF8;
         }
@@ -55,7 +68,7 @@ namespace Nastya
 
         public Task StarBots(List<IBot> bots)
         {
-            Configure();
+            ConfigureTest();
 
             var manager = new ManagerBots(bots);
             return manager.StartTask();

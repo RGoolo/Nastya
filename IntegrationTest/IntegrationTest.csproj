@@ -21,4 +21,8 @@
     <ProjectReference Include="..\Nastya\Nastya.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="WebTest\" />
+  </ItemGroup>
+
 </Project>
