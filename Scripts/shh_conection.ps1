@@ -6,4 +6,5 @@ $Password
 $User
 $Port
 $ComputerName 
+echo "ssh -o StrictHostKeyChecking=no -p $Port $User@$ComputerName"
 ssh -o StrictHostKeyChecking=no -p $Port $User@$ComputerName

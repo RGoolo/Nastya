@@ -22,16 +22,16 @@ namespace UnitTest.Web
 
 		private class CollectionNotification : ISendMsgDl
 		{
-			public readonly List<IMessageToBot> _messages = new List<IMessageToBot>();
+			public readonly List<IMessageToBot> Messages = new List<IMessageToBot>();
 
 			public void SendMsg2(IList<IMessageToBot> msgs)
 			{
-				_messages.AddRange(msgs);
+				Messages.AddRange(msgs);
 			}
 
 			public void SendMsg2(IMessageToBot msg)
 			{
-				_messages.Add(msg);
+				Messages.Add(msg);
 			}
 		}
 
@@ -43,8 +43,6 @@ namespace UnitTest.Web
 			using (StreamReader sr = new StreamReader(File.Open(path, FileMode.Open)))
 				return sr.ReadToEnd();
 		}
-
-
 
 		[Fact]
 		public void DLTest()
@@ -62,7 +60,7 @@ namespace UnitTest.Web
 			var page2 = PageConstructor.GetNewPage(GetFile(nameFirstLvlHtml));
 			_pageController.SetNewPage(page2);
 
-			var text = TexterService.GetNormalizeText(notifications._messages.First(x => x.Notification == Notification.NewLevel).Text, testGuid);
+			var text = TexterService.GetNormalizeText(notifications.Messages.First(x => x.Notification == Notification.NewLevel).Text, testGuid);
 			
 			Assert.Equal(page.Bonuses.Count, 0);
 		}

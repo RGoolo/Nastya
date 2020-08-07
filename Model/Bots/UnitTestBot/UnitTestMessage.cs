@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Model.Bots.BotTypes.Class;
 using Model.Bots.BotTypes.Enums;
 using Model.Bots.BotTypes.Interfaces;
@@ -26,6 +27,13 @@ namespace Model.Bots.UnitTestBot
             Text = text;
             FillCommands();
 		}
+
+        public UnitTestMessage(string text, IChatId chatId) : this(text)
+        {
+            Text = text;
+            FillCommands();
+            Chat = new UnitTestChat(chatId);
+        }
 
 		private void FillCommands()
 		{

@@ -8,6 +8,7 @@ using Model.Bots.BotTypes.Enums;
 using Model.Bots.BotTypes.Interfaces;
 using Model.Bots.BotTypes.Interfaces.Ids;
 using Model.Bots.BotTypes.Interfaces.Messages;
+using Model.Logic.Settings;
 
 namespace Model.Bots.UnitTestBot
 {
@@ -80,7 +81,9 @@ namespace Model.Bots.UnitTestBot
 
         public void DownloadResource(IBotMessage msg)
         {
-            throw new NotImplementedException();
+         
+
+            
         }
     }
 }

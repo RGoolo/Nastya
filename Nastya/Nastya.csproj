@@ -3,7 +3,7 @@
   <PropertyGroup>
 	<OutputType>Exe</OutputType>
 	<LangVersion>preview</LangVersion>
-    <TargetFramework>net5.0</TargetFramework>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
     <UserSecretsId>8ea83efa-765f-4c01-8a6c-3a9ded267749</UserSecretsId>
   </PropertyGroup>
 

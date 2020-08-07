@@ -7,6 +7,17 @@ namespace Model.Bots.UnitTestBot
 {
 	public class UnitTestChat : IChat
 	{
+        public UnitTestChat()
+        {
+
+        }
+
+        public UnitTestChat(IChatId id)
+        {
+            Id = id;
+        }
+
+
         public string ChatName { get; } = "unit test chat";
         public ChatType Type { get; set; } = ChatType.Private;
         public IChatId Id { get; set; } = new ChatGuid(new Guid());
