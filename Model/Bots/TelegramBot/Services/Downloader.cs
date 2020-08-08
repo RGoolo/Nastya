@@ -76,7 +76,7 @@ namespace Model.Bots.TelegramBot.Services
 			var file = tMsg.Type switch
             {
                 Telegram.Bot.Types.Enums.MessageType.Audio => _chatFileWorker(msg.Chat.Id).NewResourcesFileByExt(".mp3"), //todo mimeType
-                Telegram.Bot.Types.Enums.MessageType.Invoice => _chatFileWorker(msg.Chat.Id).NewResourcesFileByExt(".ogg"),
+                Telegram.Bot.Types.Enums.MessageType.Voice => _chatFileWorker(msg.Chat.Id).NewResourcesFileByExt(".ogg"),
                 _ => throw new ArgumentOutOfRangeException()
             };
 
