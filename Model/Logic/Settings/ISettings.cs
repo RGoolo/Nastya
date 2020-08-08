@@ -122,8 +122,9 @@ namespace Model.Logic.Settings
 		bool IsSendImg { get; set; }
 		bool IsSendVoice { get; set; }
 		bool AllowConnect { get; set; }
+        bool AllowCodeAudio { get; set; }
 
-		IMessageId SectorsMsg { get; set; }
+        IMessageId SectorsMsg { get; set; }
 		IMessageId AllSectorsMsg { get; set; }
 	}
 

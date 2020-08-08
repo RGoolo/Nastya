@@ -124,6 +124,12 @@ namespace Model.Logic.Settings.Classes
 			get => SettingsValues.GetValueBool(Const.Game.AllowConnect, true);
 			set => SettingsValues.SetValue(Const.Game.AllowConnect, value.ToString());
 		}
+        
+        public bool AllowCodeAudio
+		{
+			get => SettingsValues.GetValueBool(Const.Game.AllowCodeAudio, true);
+			set => SettingsValues.SetValue(Const.Game.AllowCodeAudio, value.ToString());
+		}
 
 		public IMessageId SectorsMsg
 		{

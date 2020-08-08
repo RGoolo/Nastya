@@ -52,7 +52,10 @@ namespace Nastya.Commands.Game
 
 		[Command(nameof(Const.Game.AllowConnect), "Позволять присоединятся к игре в других чатах")]
 		public bool AllowConnect { get; set; }
-		
+
+        [Command(nameof(Const.Game.AllowCodeAudio), "Распозновать коды с голосовых.")]
+        public bool AllowCodeSound { get; set; }
+
 		[Command(Const.Game.Send, "Отправляет коды из чата.")]
 		public bool IsSendCoord { get; set; }
 
@@ -230,6 +233,29 @@ namespace Nastya.Commands.Game
 
 			GetGame()?.SendCode(msg.Text, msg.User, msg.MessageId);
 		}
+
+        [CheckProperty(nameof(GameIsStart))]
+        [CheckProperty(nameof(AllowCodeSound))]
+		[CommandOnMsg(nameof(IsSendCoord), MessageType.Text, TypeUser.Bot)]
+        public void Command2(IBotMessage msg, ISettings settings)
+        {
+            if (msg.MessageCommands != null && msg.MessageCommands.Count() != 0)
+                return;
+
+			if (msg.ReplyToMessage == null || msg.ReplyToMessage.TypeMessage != MessageType.Voice)
+                return;
+
+            if (string.IsNullOrEmpty(msg.Text))
+                return;
+            
+            string text = null;
+            
+            if (msg.Text.StartsWith("код "))
+                text = msg.Text.Substring(3).Replace(" ", "");
+            
+			if (!string.IsNullOrEmpty(text))
+                GetGame()?.SendCode(text, msg.User, msg.MessageId);
+        }
 
 		public bool CheckSystemMsg => true;
 

@@ -23,17 +23,15 @@ namespace Model.Logic.Google
 
 		private static RecognitionConfig CreateConfig(IChatFileToken file) => new RecognitionConfig()
 			{
-				Encoding = file.FileName.EndsWith(".mp3", StringComparison.OrdinalIgnoreCase)
-					? RecognitionConfig.Types.AudioEncoding.Mp3
-					: RecognitionConfig.Types.AudioEncoding.OggOpus,
+				Encoding = RecognitionConfig.Types.AudioEncoding.Mp3,
 				SampleRateHertz = 16000,
 				LanguageCode = "ru",
 			};
 
-		public static async Task<string> GetText(IChatFile file, IChatFile creadFile)
+		public static async Task<string> GetText(IChatFile file, IChatFile credFile)
 		{
 			StringBuilder sb = new StringBuilder();
-			var speech = CreateClient(creadFile);
+			var speech = CreateClient(credFile);
 
 			RecognitionAudio audio;
 
@@ -50,7 +48,6 @@ namespace Model.Logic.Google
 			try
 			{
 				var response = await speech.RecognizeAsync(CreateConfig(file), audio);
-
 
 				foreach (var result in response.Results)
 				{

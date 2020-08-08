@@ -104,6 +104,7 @@
 			public const string AllSectorsMsg = "AllSectorsMsg";
 
 			public const string AllowConnect = "allowConnect";
+            public const string AllowCodeAudio = "AllowCodeAudio";
 		}
 
 		public static class Web

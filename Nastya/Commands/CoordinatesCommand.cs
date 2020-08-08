@@ -39,9 +39,10 @@ namespace Nastya.Commands
 		public bool AddPicture { get; set; }
 
 		[CommandOnMsg(nameof(CheckCoordintate), MessageType.Text, typeUser: TypeUser.User)]
-		public List<IMessageToBot> GetAllCoordinates(IBotMessage msg)
-		{
-			var result = new List<IMessageToBot>(_pointsFactory.GetCoordinates(msg.Text).Points().Select(CommandMessageWithDescription));
+		public List<IMessageToBot> GetAllCoordinates(IBotMessage msg, IChatFileFactory fWorker)
+        {
+            var worker = _pointsFactory.GetCoordinates(msg.Text);
+			var result = new List<IMessageToBot>(worker.Points().Select(CommandMessageWithDescription));
             return result;
         }
 
@@ -75,10 +76,9 @@ namespace Nastya.Commands
 			MessageToBot.GetCoordMsg(coord, coord.OriginText);// _pointsFactory.GetUrlLink(coord, true));
 		
 		[Command(nameof(Coords), "Распознать координаты из сообщения.")]
-		public IList<IMessageToBot> Coords(IBotMessage msg) => 
-			GetCoordinate(msg, nameof(Coords), (x) => _pointsFactory.GetCoordinates(x).Points());
+		public Task<IList<IMessageToBot>> Coords(IBotMessage msg, IChatFileFactory fWorker) => GetCoordinate(msg, nameof(Coords), (x) => _pointsFactory.GetCoordinates(x), fWorker);
 
-		//[Command(nameof(Places), "Скинуть  из текста.")]
+        //[Command(nameof(Places), "Скинуть  из текста.")]
 //		public TransactionCommandMessage Places(IMessage msg) =>
 //			GetCoordinate(msg, null, _pointsFactory.GetPlaces);
 
@@ -130,20 +130,40 @@ namespace Nastya.Commands
 			return result;
 		}
 
-		private IList<IMessageToBot> GetCoordinate(IBotMessage msg, string fName, Func<string, IEnumerable<Coordinate>> func)
+		private async Task<IList<IMessageToBot>> GetCoordinate(IBotMessage msg, string fName, Func<string, PointWorker<Coordinate>> func, IChatFileFactory fWorker)
 		{
 			var text = GetText(msg, fName);
 			var result = new List<IMessageToBot>();
 
 			var coords = func(text);
 
-			coords.ToList().ForEach(x =>
+			coords.Points().ToList().ForEach(x =>
 			{
 				result.Add(MessageToBot.GetTextMsg((Texter)(x.OriginText + Environment.NewLine))); //+ _pointsFactory.GetUrlLink(x, true)));
 				result.Add(MessageToBot.GetCoordMsg(x, x.OriginText));
 			});
-            return result;
+
+			var ms1g = await GetPictureMsg(msg, fWorker, coords);
+			if (ms1g != null)
+                result.Add(ms1g);
+
+			return result;
         }
 
-	}
+        private async Task<IMessageToBot> GetPictureMsg(IBotMessage msg, IChatFileFactory fWorker, PointWorker<Coordinate> coords)
+        {
+            if (AddPicture)
+            {
+                var file = fWorker.NewResourcesFileByExt(".jpg");
+
+                await _pointsFactory.SetPicture(file, coords.Points());
+                var tomsg = MessageToBot.GetHTMLPhototMsg(file, "");
+
+                tomsg.OnIdMessage = msg.MessageId;
+               return tomsg;
+            }
+
+            return null;
+        }
+    }
 }
