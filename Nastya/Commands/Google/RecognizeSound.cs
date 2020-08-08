@@ -25,21 +25,14 @@ namespace Nastya.Commands.Google
 		[Command("text", "Получить текст из голосового файла.", resource: TypeResource.Voice)]
 		public Task<string> GetVoiceText(IChatFile token, IChatFileFactory factory) => ConvertToText(Voice.GetText, factory, token);
 
-		[CommandOnMsg(nameof(IsCheckVoice), MessageType.Photo, typeUser: TypeUser.User)]
-		public void GetTextMsg(IBotMessage msg, IChatFileFactory factory)
+		[CommandOnMsg(nameof(IsCheckVoice), MessageType.Voice, typeUser: TypeUser.User | TypeUser.Bot)]
+		public async Task<string> GetTextMsgVoice(IBotMessage msg, IChatFileFactory factory)
 		{
-			if (msg.Resource == null) return;
-			GetVoiceText(msg.Resource.File, factory);
+			if (msg.Resource == null || msg?.Resource?.Type != TypeResource.Voice) return null;
+			return await GetVoiceText(msg.Resource.File, factory);
 		}
 
-		[CommandOnMsg(nameof(IsCheckVoice), MessageType.Voice, typeUser: TypeUser.User)]
-		public void GetTextMsgVoice(IBotMessage msg, IChatFileFactory factory)
-		{
-			if (msg.Resource == null || msg?.Resource?.Type != TypeResource.Voice) return;
-			GetVoiceText(msg.Resource.File, factory);
-		}
-
-		[CommandOnMsg(nameof(IsCheckVoice), MessageType.SystemMessage, typeUser: TypeUser.User)]
+		[CommandOnMsg(nameof(IsCheckVoice), MessageType.SystemMessage, typeUser: TypeUser.User | TypeUser.Bot)]
 		public Task<string> Notifications(IBotMessage msg, IChatFileFactory factory)
 		{
 			if (msg.ReplyToCommandMessage?.FileToken == null)
