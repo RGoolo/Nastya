@@ -31,6 +31,8 @@ namespace Model.Bots.TelegramBot.Entity
 					case Telegram.Bot.Types.Enums.MessageType.Photo:
 						return MessageType.Photo;
 					case Telegram.Bot.Types.Enums.MessageType.Voice:
+					case Telegram.Bot.Types.Enums.MessageType.Invoice:
+					case Telegram.Bot.Types.Enums.MessageType.Audio:
 						return MessageType.Voice;
 					case Telegram.Bot.Types.Enums.MessageType.Video:
 						return MessageType.Video;

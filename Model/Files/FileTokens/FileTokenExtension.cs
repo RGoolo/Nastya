@@ -35,7 +35,7 @@ namespace Model.Files.FileTokens
 			if (!token.IsLocal())
 				throw new NotImplementedException();
 
-			return File.OpenRead(token.Location);
+			return File.OpenRead(token.FullName);
 		}
 	}
 }

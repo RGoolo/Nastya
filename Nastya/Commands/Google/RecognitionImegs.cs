@@ -29,30 +29,30 @@ namespace Nastya.Commands.Google
 		public Task<string> IsCheckVisionMsg { get; set; }
 
 		[Command("text", "Получить текст с изображения.", resource: TypeResource.Photo)]
-		public Task<string> GetText(IChatFile token) => ConvertToText(Vision.GetTextAsync, token);
+		public Task<string> GetText(IChatFile token, IChatFileFactory factory) => ConvertToText(Vision.GetTextAsync, token, factory);
 
 		[Command("logo", "Получить список logo с изображения.", resource: TypeResource.Photo)]
-		public Task<string> GetLogo(IChatFile token) => ConvertToText(Vision.GetLogoAsync, token);
+		public Task<string> GetLogo(IChatFile token, IChatFileFactory factory) => ConvertToText(Vision.GetLogoAsync, token, factory);
 
 		[Command("imgweb", "Получить список web с изображения.", resource: TypeResource.Photo)]
-		public Task<string> GetWeb(IChatFile token) => ConvertToText(Vision.GetWebAsync, token);
+		public Task<string> GetWeb(IChatFile token, IChatFileFactory factory) => ConvertToText(Vision.GetWebAsync, token, factory);
 
 		[Command("imgmark", "Получить список Landmark с изображения.", resource: TypeResource.Photo)]
-		public Task<string> GetLandmark(IChatFile token) => ConvertToText(Vision.GetLandmarkAsync, token);
+		public Task<string> GetLandmark(IChatFile token, IChatFileFactory factory) => ConvertToText(Vision.GetLandmarkAsync, token, factory);
 
 		[Command("imgdoc", "Получить список Landmark с изображения.", resource: TypeResource.Photo)]
-		public Task<string> GetDoc(IChatFile token) => ConvertToText(Vision.GetDocAsync, token);
+		public Task<string> GetDoc(IChatFile token, IChatFileFactory factory) => ConvertToText(Vision.GetDocAsync, token, factory);
 
 		[CommandOnMsg(nameof(GetTextMsg), MessageType.Photo, typeUser: TypeUser.User)]
-		public void GetTextMsg(IBotMessage msg)
+		public async Task<string> GetTextMsg(IBotMessage msg, IChatFileFactory factory)
 		{
-			if (msg.Resource == null) return;
-			GetText(msg.Resource.File);
+			if (msg.Resource == null) return null;
+            return await GetText(msg.Resource.File, factory);
 		}
 
-		private async Task<string> ConvertToText(Func<IChatFile, IChatFile, Task<string>> toText, IChatFile token)
+		private async Task<string> ConvertToText(Func<IChatFile, IChatFileFactory, Task<string>> toText, IChatFile token, IChatFileFactory factory)
 		{
-			return await toText(token, _settings.FileChatFactory.SystemFile(SystemChatFile.RecognizeCredentials));
+			return await toText(token, factory);
 			//return MessageToBot.GetTextMsg(new Texter(text));
 			//var transaction = new TransactionCommandMessage(command);
 			//	SendMsg.Send(transaction);

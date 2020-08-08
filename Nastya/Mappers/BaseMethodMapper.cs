@@ -56,20 +56,20 @@ namespace Nastya.Mappers
 				case TransactionCommandMessage res2:
 					list.Add(res2);
 					break;
-				case IEnumerable<TransactionCommandMessage> res3:
-					list.AddRange(res3);
+				case IEnumerable<TransactionCommandMessage> res2:
+					list.AddRange(res2);
 					break;
-				case IMessageToBot res4:
-					list.Add(new TransactionCommandMessage(res4));
+				case IMessageToBot res2:
+					list.Add(new TransactionCommandMessage(res2));
 					break;
-				case IEnumerable<IMessageToBot> res5:
-					list.Add(new TransactionCommandMessage(res5));
+				case IEnumerable<IMessageToBot> res2:
+					list.Add(new TransactionCommandMessage(res2));
 					break;
-				case string res6:
-					list.Add(new TransactionCommandMessage(MessageToBot.GetTextMsg(res6)));
+				case string res2:
+					list.Add(new TransactionCommandMessage(MessageToBot.GetTextMsg(res2)));
 					break;
 					default:
-					throw new GameException("не поддерживает возращаемый тип");
+					throw new GameException("Не поддерживает возращаемый тип.");
 				case null:
 					break;
 			}
@@ -84,30 +84,33 @@ namespace Nastya.Mappers
 					case Task<TransactionCommandMessage> res2:
 						Send(await res2);
 						break;
-					case Task<IEnumerable<TransactionCommandMessage>> res3:
-						SendMsg(await res3);
+					case Task<IEnumerable<TransactionCommandMessage>> res2:
+						SendMsg(await res2);
 						break;
-					case Task<List<TransactionCommandMessage>> res31:
-						SendMsg(await res31);
+					case Task<List<TransactionCommandMessage>> res2:
+						SendMsg(await res2);
 						break;
-					case Task<TransactionCommandMessage[]> res32:
-						SendMsg(await res32);
+					case Task<TransactionCommandMessage[]> res2:
+						SendMsg(await res2);
 						break;
-					case Task<IMessageToBot> res4:
-						Send(new TransactionCommandMessage(await res4));
+					case Task<IMessageToBot> res2:
+						Send(new TransactionCommandMessage(await res2));
 						break;
-					case Task<IEnumerable<IMessageToBot>> res5:
-						Send(new TransactionCommandMessage(await res5));
+					case Task<IEnumerable<IMessageToBot>> res2:
+						Send(new TransactionCommandMessage(await res2));
 						break;
-					case Task<List<IMessageToBot>> res51:
-						Send(new TransactionCommandMessage(await res51));
+					case Task<List<IMessageToBot>> res2:
+						Send(new TransactionCommandMessage(await res2));
 						break;
-					case Task<IMessageToBot[]> res52:
-						Send(new TransactionCommandMessage(await res52));
+                    case Task<IList<IMessageToBot>> res2:
+                        Send(new TransactionCommandMessage(await res2));
+                        break;
+					case Task<IMessageToBot[]> res2:
+						Send(new TransactionCommandMessage(await res2));
 						break;
-					case Task<string> res6:
+					case Task<string> res2:
 					{
-						var msg = MessageToBot.GetTextMsg(await res6);
+						var msg = MessageToBot.GetTextMsg(await res2);
 						msg.OnIdMessage = botMessage.MessageId;
 						Send(new TransactionCommandMessage(msg));
 					}
@@ -115,7 +118,7 @@ namespace Nastya.Mappers
 					case null:
 						break;
 					default:
-						Send(new TransactionCommandMessage("не поддерживает возращаемый тип"));
+						Send(new TransactionCommandMessage("Не поддерживает возращаемый тип."));
 						break;
 				}
 			}

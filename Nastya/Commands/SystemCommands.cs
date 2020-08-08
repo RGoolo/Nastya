@@ -20,14 +20,13 @@ namespace Nastya.Commands
 			return "Настройки сброшены";
 		}
 
-		[Command(nameof(Me), "Очистить настройки.")]
-		public string Me(IChatId chatId)
+		[Command(nameof(Chat), "Инфо по чату.")]
+		public string Chat(IChatId chatId)
 		{
 			return chatId.ToString();
 		}
 
-
-		[Command(nameof(Me), "Очистить настройки.")]
+		[Command(nameof(Me), "Инфо по тебе")]
 		public string Me(IChatId chatId, IUser user)
 		{
 			var sb = new StringBuilder();

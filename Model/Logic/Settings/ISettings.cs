@@ -54,7 +54,7 @@ namespace Model.Logic.Settings
 		// bool Coord { get; set; }
 		bool AddPicture { get; set; }
 
-		string GoogleCreads{ get; set; }
+		string GoogleCred{ get; set; }
 		string City { get; set; }
 		IGoogleCoordinates Google { get; }
 		IYandexCoordinates Yandex { get; }

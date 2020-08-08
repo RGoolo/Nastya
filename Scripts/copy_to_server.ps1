@@ -16,7 +16,7 @@ $RemotePC
 
 #crete dir if no exist
 echo "Create dir $RemotePC/home/user/NightBot ..."
-ssh  -p $Port $User@$ComputerName "mkdir -p /home/user/NightBot"
+ssh  -p $Port $User@$ComputerName "mkdir -p /home/user/NightBot && rm --force /home/user/NightBot/*"
 
 #Copy to
 echo "load files..."

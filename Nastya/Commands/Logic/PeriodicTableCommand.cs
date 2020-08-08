@@ -5,7 +5,7 @@ using Model.Logic.PereodicTable;
 
 namespace Nastya.Commands
 {
-	[CommandClass(nameof(HelpCommand), "Таблица менделлева:", TypeUser.User)]
+	[CommandClass("PTable", "Таблица менделлева:", TypeUser.User)]
 	public class PeriodicTableCommand	 
 	{
 		private readonly PeriodicTable _pereodicTable = new PeriodicTable();

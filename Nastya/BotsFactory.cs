@@ -44,6 +44,7 @@ namespace Nastya
 				key = Console.ReadKey(true);
 			}
 
+            Console.WriteLine("Save token.");
 			SecurityEnvironment.SetPassword(token, "telegram", "bot", "token");
 			return token;
 		}

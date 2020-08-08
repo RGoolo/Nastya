@@ -8,4 +8,4 @@ $ComputerName = $Env:bot_nastya_remote_server
 
 $RemotePC = "$User@$ComputerName" + ":"
 $RemotePC
-ssh  -p $Port $User@$ComputerName "run /home/user/NightBot/Nastya.dll"
+ssh -p $Port $User@$ComputerName "dotnet /home/user/NightBot/Nastya.dll"

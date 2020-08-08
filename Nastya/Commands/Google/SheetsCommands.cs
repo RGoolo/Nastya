@@ -33,7 +33,7 @@ namespace Nastya.Commands.Google
 			if (!fileCred.Exists())
 				throw new ModelException("Не задан Token доступа.");
 
-			var fileToken = _fileFactory.SystemFile(SystemChatFile.SheetToken);
+			var fileToken = _fileFactory.SystemFile(SystemChatFile.GoogleToken);
 			return new WorkerSheets(fileCred, fileToken, url);
 		}
 
@@ -49,15 +49,6 @@ namespace Nastya.Commands.Google
 			_workerSheets = Create(_sheetsUrl);
 		}
 
-		[Command(nameof(SaveTokenSheet), "Файл с токеном для доступа к странице", TypeUser.User, TypeResource.Document)]
-		public string SaveTokenSheet(IBotMessage msg, IChatFile fileToken)
-		{
-			_fileFactory.SystemFile(SystemChatFile.SheetCredentials).CopyFrom(fileToken);
-			fileToken.Delete();
-			return "Успешно получено";
-		}
-
-		
 		[Command(nameof(CreateSheetUp), "Создает страницу в Google sheets когда появляется новый уровень.")]
 		public bool CreateSheetUp { get; set; }
 

@@ -12,14 +12,14 @@ namespace Model.Files.FileTokens
 	{
 		public UrlChatFileToken(string uri)
 		{
-			Location = uri;
+			FullName = uri;
 			FileType = FileTypeFlags.Resources;
 			FileName = UriHelper.GetFileName(uri);
 		}
 
 		public FileTypeFlags FileType { get; }
 		public string FileName { get; }
-		public string Location { get; set; }
+		public string FullName { get; set; }
 	}
 
 
@@ -33,13 +33,13 @@ namespace Model.Files.FileTokens
 		{
 			FileType = fileType;
 			FileName = fileName;
-			Location = location;
+			FullName = location;
 		}
 		
 		/// <summary>
 		/// Url or FullFilePath
 		/// </summary>
-		public string Location { get; }
+		public string FullName { get; }
 
 		public FileStream ReadStream() => ((IChatFileToken) this).ReadStream();
 
@@ -48,7 +48,7 @@ namespace Model.Files.FileTokens
 			if (!FileType.IsLocal())
 				throw new NotImplementedException();
 
-			return new FileStream(Location, FileMode.Create);
+			return new FileStream(FullName, FileMode.Create);
 		}
 
 		public T Read<T>()
@@ -72,7 +72,7 @@ namespace Model.Files.FileTokens
 			if (!FileType.IsLocal())
 				throw new NotImplementedException();
 
-			File.Delete(Location);
+			File.Delete(FullName);
 		}
 
 		public bool Exists()
@@ -80,7 +80,7 @@ namespace Model.Files.FileTokens
 			if (!FileType.IsLocal())
 				throw new NotImplementedException();
 
-			return File.Exists(Location);
+			return File.Exists(FullName);
 		}
 
 		public void CopyFrom(IChatFileToken token)

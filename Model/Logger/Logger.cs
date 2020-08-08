@@ -13,7 +13,9 @@ namespace Model.Logger
 	{
 		private readonly string _className;
 		private readonly StreamWriter _file;
-		public static string FileLog { get; set; } = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "NightGameBot", "Log",$"log_{DateTime.Now}.txt");
+
+        private const string Format = "dd-MM-yy hh-mm-ss";
+		public static string FileLog { get; set; } = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "NightGameBot", "Log",$"log_{DateTime.Now.ToString(Format)}.txt");
 
 		private static StreamWriter _staticFile;
 

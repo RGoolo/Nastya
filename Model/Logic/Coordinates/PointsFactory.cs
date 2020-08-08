@@ -24,7 +24,7 @@ namespace Model.Logic.Coordinates
 		private List<IPointProvider<Coordinate>> CoordinatesProvider;
 		private List<IPointProvider<Place>> PlacesProvider;
 
-		private string creads => _settings.Coordinates.GoogleCreads;
+		private string creads => _settings.Coordinates.GoogleCred;
 
 		public PointsFactory(ISettings settings)
 		{

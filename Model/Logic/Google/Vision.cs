@@ -1,9 +1,12 @@
-﻿using System.Linq;
+﻿using System.IO;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Google.Api.Gax.Grpc;
 using Google.Apis.Auth.OAuth2;
 using Google.Cloud.Vision.V1;
 using Grpc.Auth;
+using Grpc.Core;
 using Model.Files.FileTokens;
 
 namespace Model.Logic.Google
@@ -17,23 +20,23 @@ namespace Model.Logic.Google
 
 		private static string Link(string url, string name) => $"<a href=\"{url}\">{name}</a>";
 
-		private static Image GetImg(IChatFile file) => file.FileType.IsLocal() ? Image.FromStream(file.ReadStream()) : Image.FromUri(file.Location);
+		private static Image GetImg(IChatFile file) => file.FileType.IsLocal() ? Image.FromStream(file.ReadStream()) : Image.FromUri(file.FullName);
 
-		private static ImageAnnotatorClient CreateClient(IChatFile creadFile)
-		{
-			var credential = GoogleCredential.FromFile(creadFile.Location).CreateScoped(ImageAnnotatorClient.DefaultScopes);
-			var channel = new Grpc.Core.Channel(ImageAnnotatorClient.DefaultEndpoint.ToString(), credential.ToChannelCredentials());
-			// Instantiates a client
-			//todo
-			//return ImageAnnotatorClient.Create(channel);
-			return null;
-		}
+		private static ImageAnnotatorClient CreateClient(IChatFileFactory factory)
+        {
+            var credFile = factory.SystemFile(SystemChatFile.RecognizeCredentials);
 
-		public static async Task<string> GetTextAsync(IChatFile fileTo, IChatFile creadFile)
+			var builder = new ImageAnnotatorClientBuilder
+            {
+                 CredentialsPath = credFile.FullName,
+            };
+            return builder.Build();
+        }
+
+		public static async Task<string> GetTextAsync(IChatFile fileTo, IChatFileFactory factory)
 		{
 			var image = GetImg(fileTo);
-			var client = CreateClient(creadFile);
-			
+			var client = CreateClient(factory);
 			StringBuilder sb = new StringBuilder();
 			var responce = await client.DetectTextAsync(image);
 			if (responce == null)
@@ -45,12 +48,12 @@ namespace Model.Logic.Google
 			return sb.ToString();
 		}
 
-		public static async Task<string> GetWebAsync(IChatFile file, IChatFile creadFile)
+		public static async Task<string> GetWebAsync(IChatFile file, IChatFileFactory factory)
 		{
 			StringBuilder sb = new StringBuilder();
 			var image = GetImg(file);
 
-			var client = CreateClient(creadFile);
+			var client = CreateClient(factory);
 			var annotation = await client.DetectWebInformationAsync(image);
 			if (annotation == null)
 				return string.Empty;
@@ -74,13 +77,13 @@ namespace Model.Logic.Google
 			return sb.ToString();
 		}
 
-		public static async Task<string> GetLogoAsync(IChatFile file, IChatFile creadFile)
+		public static async Task<string> GetLogoAsync(IChatFile file, IChatFileFactory factory)
 		{
 			StringBuilder sb = new StringBuilder();
 
 			var image = GetImg(file);
 
-			var client = CreateClient(creadFile);
+			var client = CreateClient(factory);
 
 			var responce = await client.DetectLogosAsync(image);
 			if (responce != null)
@@ -90,12 +93,12 @@ namespace Model.Logic.Google
 			return sb.ToString();
 		}
 
-		public static async Task<string> GetLandmarkAsync(IChatFile file, IChatFile creadFile)
+		public static async Task<string> GetLandmarkAsync(IChatFile file, IChatFileFactory factory)
 		{
 			StringBuilder sb = new StringBuilder();
 			var image = GetImg(file);
 
-			var client = CreateClient(creadFile);
+			var client = CreateClient(factory);
 
 			var responce = await client.DetectLandmarksAsync(image);
 			if (responce != null)
@@ -105,12 +108,12 @@ namespace Model.Logic.Google
 			return sb.ToString();
 		}
 
-		public static async Task<string> GetDocAsync(IChatFile file, IChatFile creadFile)
+		public static async Task<string> GetDocAsync(IChatFile file, IChatFileFactory factory)
 		{
 			StringBuilder sb = new StringBuilder();
 			var image = GetImg(file);
 
-			var client = CreateClient(creadFile);
+			var client = CreateClient(factory);
 			var response = await client.DetectDocumentTextAsync(image);
 			if (response != null)
 				foreach (var page in response.Pages)

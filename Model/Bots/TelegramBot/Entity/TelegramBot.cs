@@ -48,8 +48,6 @@ namespace Model.Bots.TelegramBot.Entity
 			_offset = 0;
 		}
 
-	
-
 		public List<IBotMessage> GetMessages()
 		{
 			var updates = _bot.GetUpdatesAsync(_offset, 1).Result;
@@ -80,8 +78,7 @@ namespace Model.Bots.TelegramBot.Entity
 		private TelegramMessage TelegramMessage(Message msg, bool isBot, IMessageToBot message = null) =>  new TelegramMessage(msg, GetTypeUser(msg, isBot), message);
 		private static Texter GetNormalizeText(Texter text, IChatId chatId) => TexterService.GetNormalizeText(text, chatId);
 		private static ParseMode GetParseMod(Texter text) => text?.Html == true ? ParseMode.Html : ParseMode.Default;
-
-		public List<IMessageToBot> ChildrenMessage(IMessageToBot msg, IChatId chatId) => MessageService.ChildrenMessage(msg, chatId);
+        public List<IMessageToBot> ChildrenMessage(IMessageToBot msg, IChatId chatId) => MessageService.ChildrenMessage(msg, chatId);
 
 		public async Task<IBotMessage> Message(IMessageToBot message, IChatId chatId)
 		{

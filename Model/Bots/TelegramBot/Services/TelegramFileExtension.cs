@@ -7,7 +7,7 @@ namespace Model.Bots.TelegramBot.Services
 	{ 
 		public static InputOnlineFile GetInputFile(this IChatFileToken token)
 		{
-			return token.IsLocal() ? new InputOnlineFile(token.ReadStream(), token.FileName) : new InputOnlineFile(token.Location);
+			return token.IsLocal() ? new InputOnlineFile(token.ReadStream(), token.FileName) : new InputOnlineFile(token.FullName);
 		}
 	}
 }

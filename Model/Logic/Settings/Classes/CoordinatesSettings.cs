@@ -82,10 +82,10 @@ namespace Model.Logic.Settings.Classes
 		}
 
 
-		public string GoogleCreads 
+		public string GoogleCred
 		{
-			get => SettingsValues.GetValue(Const.Coordinates.Google.GoogleCreads);
-			set => SettingsValues.SetValue(Const.Coordinates.Google.GoogleCreads, value);
+			get => SettingsValues.GetValue(Const.Coordinates.Google.GoogleCred);
+			set => SettingsValues.SetValue(Const.Coordinates.Google.GoogleCred, value);
 		}
 	}
 }

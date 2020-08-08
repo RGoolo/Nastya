@@ -17,7 +17,7 @@ namespace Nastya.Commands
 			_settings = settings;
 
 			//ToDo ubdate
-			var cred = settings.Coordinates.GoogleCreads;
+			var cred = settings.Coordinates.GoogleCred;
 			_pointsFactory = settings.PointsFactory;
 		}
 

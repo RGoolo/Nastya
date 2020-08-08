@@ -8,7 +8,7 @@ using Model.Logic.Settings;
 namespace Nastya.Commands
 {
 	
-		[CommandClass(nameof(Film), "Брайль. Порядок ввода:\n1\t4\n2\t5\n3\t6\n", TypeUser.User)]
+		[CommandClass(nameof(Film), "Фильмы.", TypeUser.User)]
 		public class Film
 		{
 			private readonly ISettings _settings;
@@ -20,7 +20,6 @@ namespace Nastya.Commands
 				_poisk = new Kinopoisk();
 			}
 
-			//ToDo:
 			[Command(Const.Film.NameKinopoisk, "Список фильмов или фильм по Id")]
 			public async Task<IMessageToBot> Kp(string name)
 			{

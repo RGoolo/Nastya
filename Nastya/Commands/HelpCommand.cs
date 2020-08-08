@@ -100,7 +100,7 @@ namespace Nastya.Commands
 			}
 			var infos = refCommand.GetMethods().Where(x => x.GetCustomAttribute<CommandAttribute>(true) != null).ToList();
 			if (infos.Any())
-				sb.AppendLine($"Функции:");
+				sb.AppendLine().AppendLine($"Функции:");
 
 			foreach (var methodInfo in infos)
 			{

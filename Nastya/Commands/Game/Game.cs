@@ -23,7 +23,7 @@ namespace Nastya.Commands.Game
 	}
 
 	[CustomHelp(HelpText.CustomHelp)]
-	[CommandClass("Game", "Дозор дедлайн", TypeUser.User)]
+	[CommandClass("Game", "Дозор/Дедлайн", TypeUser.User)]
 	public class Game1 : ISenderSyncMsgs
 	{
 		private readonly ISendMessages _sendMessages;

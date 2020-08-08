@@ -26,7 +26,7 @@ namespace Model.Logic.Google
 			_sheetsUrl = sheetsUrl;
 
 			UserCredential credential;
-			var dir = Directory.GetParent(token.Location).FullName;
+			var dir = Directory.GetParent(token.FullName).FullName;
 			using (var stream = fileCred.ReadStream())
 			{
 				var clientSecret = GoogleClientSecrets.Load(stream).Secrets;
@@ -43,7 +43,7 @@ namespace Model.Logic.Google
 				HttpClientInitializer = credential,
 				ApplicationName = ApplicationName,
 			});
-		}
+        }
 
 		//ToDo: acync
 		public void CreatePage3(string name)

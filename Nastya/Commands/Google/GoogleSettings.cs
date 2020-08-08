@@ -23,23 +23,43 @@ namespace Nastya.Commands.Google
 
 				userFiles.SystemFile(SystemChatFile.SheetCredentials)
 					.CopyFrom(settings.FileChatFactory.SystemFile(SystemChatFile.SheetCredentials));
-				userFiles.SystemFile(SystemChatFile.SheetToken)
-					.CopyFrom(settings.FileChatFactory.SystemFile(SystemChatFile.SheetToken));
+				userFiles.SystemFile(SystemChatFile.GoogleToken)
+					.CopyFrom(settings.FileChatFactory.SystemFile(SystemChatFile.GoogleToken));
 				userFiles.SystemFile(SystemChatFile.RecognizeCredentials)
 					.CopyFrom(settings.FileChatFactory.SystemFile(SystemChatFile.RecognizeCredentials));
 
-				settings.Coordinates.GoogleCreads = userSettings.Coordinates.GoogleCreads; //ToDo: move to coordinate
+				settings.Coordinates.GoogleCred = userSettings.Coordinates.GoogleCred; //ToDo: move to coordinate
 			}
 
 			return "Успешно скопировано";
 		}
 
-		[Command(nameof(SaveTokenRecognizer), "Файл с токеном для доступа к странице", TypeUser.User, TypeResource.Document)]
-		public string SaveTokenRecognizer(IBotMessage msg, IChatFile fileToken, IChatFileFactory factory)
-		{
-			factory.SystemFile(SystemChatFile.RecognizeCredentials).CopyFrom(fileToken);
-			fileToken.Delete();
-			return "Успешно получено";
-		}
+        [Command(nameof(SaveTokenRecognizer), "Файл с токеном для доступа к excel странице.", TypeUser.User, TypeResource.Document)]
+        public string SaveTokenRecognizer(IBotMessage msg, IChatFile fileToken, IChatFileFactory factory)
+        {
+            factory.SystemFile(SystemChatFile.RecognizeCredentials).CopyFrom(fileToken);
+            fileToken.Delete();
+            return "Успешно получено";
+        }
+
+        [Command(nameof(SaveTokenSheet), "Файл с токеном для доступа к сервисам распознования текста.", TypeUser.User, TypeResource.Document)]
+        public string SaveTokenSheet(IBotMessage msg, IChatFile fileToken, IChatFileFactory factory)
+        {
+            factory.SystemFile(SystemChatFile.SheetCredentials).CopyFrom(fileToken);
+            fileToken.Delete();
+            return "Успешно получено";
+        }
+
+		[Command(nameof(SaveGoogleToken), "Google.Apis.Auth.OAuth2.Responses.TokenResponse-user. Файл с токеном для авторизации к excel странице.", TypeUser.User, TypeResource.Document)]
+        public string SaveGoogleToken(IBotMessage msg, IChatFile fileToken, IChatFileFactory factory)
+        {
+            factory.SystemFile(SystemChatFile.GoogleToken).CopyFrom(fileToken);
+            fileToken.Delete();
+            return "Успешно получено";
+        }
+
+        [Password]
+        [Command(Const.Coordinates.Google.GoogleCred, "Ключ к доступам апи карт гугла")]
+        public string GoogleCred { get; set; }
 	}
 }

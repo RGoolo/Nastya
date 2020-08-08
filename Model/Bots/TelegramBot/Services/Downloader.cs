@@ -72,10 +72,22 @@ namespace Model.Bots.TelegramBot.Services
 			var tMsg = (resourceMsg as TelegramMessage)?.Message;
 			if (tMsg == null)
 				return null;
+            
+			var file = tMsg.Type switch
+            {
+                Telegram.Bot.Types.Enums.MessageType.Audio => _chatFileWorker(msg.Chat.Id).NewResourcesFileByExt(".mp3"), //todo mimeType
+                Telegram.Bot.Types.Enums.MessageType.Invoice => _chatFileWorker(msg.Chat.Id).NewResourcesFileByExt(".ogg"),
+                _ => throw new ArgumentOutOfRangeException()
+            };
 
-			//var filePath = SettingHelper.DontExistFile("ogg", resourceMsg.ChatId);
-			var file = _chatFileWorker(msg.Chat.Id).NewResourcesFileByExt(".ogg");
-			return DownloadFileAsync(tMsg.Voice.FileId, file, msg, TypeResource.Voice);
+            var fileId = tMsg.Type switch
+            {
+                Telegram.Bot.Types.Enums.MessageType.Audio => tMsg.Audio.FileId, //todo mimeType
+                Telegram.Bot.Types.Enums.MessageType.Voice => tMsg.Voice.FileId,
+                _ => throw new ArgumentOutOfRangeException()
+            };
+
+			return DownloadFileAsync(fileId, file, msg, TypeResource.Voice);
 		}
 
 		private Task<IBotMessage> DownloadPhotoAsync(IBotMessage msg, IBotMessage resourceMsg)

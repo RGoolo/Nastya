@@ -8,6 +8,6 @@ namespace Model.Files.FileTokens
 	{
 		FileTypeFlags FileType { get; }
 		string FileName { get; }
-		string Location { get; }
+		string FullName { get; }
 	}
 }

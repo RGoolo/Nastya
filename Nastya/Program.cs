@@ -28,6 +28,8 @@ namespace Nastya
 
     public class Services
     {
+        private const string Format = "dd-MM-yy hh-mm-ss";
+
         private void Configure()
         {
             var builder = new ConfigurationBuilder()
@@ -37,11 +39,14 @@ namespace Nastya
             var config = builder.Build();
             var appConfig = config.GetSection("main").Get<Configuration>();
 
-            if (!string.IsNullOrEmpty(appConfig.SettingsPath)) 
+            if (!string.IsNullOrEmpty(appConfig.SettingsPath))
                 SettingsHelper.Directory = appConfig.SettingsPath;
 
+            Console.WriteLine($"{nameof(Environment.SpecialFolder.ApplicationData)}: {Environment.SpecialFolder.ApplicationData}");
+            Console.WriteLine($"{nameof(SettingsHelper.Directory)}: {SettingsHelper.Directory}");
+
             if (!string.IsNullOrEmpty(appConfig.LogPath))
-                Logger.FileLog = Path.Combine(appConfig.LogPath, $"log_{DateTime.Now}.txt");
+                Logger.FileLog = Path.Combine(appConfig.LogPath, $"log_{DateTime.Now.ToString(Format)}.txt");
 
             Console.OutputEncoding = Encoding.UTF8;
         }

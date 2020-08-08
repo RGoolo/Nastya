@@ -8,7 +8,7 @@ namespace Model.Files.FileTokens
 {
 	public enum SystemChatFile
 	{
-		Settings, SheetToken, SheetCredentials, RecognizeCredentials
+		Settings, GoogleToken, SheetCredentials, RecognizeCredentials
 	}
 
 	public interface IChatFileFactory
@@ -60,7 +60,7 @@ namespace Model.Files.FileTokens
 				SystemChatFile.Settings => $"{type}.xml",
 				SystemChatFile.SheetCredentials => $"{type}.json",
 				SystemChatFile.RecognizeCredentials => $"{type}.json",
-				SystemChatFile.SheetToken => $"Google.Apis.Auth.OAuth2.Responses.TokenResponse-user",
+				SystemChatFile.GoogleToken => $"Google.Apis.Auth.OAuth2.Responses.TokenResponse-user",
 				_ => $"{type}.xml",
 			};
 
@@ -84,7 +84,7 @@ namespace Model.Files.FileTokens
 
 		public IChatFile GetChatFile(IChatFileToken fileToken)
 		{
-			return fileToken.IsLocal() ? GetExistFileByPath(fileToken.Location) : InternetFile(fileToken.Location);
+			return fileToken.IsLocal() ? GetExistFileByPath(fileToken.FullName) : InternetFile(fileToken.FullName);
 		}
 
 		public IChatFile GetExistFileByPath(string fullFileName)

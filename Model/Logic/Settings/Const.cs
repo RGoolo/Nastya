@@ -19,7 +19,7 @@
 				public const string NamePointsMe = "NameGPointsMe";
 				public const string Show = "showG";
 
-				public const string GoogleCreads = "GoogleCreads";
+				public const string GoogleCred = "GoogleCred";
 			}
 
 			public const string Coord = "coords";

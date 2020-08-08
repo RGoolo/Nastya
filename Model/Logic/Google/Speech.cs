@@ -12,15 +12,13 @@ namespace Model.Logic.Google
 {
 	public class Voice
 	{
-
-		private static SpeechClient CreateClient(IChatFile creadFile)
+        private static SpeechClient CreateClient(IChatFile credFile)
 		{
-			var credential = GoogleCredential.FromFile(creadFile.Location).CreateScoped(SpeechClient.DefaultScopes);
-			var channel = new Grpc.Core.Channel(SpeechClient.DefaultEndpoint.ToString(), credential.ToChannelCredentials());
-			// Instantiates a client
-			//todo
-			//return SpeechClient.Create(channel);
-			return null;
+            var builder = new SpeechClientBuilder()
+			{
+                CredentialsPath = credFile.FullName,
+            };
+			return builder.Build();
 		}
 
 		private static RecognitionConfig CreateConfig(IChatFileToken file) => new RecognitionConfig()
@@ -41,7 +39,7 @@ namespace Model.Logic.Google
 
 			if (!file.IsLocal())
 			{
-				audio = RecognitionAudio.FetchFromUri(file.Location);
+				audio = RecognitionAudio.FetchFromUri(file.FullName);
 			}
 			else
 			{
