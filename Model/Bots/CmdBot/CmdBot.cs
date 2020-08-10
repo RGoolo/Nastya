@@ -64,7 +64,8 @@ namespace Model.Bots.CmdBot
 			return new List<IBotMessage> { msg };
 		}
 
-		public async Task<IBotMessage> Message(IMessageToBot message, IChatId chatId)
+		public async Task<IBotMessage> 
+			Message(IMessageToBot message, IChatId chatId)
 		{
 			switch (message.TypeMessage)
 			{

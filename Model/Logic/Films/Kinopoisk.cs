@@ -13,8 +13,8 @@ using Model.Logic.Films;
 
 namespace Model.Logic.Films
 {
-	public class Kinopoisk
-	{
+    public class Kinopoisk : IFilmService
+    {
 		private readonly IHttpMessages _messages;
 
 		public Kinopoisk()
@@ -28,8 +28,8 @@ namespace Model.Logic.Films
             var document = await _messages.GetDocumentNode(url);
 
             if (document.InnerText.StartsWith("Ой!Нам"))
-                return new Film(0, document.InnerText, "");
-
+                throw new Exception(document.InnerText);
+            
             var contentBlock = document.SelectSingleNode("//div[@class='styles_root__37rNk styles_basicInfoSection__3tXzP']");
             if (contentBlock == null)
                 return null;
@@ -39,7 +39,7 @@ namespace Model.Logic.Films
             if (nameNode == null)
                 return null;
 
-            var film = new Films.Film(id, nameNode.InnerHtml, $"https://st.kp.yandex.net/images/film_big/{id}.jpg");
+            var film = new Films.Film(id, $"<a href=\"https://www.kinopoisk.ru/film/{id}/\">{nameNode.InnerHtml}</a>", $"https://st.kp.yandex.net/images/film_big/{id}.jpg");
 
             var propsNode = mainNode.NextSibling?.FirstChild?.FirstChild?.NextSibling;
             if (propsNode == null)
@@ -98,20 +98,6 @@ namespace Model.Logic.Films
                 : node;
         }
 
-        public async Task<Film> GetFilm(string name)
-		{
-			name = name.Replace(" ", "+");
-			
-			var document = await _messages.GetDocumentNode($"https://www.kinopoisk.ru/index.php?kp_query={name}");
-
-			var contentBlock = document.SelectSingleNode("//div[@class='element most_wanted']");
-            if (contentBlock == null)
-                return null;
-
-			var nameBlock = contentBlock.SelectSingleNode("//p[@class='name']");
-            return ToFilm(nameBlock);
-        }
-
         private Film ToFilm(HtmlNode nodes)
         {
 			var linkBlock = nodes.FirstChild;
@@ -120,7 +106,7 @@ namespace Model.Logic.Films
                 return null;
 
             var id = linkBlock.GetAttributeValue("data-id", 0);
-            return new Films.Film(id, nodes.InnerHtml, $"https://st.kp.yandex.net/images/film_big/{id}.jpg");
+            return new Films.Film(id, $"<a href=\"https://www.kinopoisk.ru/film/{id}/\">{nodes.InnerHtml}</a>", $"https://st.kp.yandex.net/images/film_big/{id}.jpg");
 		}
 
         public async Task<List<Film>> GetFilms(string name)
