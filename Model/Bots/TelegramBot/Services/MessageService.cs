@@ -12,11 +12,10 @@ namespace Model.Bots.TelegramBot.Services
 	public static class MessageService
 	{
 		//Parce picture & voice
-		public static List<IMessageToBot> ChildrenMessage(TelegramMessage telegramMessage, IMessageToBot msg,
-            IChatId chatId)
+		public static List<IMessageToBot> ChildrenMessage(TelegramMessage telegramMessage, IMessageToBot msg, IChatId chatId)
 		{
 			var result = new List<IMessageToBot>();
-			if (msg.Text?.Html != true || (msg.TypeMessage & MessageType.Text) == 0 || string.IsNullOrEmpty(msg.Text.Text))
+			if (msg.Text?.Html != true || (!msg.TypeMessage.IsText())|| string.IsNullOrEmpty(msg.Text.Text))
 				return result;
 
 			var setting = SettingsHelper.GetSetting(chatId);

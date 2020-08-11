@@ -97,7 +97,7 @@ namespace Model.Bots.TelegramBot.HtmlParse
 
 		private static void Hrefs(string str, List<LinkStruct> result, string defaultUrl)
 		{
-			foreach (Match match in Regex.Matches(str, "<a href=\"([^\"]+)[^>]+>([^<]*)<a>"))
+			foreach (Match match in Regex.Matches(str, "<a [^>]*href=\"([^\"]+)[^>]+>([^<]*)<a>"))
 				result.Add(new AHrefLinkStruct(GetFullUrl(match.Groups[1].Value, defaultUrl), match.Groups[2].Value, match.Value));
 		}
 

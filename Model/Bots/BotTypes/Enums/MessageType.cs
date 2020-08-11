@@ -20,4 +20,9 @@ namespace Model.Bots.BotTypes.Enums
 		WithResource = Photo | Voice | Video | Document,
 		All = ~0,
     }
+
+	public static class MessageTypeExtension
+    {
+        public static bool IsText(this MessageType type) => (type & MessageType.Text) > 0;
+    }
 }
