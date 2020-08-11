@@ -13,12 +13,11 @@ namespace Model.Bots.BotTypes.Interfaces
 	//public delegate void MessageArrivedDel(IMessage message);
 	//public delegate void SendMessage(IMessageMark messageMark);
 
-	public interface IConcurrentBot : IDisposable
+	public interface IConcurrentBot<T> : IDisposable where T : IBotMessage
 	{
-		List<IMessageToBot> ChildrenMessage(IMessageToBot msg, IChatId chatId);
-		List<IBotMessage> GetMessages();
-		Task<IBotMessage> Message(IMessageToBot message, IChatId chatId);
-		Task<IBotMessage> DownloadFileAsync(IBotMessage msg);
+        List<T> GetMessages();
+		Task<T> SendMessage(IMessageToBot message, IChatId chatId);
+		Task<T> DownloadFileAsync(IBotMessage msg);
 		
 		void OnError(Exception ex);
 
@@ -27,7 +26,7 @@ namespace Model.Bots.BotTypes.Interfaces
 		TypeBot TypeBot { get; }
 	}
 
-	public interface IBot : IDisposable
+	public interface IBot<T> : IDisposable where T : IBotMessage
 	{
 		IBotId Id { get;}
 
@@ -35,7 +34,7 @@ namespace Model.Bots.BotTypes.Interfaces
 
 		TypeBot TypeBot { get; }
 
-		IBotMessage GetNewMessage();
+        IBotMessage GetNewMessage();
 		void SendMessage(IChatId chatId, TransactionCommandMessage tMessage);
 		void SendMessages(IChatId chatId, List<TransactionCommandMessage> tMessage);
 		void DownloadResource(IBotMessage msg);

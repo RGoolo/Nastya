@@ -9,10 +9,10 @@ namespace Nastya.Commands
 	[CommandClass("coordsSettings", "Работа с координатами.", TypeUser.User)]
 	public class CoordinateSettings
 	{
-		private readonly ISettings _settings;
+		private readonly IChatService _settings;
 		private IPointsFactory _pointsFactory;
 
-		public CoordinateSettings(ISettings settings)
+		public CoordinateSettings(IChatService settings)
 		{
 			_settings = settings;
 

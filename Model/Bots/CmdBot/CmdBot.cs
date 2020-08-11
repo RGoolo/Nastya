@@ -10,7 +10,7 @@ using Model.Logger;
 
 namespace Model.Bots.CmdBot
 {
-	public class CmdBot : IConcurrentBot
+	public class CmdBot : IConcurrentBot<CmdMessage>
 	{
 		public IBotId Id { get; }
 
@@ -52,19 +52,19 @@ namespace Model.Bots.CmdBot
 
 		public  void Dispose() => throw new NotImplementedException();
 
-		public List<IMessageToBot> ChildrenMessage(IMessageToBot msg, IChatId chatId)
-		{
-			return new List<IMessageToBot>();
-		}
-
-		public List<IBotMessage> GetMessages()
+		public List<CmdMessage> GetMessages()
 		{
 			var text = Console.ReadLine();
 			var msg = new CmdMessage(Id, null, text);
-			return new List<IBotMessage> { msg };
+			return new List<CmdMessage> { msg };
 		}
 
-		public async Task<IBotMessage> 
+        public Task<CmdMessage> SendMessage(IMessageToBot message, IChatId chatId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task<IBotMessage> 
 			Message(IMessageToBot message, IChatId chatId)
 		{
 			switch (message.TypeMessage)
@@ -90,7 +90,7 @@ namespace Model.Bots.CmdBot
 			//empty
 		}
 
-		public Task<IBotMessage> DownloadFileAsync(IBotMessage msg)
+		public Task<CmdMessage> DownloadFileAsync(IBotMessage msg)
 		{
 			return null;
 			//throw new NotImplementedException();

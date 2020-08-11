@@ -16,7 +16,7 @@ namespace Web.DL
 
 	public static class FactoryValidator
 	{
-		public static IDlValidator CreateValidator(ISettings settings) => 
+		public static IDlValidator CreateValidator(IChatService settings) => 
 			settings.TypeGame.IsDummy() 
 				? (IDlValidator) new DlLocalValidator(settings)
 				: (IDlValidator) new DlWebValidator(settings);
@@ -24,9 +24,9 @@ namespace Web.DL
 
 		private class DlLocalValidator : IDlValidator
 		{
-			private readonly ISettings _settings;
+			private readonly IChatService _settings;
 
-			public DlLocalValidator(ISettings settings)
+			public DlLocalValidator(IChatService settings)
 			{
 				_settings = settings;
 			}
@@ -40,10 +40,10 @@ namespace Web.DL
 
 		private class DlWebValidator : IDlValidator
 		{
-			private readonly ISettings _settings;
+			private readonly IChatService _settings;
 			private readonly IHttpMessages _httpMessages;
 
-			public DlWebValidator(ISettings settings)
+			public DlWebValidator(IChatService settings)
 			{
 				_settings = settings;
 				_httpMessages = HttpMessagesFactory.DeadlineThrowAuthorizationMessages();

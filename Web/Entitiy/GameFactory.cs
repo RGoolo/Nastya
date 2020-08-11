@@ -12,7 +12,7 @@ namespace Web.Entitiy
 		//ToDo: PoolThread
 
 
-		public static IGameControl NewGame(ISettings settings, ISenderSyncMsgs sendSyncMessage)
+		public static IGameControl NewGame(IChatService settings, ISenderSyncMsgs sendSyncMessage)
 		{
 			var typeGame = settings.TypeGame;
 

@@ -13,9 +13,9 @@ namespace Nastya.Commands.Google
 	[CommandClass("VisionMsg", "Распознаем текст с картинки", TypeUser.User)]
 	public class RecognitionImegs
 	{
-		private readonly ISettings _settings;
+		private readonly IChatService _settings;
 
-		public RecognitionImegs(ISettings settings)
+		public RecognitionImegs(IChatService settings)
 		{
 			_settings = settings;
 		}

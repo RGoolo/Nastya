@@ -19,7 +19,7 @@ namespace Web.DZR
 		private DzrPage _lastPage;
 		private DzrWebValidator _dzrWebValidator;
 
-		public DzrController(ISettings settings)
+		public DzrController(IChatService settings)
 		{
 			Settings = settings;
 			_dzrWebValidator = new DzrWebValidator(settings);
@@ -27,7 +27,7 @@ namespace Web.DZR
 
 		// public event SendMsgsSyncDel SendMsgs;
 		public event SendMsgDel SendMsg;
-		public ISettings Settings { get; }
+		public IChatService Settings { get; }
 		public void LogIn() => _lastPage = _dzrWebValidator.LogIn().Result; //ToDo delete result
 
 		public bool IsLogOut() => _dzrWebValidator.IsLogOut(_lastPage);

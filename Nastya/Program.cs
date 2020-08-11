@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Model;
 using Model.Bots.BotTypes.Interfaces;
+using Model.Bots.BotTypes.Interfaces.Messages;
 using Model.Logger;
 using Model.Logic.Settings;
 
@@ -71,7 +72,7 @@ namespace Nastya
             return manager.StartTask();
         }
 
-        public Task StarBots(List<IBot> bots)
+        public Task StarBots(List<IBot<IBotMessage>> bots)
         {
             ConfigureTest();
 

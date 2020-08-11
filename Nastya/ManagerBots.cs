@@ -28,13 +28,13 @@ namespace Nastya
 
 	public class ManagerBots : IDisposable
 	{
-		private readonly Dictionary<IBotId, IBot> _bots;
+		private readonly Dictionary<IBotId, IBot<IBotMessage>> _bots;
 		private readonly Dictionary<IChatId, BotChatMapper> _chats = new Dictionary<IChatId, BotChatMapper>();
 		private readonly Dictionary<IChatId, IMessageCollection> _messages = new Dictionary<IChatId, IMessageCollection>();
 
 		private readonly ILogger _logger = Logger.CreateLogger(nameof(ManagerBots));
 
-		public ManagerBots(List<IBot> bots)
+		public ManagerBots(List<IBot<IBotMessage>> bots)
 		{
             _bots = bots.ToDictionary(x => x.Id, x => x);
 			FillBots();

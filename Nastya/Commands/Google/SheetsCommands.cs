@@ -19,7 +19,7 @@ namespace Nastya.Commands.Google
 		private string _sheetsUrl;
 		private readonly IChatFileFactory _fileFactory;
 
-		public SheetsCommands(ISettings settings)
+		public SheetsCommands(IChatService settings)
 		{
 			_fileFactory = settings.FileChatFactory;
 		}

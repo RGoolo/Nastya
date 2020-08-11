@@ -29,9 +29,9 @@ namespace Model.Bots.TelegramBot.Services
 			_cancellationToken = cancellationToken;
 		}
 
-		public Task<IBotMessage> DownloadFileAsync(IBotMessage msg) => DownloadFileAsync(msg, msg);
+		public Task<TelegramMessage> DownloadFileAsync(IBotMessage msg) => DownloadFileAsync(msg, msg);
 
-		private async Task<IBotMessage> DownloadFileAsync(string fileId, IChatFile token, IBotMessage msg, TypeResource type)
+		private async Task<TelegramMessage> DownloadFileAsync(string fileId, IChatFile token, IBotMessage msg, TypeResource type)
 		{
 			try
 			{
@@ -44,7 +44,8 @@ namespace Model.Bots.TelegramBot.Services
 				}
 
 				msg.Resource = new Resource(token, type);
-				return msg;
+				//ToDo
+				return msg as TelegramMessage;
 			}
 			catch (Exception ex)
 			{
@@ -53,7 +54,7 @@ namespace Model.Bots.TelegramBot.Services
 			return null;
 		}
 
-		private Task<IBotMessage> DownloadFileAsync(IBotMessage msg, IBotMessage resourceMsg)
+		private Task<TelegramMessage> DownloadFileAsync(IBotMessage msg, IBotMessage resourceMsg)
 		{
 			if (resourceMsg == null)
 				return null;
@@ -67,7 +68,7 @@ namespace Model.Bots.TelegramBot.Services
 			};
 		}
 
-		private Task<IBotMessage> DownloadVoiceAsync(IBotMessage msg, IBotMessage resourceMsg)
+		private Task<TelegramMessage> DownloadVoiceAsync(IBotMessage msg, IBotMessage resourceMsg)
 		{
 			var tMsg = (resourceMsg as TelegramMessage)?.Message;
 			if (tMsg == null)
@@ -90,7 +91,7 @@ namespace Model.Bots.TelegramBot.Services
 			return DownloadFileAsync(fileId, file, msg, TypeResource.Voice);
 		}
 
-		private Task<IBotMessage> DownloadPhotoAsync(IBotMessage msg, IBotMessage resourceMsg)
+		private Task<TelegramMessage> DownloadPhotoAsync(IBotMessage msg, IBotMessage resourceMsg)
 		{
 			var tMsg = (resourceMsg as TelegramMessage)?.Message;
 			if (tMsg == null)
@@ -101,7 +102,7 @@ namespace Model.Bots.TelegramBot.Services
 			return DownloadFileAsync(tMsg.Photo[^1].FileId, fileToken, msg, TypeResource.Photo);
 		}
 
-		private Task<IBotMessage> DownloadDocumentAsync(IBotMessage msg, IBotMessage resourceMsg)
+		private Task<TelegramMessage> DownloadDocumentAsync(IBotMessage msg, IBotMessage resourceMsg)
 		{
 			var tMsg = (resourceMsg as TelegramMessage)?.Message;
 			if (tMsg == null)

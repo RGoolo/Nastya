@@ -18,8 +18,8 @@ namespace Nastya.Mappers
 			new Dictionary<Guid, (string, IBotMessage)>();
 
 		private ISendMessages sMessages;
-		private readonly ISettings _settingHelper;
-		public MethodsConcreteMapper(ISendMessages sMessages, ISettings settingHelper) : base(sMessages, settingHelper)
+		private readonly IChatService _settingHelper;
+		public MethodsConcreteMapper(ISendMessages sMessages, IChatService settingHelper) : base(sMessages, settingHelper)
 		{
 			this.sMessages = sMessages;
 			_settingHelper = settingHelper;

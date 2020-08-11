@@ -21,9 +21,9 @@ namespace Nastya.Mappers
 			new Dictionary<string, List<MapperPropInfo>>();
 
 		private ISendMessages sMessages;
-		private readonly ISettings _settingHelper;
+		private readonly IChatService _settingHelper;
 
-		public PropsMapper(ISendMessages sMessages, ISettings settingHelper)
+		public PropsMapper(ISendMessages sMessages, IChatService settingHelper)
 		{
 			this.sMessages = sMessages;
 			_settingHelper = settingHelper;

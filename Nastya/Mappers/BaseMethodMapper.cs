@@ -12,9 +12,9 @@ namespace Nastya.Mappers
 	public abstract class BaseMethodMapper : BaseMapper
 	{
 		protected ISendMessages _sMessages { get; }
-		protected ISettings _settingHelper { get; }
+		protected IChatService _settingHelper { get; }
 
-		public BaseMethodMapper(ISendMessages sMessages, ISettings settingHelper)
+		public BaseMethodMapper(ISendMessages sMessages, IChatService settingHelper)
 		{
 			_sMessages = sMessages;
 			_settingHelper = settingHelper;

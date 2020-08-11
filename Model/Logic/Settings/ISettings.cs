@@ -6,7 +6,7 @@ using Model.Logic.Coordinates;
 
 namespace Model.Logic.Settings
 {
-	public interface ISettings
+	public interface IChatService
 	{
 		string NotExistFile(string ext);
 

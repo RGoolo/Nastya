@@ -6,7 +6,7 @@ namespace Model.Logic.Coordinates
 {
 	public class YandexPointProvider : BasePointProvider
 	{
-		private readonly ISettings _settings;
+		private readonly IChatService _settings;
 		public static string yandexCity = @"ll={0}&";
 		public static string yandexUrl = @"https://yandex.ru/maps/?{1}mode=routes&rtext={0}&z=12";
 
@@ -17,7 +17,7 @@ namespace Model.Logic.Coordinates
 		}
 
 
-		public YandexPointProvider(ISettings settings) : base(settings.Coordinates.Yandex)
+		public YandexPointProvider(IChatService settings) : base(settings.Coordinates.Yandex)
 		{
 			_settings = settings;
 		}

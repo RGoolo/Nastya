@@ -11,14 +11,14 @@ namespace Model.Logic.Settings
 	public static class SettingsHelper
 	{
 		//ToDo: in DB
-        private static readonly Dictionary<IChatId, ISettings> Settings = new Dictionary<IChatId, ISettings>();
+        private static readonly Dictionary<IChatId, IChatService> Settings = new Dictionary<IChatId, IChatService>();
 
-        public static ISettings GetSetting(IUser user)
+        public static IChatService GetSetting(IUser user)
 		{
 			return GetSetting(new ChatGuid(user.Id));
 		}
 
-		public static ISettings GetSetting(IChatId chatId)
+		public static IChatService GetSetting(IChatId chatId)
 		{
 			if (!Settings.ContainsKey(chatId))
 				Settings.Add(chatId, new SettingHelper(chatId, Path.Combine(Directory, chatId.GetId.ToString())));

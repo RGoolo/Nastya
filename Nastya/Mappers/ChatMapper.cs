@@ -54,7 +54,7 @@ namespace Nastya.Mappers
 			props.FillProperty();
 		}
 
-		private object CreateInstance(Type type, ISendMessages message, IChatId chatId, ISettings settings)
+		private object CreateInstance(Type type, ISendMessages message, IChatId chatId, IChatService settings)
 		{
 			//ToDo FirstOrDefault?
 			var ctors = type.GetConstructors();
@@ -67,7 +67,7 @@ namespace Nastya.Mappers
 					param.Add(message);
 				else if (parameterInfo.ParameterType == typeof(IChatId))
 					param.Add(chatId);
-				else if (parameterInfo.ParameterType == typeof(ISettings))
+				else if (parameterInfo.ParameterType == typeof(IChatService))
 					param.Add(settings);
 			}
 

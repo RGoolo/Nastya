@@ -27,9 +27,9 @@ namespace Nastya.Commands.Game
 	public class Game1 : ISenderSyncMsgs
 	{
 		private readonly ISendMessages _sendMessages;
-		private readonly ISettings _settings;
+		private readonly IChatService _settings;
 
-		public Game1(ISendMessages sendMessages, IChatId chatId, ISettings settings)
+		public Game1(ISendMessages sendMessages, IChatId chatId, IChatService settings)
 		{
 			_gamePool = new GamesPool();
 			_sendMessages = sendMessages;
@@ -74,7 +74,7 @@ namespace Nastya.Commands.Game
 		}
 
 		[Command(nameof(Const.Game.CopyFromPM), "Скопировать данные по игре с лички (логин, пароль, сайт).", TypeUser.Admin)]
-		public string CopyFromPM(ISettings chatSettings, IUser user)
+		public string CopyFromPM(IChatService chatSettings, IUser user)
 		{
 			var userSettings = SettingsHelper.GetSetting(user);
 			chatSettings.Game.Password = userSettings.Game.Password;
@@ -226,7 +226,7 @@ namespace Nastya.Commands.Game
 	
 		[CheckProperty(nameof(GameIsStart))]
 		[CommandOnMsg(nameof(IsSendCoord), MessageType.Text, TypeUser.User)]
-		public void Command(IBotMessage msg, ISettings settings)
+		public void Command(IBotMessage msg, IChatService settings)
 		{
 			if (msg.MessageCommands != null && msg.MessageCommands.Count() != 0)
 				return;
@@ -237,7 +237,7 @@ namespace Nastya.Commands.Game
         [CheckProperty(nameof(GameIsStart))]
         [CheckProperty(nameof(AllowCodeSound))]
 		[CommandOnMsg(nameof(IsSendCoord), MessageType.Text, TypeUser.Bot)]
-        public void Command2(IBotMessage msg, ISettings settings)
+        public void Command2(IBotMessage msg, IChatService settings)
         {
             if (msg.MessageCommands != null && msg.MessageCommands.Count() != 0)
                 return;

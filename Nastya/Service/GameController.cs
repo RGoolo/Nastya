@@ -13,10 +13,10 @@ namespace Nastya.Service
 	public class GameController : IGameControl, ISenderSyncMsgs
 	{
 		private readonly IGameControl _game;
-		private readonly ISettings _mainGameSettings;
+		private readonly IChatService _mainGameSettings;
 		private readonly IList<ISenderSyncMsgs> _senders = new List<ISenderSyncMsgs>();
 
-		public GameController(ISettings mainGameSettings, ISenderSyncMsgs sendSyncMessage)
+		public GameController(IChatService mainGameSettings, ISenderSyncMsgs sendSyncMessage)
 		{
 			ChatId = sendSyncMessage.ChatId;
 			var game = GameFactory.NewGame(mainGameSettings, this);

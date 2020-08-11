@@ -20,9 +20,9 @@ namespace Nastya.Commands
 	[CommandClass("coords", "Работа с координатами.", TypeUser.User)]
 	public class CoordinatesCommand
 	{
-		private ISettings Settings { get; }
+		private IChatService Settings { get; }
 
-		public CoordinatesCommand(ISettings settings)
+		public CoordinatesCommand(IChatService settings)
 		{
 			Settings = settings;
 

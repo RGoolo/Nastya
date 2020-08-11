@@ -10,10 +10,10 @@ using Model.Logger;
 
 namespace Model.Bots.UnitTestBot
 {
-	public class UnitTestConcurrentBot : IConcurrentBot
+	public class UnitTestConcurrentBot : IConcurrentBot<UnitTestMessage>
 	{
         //ToDo concurrent
-        private readonly Queue<IBotMessage> _messages = new Queue<IBotMessage>();
+        private readonly Queue<UnitTestMessage> _messages = new Queue<UnitTestMessage>();
         //ToDo concurrent
         private readonly Dictionary<IChatId, List<IMessageToBot>> _messageToBots = new Dictionary<IChatId, List<IMessageToBot>>();
 
@@ -22,16 +22,16 @@ namespace Model.Bots.UnitTestBot
            return new List<IMessageToBot>();
         }
 
-        public List<IBotMessage> GetMessages()
+        public List<UnitTestMessage> GetMessages()
         {
-            var list = new List<IBotMessage>();
+            var list = new List<UnitTestMessage>();
             while (_messages.TryDequeue(out var msg))
                 list.Add(msg);
 
             return list;
         }
 
-        public Task<IBotMessage> Message(IMessageToBot message, IChatId chatId)
+        public Task<UnitTestMessage> SendMessage(IMessageToBot message, IChatId chatId)
         {
             if (!_messageToBots.TryGetValue(chatId, out var list))
             {
@@ -45,12 +45,12 @@ namespace Model.Bots.UnitTestBot
             //toDo return new  UnitTestMessage(senderMsg, true, message);
         }
 
-        private IBotMessage MessageRun()
+        private UnitTestMessage MessageRun()
         {
             return null;
         }
 
-        public Task<IBotMessage> DownloadFileAsync(IBotMessage msg)
+        public Task<UnitTestMessage> DownloadFileAsync(IBotMessage msg)
         {
             throw new NotImplementedException();
         }

@@ -112,7 +112,7 @@ namespace Model.Bots.BotTypes.Class.Reflection
 			[typeof(IUser)] = (mess, command) => mess.User,
 
 			[typeof(IChatId)] = (mess, command) => mess.Chat.Id,
-			[typeof(ISettings)] = (mess, command) => SettingsHelper.GetSetting(mess.Chat.Id),
+			[typeof(IChatService)] = (mess, command) => SettingsHelper.GetSetting(mess.Chat.Id),
 			[typeof(IChatFileFactory)] = (mess, command) => SettingsHelper.GetSetting(mess.Chat.Id).FileChatFactory,
 			[typeof(IMessageToBot)] = (mess, command) => mess.ReplyToCommandMessage,
 			[typeof(IMessageId)] = (mess, command) => mess.MessageId,

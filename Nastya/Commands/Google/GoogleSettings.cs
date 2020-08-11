@@ -14,7 +14,7 @@ namespace Nastya.Commands.Google
 	public class GoogleSettings
 	{
 		[Command(nameof(CopyCreadFromPM), "Скопировать файл с токеном для доступа из лички", TypeUser.Admin)]
-		public string CopyCreadFromPM(IUser user, ISettings settings, IChatId chatId)
+		public string CopyCreadFromPM(IUser user, IChatService settings, IChatId chatId)
 		{
 			if (user.Id != chatId.GetId)
 			{

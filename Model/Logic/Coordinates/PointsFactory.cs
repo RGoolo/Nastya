@@ -18,7 +18,7 @@ namespace Model.Logic.Coordinates
 
 	public class PointsFactory : IPointsFactory
 	{
-		private ISettings _settings;
+		private IChatService _settings;
 		private GooglePointProvider GooglePlacesProvider;
 		private readonly YandexPointProvider _yandexPlacesProvider;
 		private List<IPointProvider<Coordinate>> CoordinatesProvider;
@@ -26,7 +26,7 @@ namespace Model.Logic.Coordinates
 
 		private string creads => _settings.Coordinates.GoogleCred;
 
-		public PointsFactory(ISettings settings)
+		public PointsFactory(IChatService settings)
 		{
 			_settings = settings;
 

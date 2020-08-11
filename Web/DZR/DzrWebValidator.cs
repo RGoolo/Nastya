@@ -9,11 +9,11 @@ namespace Web.DZR
 {
 	public class DzrWebValidator
 	{
-		private readonly ISettings _settings;
+		private readonly IChatService _settings;
 		public IHttpMessages Messages;
 		private string _url;
 		private readonly string _tempDzrUrl =  new DzrUrl().ToString();
-		public DzrWebValidator(ISettings settings)
+		public DzrWebValidator(IChatService settings)
 		{
 			_settings = settings;
 			Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);

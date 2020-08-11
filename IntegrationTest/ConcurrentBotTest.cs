@@ -5,6 +5,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Model.Bots.BotTypes.Class;
 using Model.Bots.BotTypes.Class.Ids;
 using Model.Bots.BotTypes.Interfaces;
+using Model.Bots.BotTypes.Interfaces.Messages;
 using Model.Bots.UnitTestBot;
 using Nastya;
 
@@ -17,8 +18,8 @@ namespace IntegrationTest
         public void TestMethod()
         {
             var unitTestBot = new UnitTestConcurrentBot(new BotGuid(new Guid()));
-            var bot = new ConcurrentBot(unitTestBot);
-            new Services().StarBots(new List<IBot>() { bot });
+            var bot = (IBot<IBotMessage>)new ConcurrentBot<UnitTestMessage>(unitTestBot);
+            new Services().StarBots(new List<IBot<IBotMessage>>() {bot });
 
             var list = Wait("/start", unitTestBot);
             Assert.IsNotNull(list);

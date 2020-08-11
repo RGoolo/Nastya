@@ -25,7 +25,7 @@ namespace Model.Logic.Settings
 			return false;
 		}
 
-		public static string GetDefaultUrl(ISettings settings, TypeGame result)
+		public static string GetDefaultUrl(IChatService settings, TypeGame result)
 		{
 			var url = settings.Web.Domen;
 			if (result == TypeGame.Unknown) return string.Empty;
@@ -40,7 +40,7 @@ namespace Model.Logic.Settings
 			return string.Empty;
 		}
 
-		public static TypeGame SetUri(ISettings settings, string uri)
+		public static TypeGame SetUri(IChatService settings, string uri)
 		{
 			var dummy = "dummy:";
 			var lite = "lite:";

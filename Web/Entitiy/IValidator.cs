@@ -9,7 +9,7 @@ namespace Web.Entitiy
 	{
 		// event SendMsgsSyncDel SendMsgs; //ToDo to interface
 		event SendMsgDel SendMsg; //ToDo to interface
-		ISettings Settings { get; }
+		IChatService Settings { get; }
 		void LogIn();
 		List<IEvent> GetCode(string str, IUser user, IMessageId replaceMsg);
 		void SendEvent(IEvent iEvent);

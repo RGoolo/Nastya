@@ -17,7 +17,7 @@ using MessageType = Model.Bots.BotTypes.Enums.MessageType;
 
 namespace Model.Bots.TelegramBot.Entity
 {
-	public class TelegramBot : IConcurrentBot
+	public class TelegramBot : IConcurrentBot<TelegramMessage>
 	{
 		private readonly ILogger _log;
 		private readonly CancellationToken _cancellationToken = default(CancellationToken);
@@ -48,10 +48,10 @@ namespace Model.Bots.TelegramBot.Entity
 			_offset = 0;
 		}
 
-		public List<IBotMessage> GetMessages()
+		public List<TelegramMessage> GetMessages()
 		{
 			var updates = _bot.GetUpdatesAsync(_offset, 1).Result;
-			var msgs = new List<IBotMessage>();
+			var msgs = new List<TelegramMessage>();
 
 			foreach (var update in updates)
 			{
@@ -78,14 +78,23 @@ namespace Model.Bots.TelegramBot.Entity
 		private TelegramMessage TelegramMessage(Message msg, bool isBot, IMessageToBot message = null) =>  new TelegramMessage(msg, GetTypeUser(msg, isBot), message);
 		private static Texter GetNormalizeText(Texter text, IChatId chatId) => TexterService.GetNormalizeText(text, chatId);
 		private static ParseMode GetParseMod(Texter text) => text?.Html == true ? ParseMode.Html : ParseMode.Default;
-        public List<IMessageToBot> ChildrenMessage(IMessageToBot msg, IChatId chatId) => MessageService.ChildrenMessage(msg, chatId);
+        private List<IMessageToBot> ChildrenMessage(TelegramMessage telegramMessage, IMessageToBot msg, IChatId chatId) => MessageService.ChildrenMessage(telegramMessage, msg, chatId);
 
-		public async Task<IBotMessage> Message(IMessageToBot message, IChatId chatId)
+		public async Task<TelegramMessage> SendMessage(IMessageToBot message, IChatId chatId)
 		{
 			try
 			{
-				return await InternalMessage(message, chatId); //ToDo delete try and cath on lvl up
-			}
+                var msg = await InternalMessage(message, chatId); //ToDo delete try and cath on lvl up
+
+                var cms = ChildrenMessage(msg, message, chatId);
+
+				foreach (var cm in cms)
+                {
+                    await SendMessage(cm, chatId);
+                }
+
+				return msg;
+            }
 			catch (Exception ex)
 			{
 				_log.Error(ex);
@@ -94,7 +103,7 @@ namespace Model.Bots.TelegramBot.Entity
 			return null;
 		}
 
-		private async Task<IBotMessage> InternalMessage(IMessageToBot message, IChatId chatId)
+		private async Task<TelegramMessage> InternalMessage(IMessageToBot message, IChatId chatId)
 		{
 			_log.Info($"{nameof(message.TypeMessage)}:{message.TypeMessage} type:{message.Text?.Html} message:{ message.Text?.Text}");
 
@@ -159,7 +168,7 @@ namespace Model.Bots.TelegramBot.Entity
 			return senderMsg == null ? null : TelegramMessage(senderMsg, true, message);
 		}
 
-		public async Task<IBotMessage> DownloadFileAsync(IBotMessage msg) => await _downloader.DownloadFileAsync(msg);
+		public async Task<TelegramMessage> DownloadFileAsync(IBotMessage msg) => await _downloader.DownloadFileAsync(msg);
 
 		
 		public void OnError(Exception ex)

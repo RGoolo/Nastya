@@ -3,14 +3,17 @@ namespace Model.Bots.BotTypes.Class
 {
 	public abstract class LinkStruct
 	{
-		public string OriginalTag { get; }
+        public LocationFileType Location;
+        public string OriginalTag { get; }
 		public string Url { get; }
 		public string Name { get; }
 		public TypeUrl TypeUrl { get; }
+        
 
 		protected LinkStruct(string url, string name, string originalTag, TypeUrl typeUrl)
 		{
-			OriginalTag = originalTag;
+            Location = (url != null && url.Length > 2 && url[1] == ':') ? LocationFileType.Local : LocationFileType.Internet;
+            OriginalTag = originalTag;
 			Url = url;
 			Name = name;
 			TypeUrl = typeUrl;
@@ -42,6 +45,11 @@ namespace Model.Bots.BotTypes.Class
 
 		}
 	}
+
+    public enum LocationFileType
+    {
+		Local, Internet
+    }
 
 	public enum TypeUrl
 	{

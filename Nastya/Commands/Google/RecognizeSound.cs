@@ -12,9 +12,9 @@ namespace Nastya.Commands.Google
 	[CommandClass("SoundMsg", "Распознаем текст с аудио", TypeUser.User)]
 	public class RecognitionSounds
 	{
-		private readonly ISettings _settings;
+		private readonly IChatService _settings;
 
-		public RecognitionSounds(ISettings settings)
+		public RecognitionSounds(IChatService settings)
 		{
 			_settings = settings;
 		}

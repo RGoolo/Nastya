@@ -24,15 +24,15 @@ namespace Web.DL
 		// public event SendMsgsSyncDel SendMsgs;
 		public event SendMsgDel SendMsg;
 
-		public ISettings Setting { get; }
+		public IChatService Setting { get; }
 
 		private readonly IDlValidator _webValidator;
 
-		public ISettings Settings => Setting;
+		public IChatService Settings => Setting;
 
 		private PageController _pageController;
 
-		public DlController(ISettings setting)// : base(setting)
+		public DlController(IChatService setting)// : base(setting)
 		{
 			Setting = setting;
 			_webValidator = FactoryValidator.CreateValidator(setting);

@@ -20,7 +20,7 @@ namespace IntegrationTest
         public SimpleMsgBot()
         {
             var unitTestBot = new UnitTestBot(new BotGuid(new Guid()));
-            new Services().StarBots(new List<IBot>() { unitTestBot });
+            new Services().StarBots(new List<IBot<IBotMessage>>() { (IBot<IBotMessage>)unitTestBot });
 
             _testBot = unitTestBot;
         }

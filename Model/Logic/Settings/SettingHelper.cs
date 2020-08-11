@@ -14,7 +14,7 @@ using Model.Logic.Settings.Classes;
 
 namespace Model.Logic.Settings
 {
-	public class SettingHelper : ISettings, ISettingValues
+	public class SettingHelper : IChatService, ISettingValues
 	{
 		private readonly object _lockObj = new object();
 		private readonly IChatFile _settingsFile;

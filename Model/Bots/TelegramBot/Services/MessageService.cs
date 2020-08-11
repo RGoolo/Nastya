@@ -3,6 +3,7 @@ using Model.Bots.BotTypes;
 using Model.Bots.BotTypes.Class;
 using Model.Bots.BotTypes.Enums;
 using Model.Bots.BotTypes.Interfaces.Ids;
+using Model.Bots.TelegramBot.Entity;
 using Model.Bots.TelegramBot.HtmlParse;
 using Model.Logic.Settings;
 
@@ -10,7 +11,9 @@ namespace Model.Bots.TelegramBot.Services
 {
 	public static class MessageService
 	{
-		public static List<IMessageToBot> ChildrenMessage(IMessageToBot msg, IChatId chatId)
+		//Parce picture & voice
+		public static List<IMessageToBot> ChildrenMessage(TelegramMessage telegramMessage, IMessageToBot msg,
+            IChatId chatId)
 		{
 			var result = new List<IMessageToBot>();
 			if (msg.Text?.Html != true || (msg.TypeMessage & MessageType.Text) == 0 || string.IsNullOrEmpty(msg.Text.Text))
@@ -18,7 +21,7 @@ namespace Model.Bots.TelegramBot.Services
 
 			var setting = SettingsHelper.GetSetting(chatId);
 			var defaultUrl = setting.Web.DefaultUri;
-
+			
 			var links = TelegramHtml.GetLinks(msg.Text.Text, defaultUrl);
 			if (links.Count == 0 || !msg.Text.ReplaceResources)
 				return result;
@@ -35,9 +38,10 @@ namespace Model.Bots.TelegramBot.Services
 						if (img++ > msg.Text.Settings.MaxParsePicture)
 							continue;
 
-						var file = setting.TypeGame.IsDummy()
+						var file = link.Location == LocationFileType.Local
 							? setting.FileChatFactory.GetExistFileByPath(link.Url)
 							: setting.FileChatFactory.InternetFile(link.Url);
+
 						result.Add(MessageToBot.GetPhototMsg(file, (Texter)link.Name));
 						break;
 					case TypeUrl.Sound:
@@ -45,6 +49,12 @@ namespace Model.Bots.TelegramBot.Services
 						break;
 				}
 			}
+
+            foreach (var messageToBot in result)
+            {
+                messageToBot.OnIdMessage = telegramMessage.MessageId;
+
+            }
 
 			return result;
 		}

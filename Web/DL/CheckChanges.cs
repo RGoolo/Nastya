@@ -63,7 +63,7 @@ namespace Web.DL
 			return msg;
 		}
 
-		public static List<IMessageToBot> Sectors (DLPage page, DLPage lastPage, ISettings settings)
+		public static List<IMessageToBot> Sectors (DLPage page, DLPage lastPage, IChatService settings)
 		{
 			var msgs = new List<IMessageToBot>();
 			// public static List<IMessageToBot> Hints(DLPage page, DLPage lastPage)

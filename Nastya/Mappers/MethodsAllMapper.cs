@@ -42,7 +42,7 @@ namespace Nastya.Mappers
 				_methodsAllMsg.Add(new MapperMethodOnAllMsg(methodInfo, instance));
 		}
 
-		public MethodsAllMapper(ISendMessages sMessages, ISettings settingHelper) : base(sMessages, settingHelper)
+		public MethodsAllMapper(ISendMessages sMessages, IChatService settingHelper) : base(sMessages, settingHelper)
 		{
 		}
 	}

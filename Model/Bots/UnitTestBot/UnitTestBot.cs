@@ -12,7 +12,7 @@ using Model.Logic.Settings;
 
 namespace Model.Bots.UnitTestBot
 {
-    public class UnitTestBot : IBot
+    public class UnitTestBot : IBot<UnitTestMessage>
     {
         //ToDo concurrent
         private Queue<IBotMessage> _messages = new Queue<IBotMessage>() ;
@@ -49,7 +49,6 @@ namespace Model.Bots.UnitTestBot
             _messages.Enqueue(msg);
         }
 
-
         public void SendMessage(IChatId chatId, TransactionCommandMessage tMessage)
         {
             if (!_messageToBots.TryGetValue(chatId, out var list))
@@ -81,8 +80,6 @@ namespace Model.Bots.UnitTestBot
 
         public void DownloadResource(IBotMessage msg)
         {
-         
-
             
         }
     }

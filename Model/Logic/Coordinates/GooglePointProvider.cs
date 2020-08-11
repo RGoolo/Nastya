@@ -13,7 +13,7 @@ namespace Model.Logic.Coordinates
 		public TravelMode TravelMode = TravelMode.driving;
 		//public List<Point> WayPoints = new List<string>();
 
-		public GooglePointProvider(ISettings settings) : base(settings.Coordinates.Google)
+		public GooglePointProvider(IChatService settings) : base(settings.Coordinates.Google)
 		{
 	
 		}

@@ -14,9 +14,9 @@ namespace Nastya.Service
 	{
 		private static Dictionary<Guid, GameController> _games = new Dictionary<Guid, GameController>();
 		private static IMessageId _messageId;
-		private static ISettings _mainGameSettings;
+		private static IChatService _mainGameSettings;
 
-		public IGameControl CreateGame(ISettings settings, ISenderSyncMsgs sendSyncMessage, IMessageId messageId)
+		public IGameControl CreateGame(IChatService settings, ISenderSyncMsgs sendSyncMessage, IMessageId messageId)
 		{
 			_mainGameSettings = settings;
 			var controller = new GameController(settings, sendSyncMessage);

@@ -14,7 +14,7 @@ namespace Web.DL
 	{
 		private readonly ISendMsgDl _sendMsgDl;
 		private DLPage _lastPage;
-		private readonly ISettings _setting;
+		private readonly IChatService _setting;
 		
 		public void SendMsg(string message, IMessageId replaceMsgId = null, bool withHtml = false)
 		{
@@ -35,7 +35,7 @@ namespace Web.DL
 			_sendMsgDl.SendMsg2(msg);
 		}
 
-		public PageController(ISendMsgDl sendMsgDl, ISettings settings)
+		public PageController(ISendMsgDl sendMsgDl, IChatService settings)
 		{
 			_sendMsgDl = sendMsgDl;
 			_setting = settings;

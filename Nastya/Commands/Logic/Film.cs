@@ -17,11 +17,11 @@ namespace Nastya.Commands
 		[CommandClass(nameof(Film), "Фильмы.", TypeUser.User)]
 		public class Film
 		{
-			private readonly ISettings _settings;
+			private readonly IChatService _settings;
 			private readonly IFilmService _poisk;
 			private readonly IFilmService _imdb;
 
-			public Film(ISettings settings)
+			public Film(IChatService settings)
 			{
 				_settings = settings;
 				_poisk = new Kinopoisk();

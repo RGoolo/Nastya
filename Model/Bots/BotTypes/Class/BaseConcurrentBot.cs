@@ -11,13 +11,13 @@ using Model.Logger;
 
 namespace Model.Bots.BotTypes.Class
 {
-	public class ConcurrentBot : IBot
+	public class ConcurrentBot<T> : IBot<T> where T : IBotMessage
 	{
 		private readonly ConcurrentQueue<(IChatId, TransactionCommandMessage)> _toSendQueue = new ConcurrentQueue<(IChatId, TransactionCommandMessage)>();
 		private readonly ConcurrentQueue<IBotMessage> _downloadResourceQueue = new ConcurrentQueue<IBotMessage>();
 		private readonly ConcurrentQueue<IBotMessage> _messagesQueue = new ConcurrentQueue<IBotMessage>();
 
-		private readonly IConcurrentBot _bot;
+		private readonly IConcurrentBot<T> _bot;
 
 
 		public TypeBot TypeBot => _bot.TypeBot;
@@ -26,7 +26,7 @@ namespace Model.Bots.BotTypes.Class
 		private readonly ILogger _log;
 		//private object _lockerSendMsg = new object();
 
-		public ConcurrentBot(IConcurrentBot bot)
+		public ConcurrentBot(IConcurrentBot<T> bot)
 		{
 			_bot = bot;
 			_log = bot.Log; 
@@ -69,14 +69,14 @@ namespace Model.Bots.BotTypes.Class
 		}
 
 		public IBotMessage GetNewMessage()
-		{
-			if (_messagesQueue.IsEmpty)
-				return null;
+        {
+            if (_messagesQueue.IsEmpty)
+                return default;
 
 			if (_messagesQueue.TryDequeue(out var msg))
 				return msg;
 
-			return null;
+			return default;
 		}
 
 		public void SendMessage(IChatId chatId, TransactionCommandMessage tMessage)
@@ -141,13 +141,9 @@ namespace Model.Bots.BotTypes.Class
 					 DownloadResource((IBotMessage)msg.SystemResource);
 				else
 				{
-					var cms = _bot.ChildrenMessage(msg, chatId);
-					
-					var botMsg = await _bot.Message(msg, chatId);
+                    var botMsg = await _bot.SendMessage(msg, chatId);
 					if (botMsg != null) AfterSendMessage(msg, botMsg);
-					
-					await MessagesSyncAsync(chatId, cms);
-				}
+                }
 			}
 		}
 

@@ -5,12 +5,12 @@ namespace Model.Bots.BotTypes.Class
 {
 	public class GameController
 	{
-		private readonly ISettings _settings;
+		private readonly IChatService _settings;
 
 		public List<Answer> Answers { get; } = new List<Answer>();
 		public string CurrentLvl { get; }
 
-		public GameController(ISettings settings)
+		public GameController(IChatService settings)
 		{
 			_settings = settings;
 		}
