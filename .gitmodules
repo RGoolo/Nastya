@@ -1,3 +1,6 @@
 [submodule "russian-words"]
 	path = russian-words
 	url = https://github.com/danakt/russian-words.git
+[submodule "BotService"]
+	path = BotService
+	url = https://github.com/RGoolo/BotService.git
