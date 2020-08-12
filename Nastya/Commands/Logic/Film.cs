@@ -1,17 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Discord;
-using Model.Bots.BotTypes.Attribute;
-using Model.Bots.BotTypes.Class;
-using Model.Bots.BotTypes.Enums;
-using Model.Bots.BotTypes.Interfaces.Ids;
-using Model.Bots.BotTypes.Interfaces.Messages;
+using BotModel.Bots.BotTypes.Attribute;
+using BotModel.Bots.BotTypes.Class;
+using BotModel.Bots.BotTypes.Enums;
+using BotModel.Bots.BotTypes.Interfaces.Ids;
 using Model.Logic.Films;
-using Model.Logic.Settings;
+using Model.Settings;
 
-namespace Nastya.Commands
+namespace NightGameBot.Commands.Logic
 {
 	
 		[CommandClass(nameof(Film), "Фильмы.", TypeUser.User)]

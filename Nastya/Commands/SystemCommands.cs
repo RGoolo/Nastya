@@ -1,11 +1,12 @@
 ﻿using System.Text;
-using Model.Bots.BotTypes.Attribute;
-using Model.Bots.BotTypes.Enums;
-using Model.Bots.BotTypes.Interfaces.Ids;
-using Model.Bots.BotTypes.Interfaces.Messages;
-using Model.Logic.Settings;
+using BotModel.Bots.BotTypes.Attribute;
+using BotModel.Bots.BotTypes.Enums;
+using BotModel.Bots.BotTypes.Interfaces.Ids;
+using BotModel.Bots.BotTypes.Interfaces.Messages;
+using BotModel.Settings;
+using Model.Settings;
 
-namespace Nastya.Commands
+namespace NightGameBot.Commands
 {
 	[CommandClass("SystemCommand", "Системные настройки.",  TypeUser.User)]
 	class SystemCommand
@@ -16,7 +17,7 @@ namespace Nastya.Commands
 		[Command(nameof(Clear), "Очистить настройки.")]
 		public string Clear(IChatId chatId)
 		{
-			SettingsHelper.GetSetting(chatId).Clear();
+			SettingsHelper<SettingHelper>.GetSetting(chatId).Clear();
 			return "Настройки сброшены";
 		}
 

@@ -1,10 +1,10 @@
 ﻿using System.ComponentModel;
-using Model.Bots.BotTypes.Attribute;
-using Model.Bots.BotTypes.Enums;
+using BotModel.Bots.BotTypes.Attribute;
+using BotModel.Bots.BotTypes.Enums;
 using Model.Logic.Coordinates;
-using Model.Logic.Settings;
+using Model.Settings;
 
-namespace Nastya.Commands
+namespace NightGameBot.Commands
 {
 	[CommandClass("coordsSettings", "Работа с координатами.", TypeUser.User)]
 	public class CoordinateSettings

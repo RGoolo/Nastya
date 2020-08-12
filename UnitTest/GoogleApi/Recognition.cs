@@ -7,7 +7,7 @@
 		[Fact]
 		public void TestVision()
 		{ 
-			var settings = SettingsHelper.GetSetting(new Guid(TestGuid));
+			var settings = SettingsHelper<SettingHelper>.GetSetting(new Guid(TestGuid));
 			settings.Clear();
 			var file = settings.FileChatWorker.GetExistFileByPath(@"C:\Users\Roman\source\repos\RGoolo\Nastya\UnitTest\sources\test.png");
 
@@ -20,7 +20,7 @@
 		[Fact]
 		public void TestSpeech()
 		{
-			var settings = SettingsHelper.GetSetting(new Guid(TestGuid));
+			var settings = SettingsHelper<SettingHelper>.GetSetting(new Guid(TestGuid));
 			settings.Clear();
 			var file = settings.FileChatWorker.GetExistFileByPath(@"C:\Users\Roman\source\repos\RGoolo\Nastya\UnitTest\sources\test.ogg");
 
@@ -34,7 +34,7 @@
 		[Fact]
 		public void TestRecogniseCode()
 		{
-			var settings = SettingsHelper.GetSetting(new Guid(TestGuid));
+			var settings = SettingsHelper<SettingHelper>.GetSetting(new Guid(TestGuid));
 			settings.Clear();
 			var file = settings.FileChatWorker.GetExistFileByPath(@"C:\Users\Roman\source\repos\RGoolo\Nastya\UnitTest\sources\testSendCode.ogg");
 

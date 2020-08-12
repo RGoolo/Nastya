@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Model.Logic.Braille;
-using Nastya.Commands;
+using NightGameBot.Commands.Logic;
 using Xunit;
 
 namespace UnitTest.Logic

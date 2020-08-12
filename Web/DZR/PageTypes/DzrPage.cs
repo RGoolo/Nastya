@@ -1,10 +1,9 @@
-﻿using HtmlAgilityPack;
-using System;
-using System.Text;
-using Web.DZR.PageTypes;
+﻿using System;
 using System.Linq;
+using System.Text;
+using HtmlAgilityPack;
 
-namespace Web.DZR
+namespace Web.DZR.PageTypes
 
 {
 	public enum PageType

@@ -1,13 +1,14 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Model.Bots.BotTypes.Attribute;
-using Model.Bots.BotTypes.Enums;
-using Model.Bots.BotTypes.Interfaces.Messages;
-using Model.Files.FileTokens;
+using BotModel.Bots.BotTypes.Attribute;
+using BotModel.Bots.BotTypes.Enums;
+using BotModel.Bots.BotTypes.Interfaces.Messages;
+using BotModel.Files.FileTokens;
 using Model.Logic.Google;
-using Model.Logic.Settings;
+using Model.Settings;
 
-namespace Nastya.Commands.Google
+
+namespace NightGameBot.Commands.Google
 {
 	[CommandClass("SoundMsg", "Распознаем текст с аудио", TypeUser.User)]
 	public class RecognitionSounds

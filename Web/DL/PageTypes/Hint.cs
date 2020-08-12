@@ -1,11 +1,10 @@
-﻿using System.Text.RegularExpressions;
-using System.Linq;
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using Model.Logic.Yandex;
+using System.Linq;
+using System.Text.RegularExpressions;
 
-namespace Web.DL
+namespace Web.DL.PageTypes
 {
 
 	public class Hints : IEnumerable<Hint>

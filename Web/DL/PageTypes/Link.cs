@@ -1,7 +1,7 @@
 ﻿using HtmlAgilityPack;
 using Web.Base;
 
-namespace Web.DL
+namespace Web.DL.PageTypes
 {
 	public class Link : ILink
 	{

@@ -2,7 +2,7 @@
 using System.Linq;
 using HtmlAgilityPack;
 
-namespace Web.DL
+namespace Web.DL.PageTypes
 {
 	public class Bonus
 	{

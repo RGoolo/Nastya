@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using Model.Bots.BotTypes.Class;
-using Model.Bots.BotTypes.Class.Ids;
-using Model.Bots.TelegramBot.HtmlParse;
-using Model.Bots.TelegramBot.Services;
+using BotModel.Bots.BotTypes.Class;
+using BotModel.Bots.BotTypes.Class.Ids;
+using BotModel.Bots.TelegramBot.HtmlParse;
+using Model.Services;
 using Xunit;
 
 namespace UnitTest.Logic
@@ -18,7 +18,7 @@ namespace UnitTest.Logic
 		{
 			//var 
 			var texter = new Texter(input, true, false);
-			var str = TexterService.GetNormalizeText(texter, new ChatGuid(Guid.Empty)).Text;
+			var str = new TexterService().GetNormalizeText(texter, new ChatGuid(Guid.Empty)).Text;
 			Assert.Equal(str, output);
 		}
 

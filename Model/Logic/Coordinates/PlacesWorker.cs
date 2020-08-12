@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using BotModel.Bots.BotTypes;
 using Model.Logic.Coordinates.RegExp;
 
 namespace Model.Logic.Coordinates

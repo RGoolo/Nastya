@@ -2,7 +2,7 @@
 using Web.DZR;
 using Xunit;
 
-namespace UnitTest.Model
+namespace UnitTest.Web
 {
 	public class CheckRecognizeCode
 	{

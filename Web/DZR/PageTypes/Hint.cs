@@ -1,6 +1,6 @@
 ﻿using HtmlAgilityPack;
 
-namespace Web.DZR
+namespace Web.DZR.PageTypes
 {
 	public class Hint
 	{

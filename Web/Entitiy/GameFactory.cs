@@ -1,6 +1,6 @@
 ﻿using System;
-using Model.Bots.BotTypes.Enums;
-using Model.Logic.Settings;
+using BotModel.Bots.BotTypes.Enums;
+using Model.Settings;
 using Web.Base;
 using Web.DL;
 using Web.DZR;

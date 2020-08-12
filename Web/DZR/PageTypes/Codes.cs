@@ -1,11 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Model.Bots.BotTypes.Class;
-using Web.Base;
+using BotModel.Bots.BotTypes.Class;
 using Web.Entitiy;
 
-namespace Web.DZR
+namespace Web.DZR.PageTypes
 {
 	public class Codes : Dictionary<int, Code>
 	{

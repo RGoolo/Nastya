@@ -1,4 +1,4 @@
-﻿namespace Web.DL
+﻿namespace Web.DL.PageTypes
 {
 	public static class TextHelper
 	{

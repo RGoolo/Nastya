@@ -1,9 +1,9 @@
 ﻿using System.Linq;
-using Model.Bots.BotTypes.Attribute;
-using Model.Bots.BotTypes.Enums;
+using BotModel.Bots.BotTypes.Attribute;
+using BotModel.Bots.BotTypes.Enums;
 using Model.Logic.PereodicTable;
 
-namespace Nastya.Commands
+namespace NightGameBot.Commands.Logic
 {
 	[CommandClass("PTable", "Таблица менделлева:", TypeUser.User)]
 	public class PeriodicTableCommand	 

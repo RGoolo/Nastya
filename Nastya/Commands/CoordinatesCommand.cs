@@ -3,16 +3,17 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
-using Model.Bots.BotTypes.Attribute;
-using Model.Bots.BotTypes.Class;
-using Model.Bots.BotTypes.Enums;
-using Model.Bots.BotTypes.Interfaces.Messages;
-using Model.Bots.TelegramBot.HtmlParse;
-using Model.Files.FileTokens;
+using BotModel.Bots.BotTypes;
+using BotModel.Bots.BotTypes.Attribute;
+using BotModel.Bots.BotTypes.Class;
+using BotModel.Bots.BotTypes.Enums;
+using BotModel.Bots.BotTypes.Interfaces.Messages;
+using BotModel.Bots.TelegramBot.HtmlParse;
+using BotModel.Files.FileTokens;
 using Model.Logic.Coordinates;
-using Model.Logic.Settings;
+using Model.Settings;
 
-namespace Nastya.Commands
+namespace NightGameBot.Commands
 {
 
 	//Display(Description = "Работа с сообщениями", Name = "coords"),
@@ -110,7 +111,7 @@ namespace Nastya.Commands
 			var pointWorker = func(text);
 			//if (isText.HasValue)
 			{
-				//var file = SettingsHelper.GetSetting(ChatId).FileWorker.NewFileTokenByExt(".jpg");
+				//var file = SettingsHelper<SettingHelper>.GetSetting(ChatId).FileWorker.NewFileTokenByExt(".jpg");
 
 				var file = fWorker.NewResourcesFileByExt(".jpg");
 				//if (addPicture) _pointsFactory.GetPictureText(text, file);

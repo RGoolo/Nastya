@@ -1,11 +1,12 @@
-﻿using Model.Bots.BotTypes.Attribute;
-using Model.Bots.BotTypes.Enums;
-using Model.Bots.BotTypes.Interfaces.Ids;
-using Model.Bots.BotTypes.Interfaces.Messages;
-using Model.Files.FileTokens;
-using Model.Logic.Settings;
+﻿using BotModel.Bots.BotTypes.Attribute;
+using BotModel.Bots.BotTypes.Enums;
+using BotModel.Bots.BotTypes.Interfaces.Ids;
+using BotModel.Bots.BotTypes.Interfaces.Messages;
+using BotModel.Files.FileTokens;
+using BotModel.Settings;
+using Model.Settings;
 
-namespace Nastya.Commands.Google
+namespace NightGameBot.Commands.Google
 {
 
 
@@ -18,7 +19,7 @@ namespace Nastya.Commands.Google
 		{
 			if (user.Id != chatId.GetId)
 			{
-				var userSettings =  SettingsHelper.GetSetting(user);
+				var userSettings =  SettingsHelper<SettingHelper>.GetSetting(user);
 				var userFiles = userSettings.FileChatFactory;
 
 				userFiles.SystemFile(SystemChatFile.SheetCredentials)

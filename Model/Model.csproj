@@ -10,35 +10,29 @@
 
   <ItemGroup>
 	<Compile Remove="Args\**" />
-	<Compile Remove="Bots\BotTypes\Base\**" />
 	<Compile Remove="WebModel\**" />
 	<EmbeddedResource Remove="Args\**" />
-	<EmbeddedResource Remove="Bots\BotTypes\Base\**" />
 	<EmbeddedResource Remove="WebModel\**" />
 	<None Remove="Args\**" />
-	<None Remove="Bots\BotTypes\Base\**" />
 	<None Remove="WebModel\**" />
   </ItemGroup>
 
   <ItemGroup>
-	<PackageReference Include="Discord.Net" Version="2.1.1" />
-	<PackageReference Include="Google.Apis.Sheets.v4" Version="1.45.0.1911" />
+	<PackageReference Include="Discord.Net" Version="2.2.0" />
+	<PackageReference Include="Google.Apis.Sheets.v4" Version="1.48.0.2037" />
 	<PackageReference Include="Google.Cloud.Speech.V1P1Beta1" Version="2.0.0-beta02" />
 	<PackageReference Include="Google.Cloud.Vision.V1" Version="2.0.0" />
-	<PackageReference Include="HtmlAgilityPack" Version="1.11.23" />
-	<PackageReference Include="Microsoft.Extensions.Configuration" Version="5.0.0-preview.2.20160.3" />
-	<PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="5.0.0-preview.2.20160.3" />
-	<PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="5.0.0-preview.2.20160.3" />
-	<PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="5.0.0-preview.2.20160.3" />
-	<PackageReference Include="Telegram.Bot" Version="15.5.1" />
+	<PackageReference Include="HtmlAgilityPack" Version="1.11.24" />
+	<PackageReference Include="Microsoft.Extensions.Configuration" Version="5.0.0-preview.7.20364.11" />
+	<PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="5.0.0-preview.7.20364.11" />
+	<PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="5.0.0-preview.7.20364.11" />
+	<PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="5.0.0-preview.7.20364.11" />
+	<PackageReference Include="Telegram.Bot" Version="15.7.1" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\BotService\BotModelService\BotModel.csproj" />
     <ProjectReference Include="..\WordService\WordService.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="HttpMessages\Simple\" />
   </ItemGroup>
 
   <ItemGroup>

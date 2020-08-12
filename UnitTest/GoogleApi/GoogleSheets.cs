@@ -1,5 +1,4 @@
-﻿using Model.Logic.Google;
-using Xunit;
+﻿using Xunit;
 
 namespace UnitTest.GoogleApi
 {

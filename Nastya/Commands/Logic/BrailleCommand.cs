@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Linq;
-using Model.Bots.BotTypes.Attribute;
-using Model.Bots.BotTypes.Enums;
+using BotModel.Bots.BotTypes.Attribute;
+using BotModel.Bots.BotTypes.Enums;
 using Model.Logic.Braille;
 
-namespace Nastya.Commands
+namespace NightGameBot.Commands.Logic
 {
 
     [CommandClass(nameof(BrailleCommand), "Брайль. Порядок ввода:\n1\t4\n2\t5\n3\t6\n", TypeUser.User)]

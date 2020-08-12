@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Text;
 using Model.Logic.Google;
-using Model.Logic.Settings;
+using Model.Settings;
 
 namespace Model.Logic.Coordinates
 {

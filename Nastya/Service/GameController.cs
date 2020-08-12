@@ -2,13 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Model.Bots.BotTypes.Class;
-using Model.Bots.BotTypes.Interfaces.Ids;
-using Model.Bots.BotTypes.Interfaces.Messages;
-using Model.Logic.Settings;
+using BotModel.Bots.BotTypes.Class;
+using BotModel.Bots.BotTypes.Interfaces.Ids;
+using BotModel.Bots.BotTypes.Interfaces.Messages;
+using Model.Settings;
 using Web.Entitiy;
 
-namespace Nastya.Service
+namespace NightGameBot.Service
 {
 	public class GameController : IGameControl, ISenderSyncMsgs
 	{

@@ -1,8 +1,9 @@
-﻿using Model.Logic.Settings;
-using System.Threading.Tasks;
-using Model.Bots.BotTypes;
-using Model.Files;
-using Model.HttpMessages;
+﻿using System.Threading.Tasks;
+using BotModel.Bots.BotTypes;
+using BotModel.Files;
+using BotModel.HttpMessages;
+using Model.Settings;
+using Web.DL.PageTypes;
 using HttpMessagesFactory = Web.HttpMessages.HttpMessagesFactory;
 
 namespace Web.DL

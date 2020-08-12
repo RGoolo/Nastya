@@ -1,12 +1,11 @@
 ﻿using System;
-using HtmlAgilityPack;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Web.Base;
+using HtmlAgilityPack;
 using Web.Entitiy;
 
-namespace Web.DZR
+namespace Web.DZR.PageTypes
 {
 	public class DzrTask
 	{

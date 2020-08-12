@@ -1,15 +1,15 @@
 ﻿using System.Collections.Generic;
 using System.Net;
 using System.Text;
-using Model.HttpMessages;
-using Model.HttpMessages.Simple;
+using BotModel.HttpMessages;
+using BotModel.HttpMessages.Simple;
 
 
 namespace Web.HttpMessages
 {
-	public class HttpMessagesFactory : Model.HttpMessages.HttpMessagesFactory
+	public class HttpMessagesFactory : BotModel.HttpMessages.HttpMessagesFactory
 	{
-		public static IHttpFullMessages DeadlineThrowAuthorizationMessages() => new Model.HttpMessages.HttpMessages(Model.HttpMessages.HttpMessagesFactory.Messages().AddCookiesMode().AddDlThrowMode());
+		public static IHttpFullMessages DeadlineThrowAuthorizationMessages() => new BotModel.HttpMessages.HttpMessages(BotModel.HttpMessages.HttpMessagesFactory.Messages().AddCookiesMode().AddDlThrowMode());
 
 		public static IHttpFullMessages Dzzzr()
 		{
@@ -32,7 +32,7 @@ namespace Web.HttpMessages
 				new Cookie("dozorSiteSession", "11", "/", ".dzzzr.ru"),
 			};
 
-			return new Model.HttpMessages.HttpMessages(Model.HttpMessages.HttpMessagesFactory.Messages(Encoding.GetEncoding(1251), DecompressionMethods.GZip).AddCustomHeaderMode(customHeaders).AddCookiesMode(startedCookies));
+			return new BotModel.HttpMessages.HttpMessages(BotModel.HttpMessages.HttpMessagesFactory.Messages(Encoding.GetEncoding(1251), DecompressionMethods.GZip).AddCustomHeaderMode(customHeaders).AddCookiesMode(startedCookies));
 		}
 
 	}

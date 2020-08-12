@@ -1,6 +1,6 @@
-﻿using Model.Bots.BotTypes.Class;
+﻿using BotModel.Bots.BotTypes.Class;
 
-namespace Web.DZR
+namespace Web.DZR.PageTypes
 {
 	public class Code
 	{

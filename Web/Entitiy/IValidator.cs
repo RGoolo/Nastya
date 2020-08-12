@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
-using Model.Bots.BotTypes.Interfaces.Ids;
-using Model.Bots.BotTypes.Interfaces.Messages;
-using Model.Logic.Settings;
+using BotModel.Bots.BotTypes.Interfaces.Ids;
+using BotModel.Bots.BotTypes.Interfaces.Messages;
+using Model.Settings;
 
 namespace Web.Entitiy
 {

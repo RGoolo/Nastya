@@ -1,15 +1,13 @@
-﻿using HtmlAgilityPack;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
-using Model.Logger;
-using Web.Base;
-using Web.DL.PageTypes;
+using BotModel.Logger;
+using HtmlAgilityPack;
 using Web.Entitiy;
 
-namespace Web.DL
+namespace Web.DL.PageTypes
 {
 	public static class PageConstructor
 	{

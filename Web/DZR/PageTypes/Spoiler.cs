@@ -1,10 +1,9 @@
-﻿using HtmlAgilityPack;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Text;
 using System.Text.RegularExpressions;
-using Web.Base;
+using HtmlAgilityPack;
 
-namespace Web.DZR
+namespace Web.DZR.PageTypes
 {
 	public class Spoiler
 	{

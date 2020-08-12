@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Text;
-using Model.Bots.BotTypes.Class;
-using Model.Bots.BotTypes.Enums;
-using Model.Bots.BotTypes.Interfaces.Ids;
-using Model.Logic.Model;
-using Model.Logic.Settings;
+using BotModel.Bots.BotTypes.Class;
+using BotModel.Bots.BotTypes.Enums;
+using BotModel.Bots.BotTypes.Interfaces.Ids;
+using BotModel.Exception;
+using Model.Settings;
 using Web.DL.PageTypes;
 using Web.Entitiy;
 

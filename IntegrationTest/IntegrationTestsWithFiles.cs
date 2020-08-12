@@ -1,9 +1,5 @@
-using System;
-using System.Collections.Generic;
-using System.Threading;
+using IntegrationTest.Common;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Model.Bots.BotTypes.Class;
-using Model.Bots.UnitTestBot;
 
 namespace IntegrationTest
 {

@@ -1,8 +1,6 @@
-﻿using System;
-using System.Net;
-using System.Security.Authentication;
+﻿using System.Net;
 using System.Threading.Tasks;
-using Model.HttpMessages.Simple;
+using BotModel.HttpMessages.Simple;
 
 namespace Web.DL
 {

@@ -1,15 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
 using System.Threading.Tasks;
+using BotModel.HttpMessages;
 using HtmlAgilityPack;
-using Model.Bots.BotTypes.Interfaces.Ids;
-using Model.HttpMessages;
-using Model.Logic.Settings;
-using Model.Logic.Films;
 
 namespace Model.Logic.Films
 {

@@ -1,13 +1,8 @@
-﻿using System.IO;
-using System.Linq;
+﻿using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Google.Api.Gax.Grpc;
-using Google.Apis.Auth.OAuth2;
+using BotModel.Files.FileTokens;
 using Google.Cloud.Vision.V1;
-using Grpc.Auth;
-using Grpc.Core;
-using Model.Files.FileTokens;
 
 namespace Model.Logic.Google
 {

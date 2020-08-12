@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using Model.Bots.BotTypes.Class.Ids;
-using Model.Bots.BotTypes.Interfaces.Ids;
-using Model.Bots.CmdBot;
+using BotModel.Bots.BotTypes.Class.Ids;
+using BotModel.Bots.BotTypes.Interfaces.Ids;
+using BotModel.Bots.CmdBot;
 using Xunit;
 
 namespace UnitTest.LoadTest

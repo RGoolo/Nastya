@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Xml;
+using BotModel.Bots.BotTypes.Class;
 
 namespace Model.Logic.Yandex
 {
@@ -92,29 +92,7 @@ namespace Model.Logic.Yandex
 		}
 	}
 
-	public struct GeoPoint
-	{
-		public delegate string ToStringFunc(double x, double y);
-		public double Long, Lat;
-
-		public static GeoPoint Parse(string point)
-		{
-			var splitted = point.Split(new char[] { ' ' }, count: 2);
-			return new GeoPoint(double.Parse(splitted[0], CultureInfo.InvariantCulture), double.Parse(splitted[1], CultureInfo.InvariantCulture));
-		}
-
-		public GeoPoint(double @long, double lat)
-		{
-			Long = @long;
-			Lat = lat;
-		}
-
-		public override string ToString() => $"{Long.ToString(CultureInfo.InvariantCulture)} {Lat.ToString(CultureInfo.InvariantCulture)}";
-		public string ToString(string format) => string.Format(format, Long.ToString(CultureInfo.InvariantCulture), Lat.ToString(CultureInfo.InvariantCulture));
-		public string ToString(ToStringFunc formatFunc) => formatFunc(Long, Lat);
-	}
-
-	public struct GeoBound
+    public struct GeoBound
 	{
 		public GeoPoint LowerCorner, UpperCorner;
 		public GeoBound(GeoPoint lowerCorner, GeoPoint upperCorner)

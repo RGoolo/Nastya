@@ -1,5 +1,5 @@
-﻿using Model.Bots.BotTypes.Interfaces.Ids;
-using Model.Bots.BotTypes.Interfaces.Messages;
+﻿using BotModel.Bots.BotTypes.Interfaces.Ids;
+using BotModel.Bots.BotTypes.Interfaces.Messages;
 
 namespace Web.Entitiy
 {

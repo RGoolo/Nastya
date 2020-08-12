@@ -2,8 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Model.Files.FileTokens;
-using Model.Logic.Settings;
+using BotModel.Bots.BotTypes;
+using BotModel.Files.FileTokens;
+using Model.Settings;
 
 namespace Model.Logic.Coordinates
 {

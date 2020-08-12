@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Model.Files.FileTokens;
-using Model.Logic.Model;
-using ILogger = Model.Logger.ILogger;
+using BotModel.Exception;
+using BotModel.Files.FileTokens;
+using BotModel.Logger;
+using ILogger = BotModel.Logger.ILogger;
 
 namespace Model.Logic.Google
 {
@@ -11,7 +12,7 @@ namespace Model.Logic.Google
 		private readonly string _sheetsUrl;
 		private Sheets _sheets;// ToDo token = new Sheets();
 
-		public ILogger Log = Logger.Logger.CreateLogger(nameof(WorkerSheets));
+		public ILogger Log = Logger.CreateLogger(nameof(WorkerSheets));
 
 		public WorkerSheets(IChatFile fileCred, IChatFile fileToken, string sheetsUrl)
 		{

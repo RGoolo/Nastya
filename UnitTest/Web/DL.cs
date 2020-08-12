@@ -2,11 +2,12 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Model.Bots.BotTypes.Class;
-using Model.Bots.BotTypes.Class.Ids;
-using Model.Bots.BotTypes.Enums;
-using Model.Bots.TelegramBot.Services;
-using Model.Logic.Settings;
+using BotModel.Bots.BotTypes.Class;
+using BotModel.Bots.BotTypes.Class.Ids;
+using BotModel.Bots.BotTypes.Enums;
+using BotModel.Settings;
+using Model.Services;
+using Model.Settings;
 using Web.Base;
 using Web.DL;
 using Web.DL.PageTypes;
@@ -50,7 +51,7 @@ namespace UnitTest.Web
 			var testGuid =new ChatGuid( new Guid("C5121271-CF33-4EFA-B1E0-EE3486B1E724"));
 			var notifications = new CollectionNotification();
 		
-			var settings = SettingsHelper.GetSetting(testGuid);
+			var settings = SettingsHelper<SettingHelper>.GetSetting(testGuid);
 			settings.Clear();
 
 			var _pageController = new PageController(notifications, settings);
@@ -60,7 +61,7 @@ namespace UnitTest.Web
 			var page2 = PageConstructor.GetNewPage(GetFile(nameFirstLvlHtml));
 			_pageController.SetNewPage(page2);
 
-			var text = TexterService.GetNormalizeText(notifications.Messages.First(x => x.Notification == Notification.NewLevel).Text, testGuid);
+			var text = new TexterService().GetNormalizeText(notifications.Messages.First(x => x.Notification == Notification.NewLevel).Text, testGuid);
 			
 			Assert.Equal(page.Bonuses.Count, 0);
 		}

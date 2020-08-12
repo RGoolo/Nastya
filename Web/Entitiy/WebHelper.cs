@@ -1,6 +1,6 @@
 ﻿using System.Text;
 using System.Text.RegularExpressions;
-using Model.Bots.BotTypes.Class;
+using BotModel.Bots.BotTypes.Class;
 using Model.Logic.Google;
 using Model.Logic.Yandex;
 
@@ -42,7 +42,7 @@ namespace Web.Entitiy
 
 			//var coords = PointsFactory.GetCoo (buffText).ToList();
 
-			//var cord = new PointsFactory(new SettingsPoints(), new NetworkCredential(string.Empty, SecurityEnvironment.GetPassword("google_map")).Password, SettingsHelper.FileWorker);
+			//var cord = new PointsFactory(new SettingsPoints(), new NetworkCredential(string.Empty, SecurityEnvironment.GetPassword("google_map")).Password, SettingsHelper<SettingHelper>.FileWorker);
 			var coords = RegExPoints.GetCoords(buffText);
 
 

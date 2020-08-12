@@ -1,25 +1,24 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Security;
-using Model.Bots.BotTypes.Class;
-using Model.Bots.BotTypes.Class.Ids;
-using Model.Bots.BotTypes.Interfaces;
-using Model.Bots.BotTypes.Interfaces.Ids;
-using Model.Bots.BotTypes.Interfaces.Messages;
-using Model.Bots.CmdBot;
-using Model.Bots.TelegramBot.Entity;
-using Model.Bots.UnitTestBot;
+using BotModel.Bots.BotTypes.Class;
+using BotModel.Bots.BotTypes.Class.Ids;
+using BotModel.Bots.BotTypes.Interfaces;
+using BotModel.Bots.BotTypes.Interfaces.Messages;
+using BotModel.Bots.CmdBot;
+using BotModel.Bots.TelegramBot.Entity;
+using Model.Services;
 
-namespace Nastya
+namespace NightGameBot
 {
 	public static class BotsFactory
 	{
-		public static List<IBot<IBotMessage>> Bots()
+		public static List<IBot> Bots()
 		{
-			var bots = new List<IBot<IBotMessage>>
+			var bots = new List<IBot>
 			{
-				new ConcurrentBot<IBotMessage>((IConcurrentBot<IBotMessage>)new CmdBot(new BotGuid(Guid.NewGuid()))),
-                new ConcurrentBot<IBotMessage>((IConcurrentBot<IBotMessage>)new TelegramBot(GetBotToken(), new BotGuid(Guid.NewGuid()))),
+				new ConcurrentBot(new CmdBot(new BotGuid(Guid.NewGuid()))),
+                new ConcurrentBot(new TelegramBot(GetBotToken(), new BotGuid(Guid.NewGuid()), new TexterService())),
 			};
 			
 			return bots;

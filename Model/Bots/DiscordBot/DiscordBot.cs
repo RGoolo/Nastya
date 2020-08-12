@@ -25,8 +25,8 @@
 		private int _offset;
 	
 		private DiscordSocketClient _bot = new DiscordSocketClient(); 
-		private IChatFileWorker _chatFileWorker(Guid chatId) => SettingsHelper.GetSetting(chatId).FileWorker;
-		private IFileWorker _fileWorker => SettingsHelper.FileWorker;
+		private IChatFileWorker _chatFileWorker(Guid chatId) => SettingsHelper<SettingHelper>.GetSetting(chatId).FileWorker;
+		private IFileWorker _fileWorker => SettingsHelper<SettingHelper>.FileWorker;
 
 		public TypeBot TypeBot => TypeBot.Telegram;
 

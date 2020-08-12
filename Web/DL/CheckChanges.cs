@@ -1,9 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using Model.Bots.BotTypes.Class;
-using Model.Bots.BotTypes.Enums;
-using Model.Logic.Settings;
+using BotModel.Bots.BotTypes.Class;
+using BotModel.Bots.BotTypes.Enums;
+using Model.Settings;
 using Web.Base;
 using Web.DL.PageTypes;
 

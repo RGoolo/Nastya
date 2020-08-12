@@ -1,13 +1,11 @@
-﻿using System.Collections.Generic;
-using System;
-using System.Globalization;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Model.Bots.BotTypes.Class;
-using Model.Logic.Settings;
-using Web.DL.PageTypes;
+using BotModel.Bots.BotTypes.Class;
+using Model.Settings;
 
-namespace Web.DL
+namespace Web.DL.PageTypes
 {
 
 	public enum TypeCode

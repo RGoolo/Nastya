@@ -1,17 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading;
-using Model.Bots.BotTypes.Class;
-using Model.Bots.BotTypes.Class.Ids;
-using Model.Bots.BotTypes.Enums;
-using Model.Bots.BotTypes.Interfaces;
-using Model.Bots.BotTypes.Interfaces.Ids;
-using Model.Bots.BotTypes.Interfaces.Messages;
-using Model.Bots.UnitTestBot;
-using Model.Files.FileTokens;
-using Nastya;
+using BotModel.Bots.BotTypes.Class;
+using BotModel.Bots.BotTypes.Class.Ids;
+using BotModel.Bots.BotTypes.Interfaces;
+using BotModel.Bots.BotTypes.Interfaces.Ids;
+using BotModel.Bots.BotTypes.Interfaces.Messages;
+using BotModel.Bots.UnitTestBot;
+using NightGameBot;
 
-namespace IntegrationTest
+namespace IntegrationTest.Common
 {
     public class SimpleMsgBot
     {
@@ -20,7 +18,7 @@ namespace IntegrationTest
         public SimpleMsgBot()
         {
             var unitTestBot = new UnitTestBot(new BotGuid(new Guid()));
-            new Services().StarBots(new List<IBot<IBotMessage>>() { (IBot<IBotMessage>)unitTestBot });
+            new Services().StarBots(new List<IBot>() { (IBot)unitTestBot });
 
             _testBot = unitTestBot;
         }

@@ -1,4 +1,4 @@
-namespace Web.DZR
+namespace Web.DZR.PageTypes
 {
 	public partial class DzrPage
 	{

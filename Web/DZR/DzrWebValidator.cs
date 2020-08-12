@@ -1,8 +1,8 @@
-﻿using System.Linq;
-using System.Text;
+﻿using System.Text;
 using System.Threading.Tasks;
-using Model.HttpMessages;
-using Model.Logic.Settings;
+using BotModel.HttpMessages;
+using Model.Settings;
+using Web.DZR.PageTypes;
 using HttpMessagesFactory = Web.HttpMessages.HttpMessagesFactory;
 
 namespace Web.DZR

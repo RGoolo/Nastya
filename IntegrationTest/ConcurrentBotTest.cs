@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading;
+using BotModel.Bots.BotTypes.Class;
+using BotModel.Bots.BotTypes.Class.Ids;
+using BotModel.Bots.BotTypes.Interfaces;
+using BotModel.Bots.BotTypes.Interfaces.Messages;
+using BotModel.Bots.UnitTestBot;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Model.Bots.BotTypes.Class;
-using Model.Bots.BotTypes.Class.Ids;
-using Model.Bots.BotTypes.Interfaces;
-using Model.Bots.BotTypes.Interfaces.Messages;
-using Model.Bots.UnitTestBot;
-using Nastya;
+using NightGameBot;
 
 namespace IntegrationTest
 {
@@ -18,8 +18,8 @@ namespace IntegrationTest
         public void TestMethod()
         {
             var unitTestBot = new UnitTestConcurrentBot(new BotGuid(new Guid()));
-            var bot = (IBot<IBotMessage>)new ConcurrentBot<UnitTestMessage>(unitTestBot);
-            new Services().StarBots(new List<IBot<IBotMessage>>() {bot });
+            var bot = (IBot)new ConcurrentBot(unitTestBot);
+            new Services().StarBots(new List<IBot>() {bot });
 
             var list = Wait("/start", unitTestBot);
             Assert.IsNotNull(list);

@@ -2,16 +2,14 @@
 using System.Text;
 using System.Timers;
 using System.Threading.Tasks;
-using System.Collections.Generic;
 using System.Collections.Concurrent;
 using System.Threading;
-using Model.Bots.BotTypes.Class;
-using Model.Bots.BotTypes.Enums;
-using Model.Bots.BotTypes.Interfaces.Ids;
-using Model.Bots.BotTypes.Interfaces.Messages;
-using Model.Logic.Model;
-using Model.Logic.Settings;
-using Model.Logger;
+using BotModel.Bots.BotTypes.Class;
+using BotModel.Bots.BotTypes.Enums;
+using BotModel.Bots.BotTypes.Interfaces.Ids;
+using BotModel.Bots.BotTypes.Interfaces.Messages;
+using BotModel.Exception;
+using BotModel.Logger;
 using Web.Entitiy;
 using Timer = System.Timers.Timer;
 

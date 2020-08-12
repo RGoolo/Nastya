@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Net;
-using Model.HttpMessages.Simple;
+﻿using BotModel.HttpMessages.Simple;
 using Web.DL;
 
 namespace Web.HttpMessages

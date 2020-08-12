@@ -1,13 +1,12 @@
 using System;
-using System.Collections.Generic;
-using System.Threading;
+using BotModel.Bots.BotTypes.Class.Ids;
+using BotModel.Bots.BotTypes.Enums;
+using BotModel.Bots.BotTypes.Interfaces;
+using BotModel.Bots.BotTypes.Interfaces.Messages;
+using BotModel.Settings;
+using IntegrationTest.Common;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Model.Bots.BotTypes.Class;
-using Model.Bots.BotTypes.Class.Ids;
-using Model.Bots.BotTypes.Enums;
-using Model.Bots.BotTypes.Interfaces.Messages;
-using Model.Bots.UnitTestBot;
-using Model.Logic.Settings;
+using Model.Settings;
 
 namespace IntegrationTest
 {
@@ -21,8 +20,8 @@ namespace IntegrationTest
         {
             var chatId = new ChatGuid(new Guid());
             
-            var token = SettingsHelper.GetSetting(chatId).FileChatFactory.InternetFile("https://i.pinimg.com/236x/a9/d9/c0/a9d9c035ccfa8066af73cd59829097a7.jpg");
-            IResource res = new Model.Bots.BotTypes.Interfaces.Resource(token, TypeResource.Photo);
+            var token = SettingsHelper<SettingHelper>.GetSetting(chatId).FileChatFactory.InternetFile("https://i.pinimg.com/236x/a9/d9/c0/a9d9c035ccfa8066af73cd59829097a7.jpg");
+            IResource res = new Resource(token, TypeResource.Photo);
             
             var list = _convert.GetMessages("/ttt", chatId, res);
 

@@ -1,13 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
-using Model.Bots.BotTypes.Class;
-using Model.Bots.BotTypes.Interfaces.Ids;
-using Model.Bots.BotTypes.Interfaces.Messages;
-using Model.Logic.Settings;
-using Web.Base;
-using Web.DL.PageTypes;
+using BotModel.Bots.BotTypes.Class;
+using BotModel.Bots.BotTypes.Interfaces.Ids;
+using BotModel.Bots.BotTypes.Interfaces.Messages;
+using Model.Settings;
 using Web.Entitiy;
 
 namespace Web.DL

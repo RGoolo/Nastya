@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text;
-using Model.Bots.BotTypes.Attribute;
-using Model.Bots.BotTypes.Class;
-using Model.Bots.BotTypes.Enums;
-using Model.Bots.BotTypes.Interfaces.Messages;
+using BotModel.Bots.BotTypes.Attribute;
+using BotModel.Bots.BotTypes.Class;
+using BotModel.Bots.BotTypes.Enums;
+using BotModel.Bots.BotTypes.Interfaces.Messages;
 
-namespace Nastya.Commands
+namespace NightGameBot.Commands
 {
 
 	[CommandClass(nameof(HelpCommand), "Помощь:", TypeUser.User)]

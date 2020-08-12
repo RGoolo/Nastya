@@ -1,0 +1,89 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29324.140
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NightGameBot", "Nastya\NightGameBot.csproj", "{CD0F3F73-4490-467F-A7F1-03882CF22682}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Web", "Web\Web.csproj", "{788FD1F9-BAB3-40FC-8522-89581EA72570}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Model", "Model\Model.csproj", "{2D3EB732-E9D8-4404-8D5A-5723DD0446C1}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UnitTest", "UnitTest\UnitTest.csproj", "{9593E12C-DEEC-43D8-8F79-50A189B01B99}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{69A67F3A-E805-418D-8E4B-6C6D716D9516}"
+	ProjectSection(SolutionItems) = preProject
+		LICENSE = LICENSE
+		README.md = README.md
+		todo.txt = todo.txt
+	EndProjectSection
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WordService", "WordService\WordService.csproj", "{18660E8D-F062-4E16-89E7-86BCEB4668A3}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IntegrationTest", "IntegrationTest\IntegrationTest.csproj", "{E7B3F3CA-9695-46C8-B4F9-5C230476F868}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Scripts", "Scripts", "{F674E14A-0CA9-4865-9513-E2E4D5409840}"
+	ProjectSection(SolutionItems) = preProject
+		Scripts\configure_server.ps1 = Scripts\configure_server.ps1
+		Scripts\copy_to_server.ps1 = Scripts\copy_to_server.ps1
+		CreateSelfContainer.ps1 = CreateSelfContainer.ps1
+		Scripts\run.ps1 = Scripts\run.ps1
+		Scripts\shh_conection.ps1 = Scripts\shh_conection.ps1
+	EndProjectSection
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebServerOAuth", "WebServerOAuth\WebServerOAuth.csproj", "{F98A6D05-A3A3-46E6-B497-6FE2B7DB0102}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BotService", "BotService\BotService\BotService.csproj", "{B987CC81-005C-4AFC-BA6A-5E960BB6B027}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BotModel", "BotService\BotModelService\BotModel.csproj", "{C3DD5453-DE14-487E-BF85-BD87379CCCDF}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{CD0F3F73-4490-467F-A7F1-03882CF22682}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CD0F3F73-4490-467F-A7F1-03882CF22682}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CD0F3F73-4490-467F-A7F1-03882CF22682}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CD0F3F73-4490-467F-A7F1-03882CF22682}.Release|Any CPU.Build.0 = Release|Any CPU
+		{788FD1F9-BAB3-40FC-8522-89581EA72570}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{788FD1F9-BAB3-40FC-8522-89581EA72570}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{788FD1F9-BAB3-40FC-8522-89581EA72570}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{788FD1F9-BAB3-40FC-8522-89581EA72570}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2D3EB732-E9D8-4404-8D5A-5723DD0446C1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2D3EB732-E9D8-4404-8D5A-5723DD0446C1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2D3EB732-E9D8-4404-8D5A-5723DD0446C1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2D3EB732-E9D8-4404-8D5A-5723DD0446C1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9593E12C-DEEC-43D8-8F79-50A189B01B99}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9593E12C-DEEC-43D8-8F79-50A189B01B99}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9593E12C-DEEC-43D8-8F79-50A189B01B99}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9593E12C-DEEC-43D8-8F79-50A189B01B99}.Release|Any CPU.Build.0 = Release|Any CPU
+		{18660E8D-F062-4E16-89E7-86BCEB4668A3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{18660E8D-F062-4E16-89E7-86BCEB4668A3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{18660E8D-F062-4E16-89E7-86BCEB4668A3}.Release|Any CPU.ActiveCfg = Release|x86
+		{18660E8D-F062-4E16-89E7-86BCEB4668A3}.Release|Any CPU.Build.0 = Release|x86
+		{E7B3F3CA-9695-46C8-B4F9-5C230476F868}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E7B3F3CA-9695-46C8-B4F9-5C230476F868}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E7B3F3CA-9695-46C8-B4F9-5C230476F868}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E7B3F3CA-9695-46C8-B4F9-5C230476F868}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F98A6D05-A3A3-46E6-B497-6FE2B7DB0102}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F98A6D05-A3A3-46E6-B497-6FE2B7DB0102}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F98A6D05-A3A3-46E6-B497-6FE2B7DB0102}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F98A6D05-A3A3-46E6-B497-6FE2B7DB0102}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B987CC81-005C-4AFC-BA6A-5E960BB6B027}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B987CC81-005C-4AFC-BA6A-5E960BB6B027}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B987CC81-005C-4AFC-BA6A-5E960BB6B027}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B987CC81-005C-4AFC-BA6A-5E960BB6B027}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C3DD5453-DE14-487E-BF85-BD87379CCCDF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C3DD5453-DE14-487E-BF85-BD87379CCCDF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C3DD5453-DE14-487E-BF85-BD87379CCCDF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C3DD5453-DE14-487E-BF85-BD87379CCCDF}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {F4204E40-D2BD-4392-97A8-B59FABC4D4DA}
+	EndGlobalSection
+EndGlobal

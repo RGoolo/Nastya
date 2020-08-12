@@ -1,8 +1,7 @@
-﻿using System.Collections.Generic;
-using System.Text;
-using Model.Bots.BotTypes.Class;
-using Model.Logic.Settings;
-using Web.Base;
+﻿using System.Text;
+using BotModel.Bots.BotTypes.Class;
+using Model.Settings;
+using Web.DZR.PageTypes;
 
 namespace Web.DZR
 {

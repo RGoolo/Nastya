@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
-using Model.Logic.Settings;
+using BotModel.Bots.BotTypes;
+using Model.Settings;
 
 namespace Model.Logic.Coordinates
 {

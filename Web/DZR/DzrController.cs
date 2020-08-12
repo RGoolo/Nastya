@@ -3,12 +3,12 @@ using System.Linq;
 using System.Collections.Generic;
 using System.Text;
 using System.Text.RegularExpressions;
-using Model.Bots.BotTypes.Class;
-using Model.Bots.BotTypes.Interfaces.Ids;
-using Model.Bots.BotTypes.Interfaces.Messages;
-using Model.Logic.Settings;
+using BotModel.Bots.BotTypes.Class;
+using BotModel.Bots.BotTypes.Interfaces.Ids;
+using BotModel.Bots.BotTypes.Interfaces.Messages;
+using BotModel.Exception;
+using Model.Settings;
 using Web.Base;
-using Model.Logic.Model;
 using Web.DZR.PageTypes;
 using Web.Entitiy;
 

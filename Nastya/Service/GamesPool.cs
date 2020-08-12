@@ -1,14 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
-using Model.Bots.BotTypes.Class;
-using Model.Bots.BotTypes.Interfaces;
-using Model.Bots.BotTypes.Interfaces.Ids;
-using Model.Bots.BotTypes.Interfaces.Messages;
-using Model.Logic.Model;
-using Model.Logic.Settings;
+using BotModel.Bots.BotTypes.Class;
+using BotModel.Bots.BotTypes.Interfaces;
+using BotModel.Bots.BotTypes.Interfaces.Ids;
+using BotModel.Bots.BotTypes.Interfaces.Messages;
+using BotModel.Exception;
+using Model.Settings;
 using Web.Entitiy;
 
-namespace Nastya.Service
+namespace NightGameBot.Service
 {
 	public class GamesPool
 	{

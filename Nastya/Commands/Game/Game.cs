@@ -1,17 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using BotModel.Bots.BotTypes.Attribute;
+using BotModel.Bots.BotTypes.Class;
+using BotModel.Bots.BotTypes.Enums;
+using BotModel.Bots.BotTypes.Interfaces.Ids;
+using BotModel.Bots.BotTypes.Interfaces.Messages;
+using BotModel.Settings;
+using BotService.Types;
 using Google.Protobuf;
-using Model.Bots.BotTypes.Attribute;
-using Model.Bots.BotTypes.Class;
-using Model.Bots.BotTypes.Enums;
-using Model.Bots.BotTypes.Interfaces.Ids;
-using Model.Bots.BotTypes.Interfaces.Messages;
-using Model.Logic.Settings;
-using Nastya.Service;
+using Model.Settings;
+using NightGameBot.Service;
 using Web.Entitiy;
 
-namespace Nastya.Commands.Game
+namespace NightGameBot.Commands.Game
 {
 	public static class HelpText
 	{
@@ -69,14 +71,14 @@ namespace Nastya.Commands.Game
 		[Command(Const.Game.Site, "Задать адрес игры")]
 		public string Site(IChatId chatId, string url)
 		{
-			var  type = SettingsHelper.GetSetting(chatId).SetUri(url);
+			var  type = SettingsHelper<SettingHelper>.GetSetting(chatId).SetUri(url);
 			return $"type={type}\nurl={url}";
 		}
 
 		[Command(nameof(Const.Game.CopyFromPM), "Скопировать данные по игре с лички (логин, пароль, сайт).", TypeUser.Admin)]
 		public string CopyFromPM(IChatService chatSettings, IUser user)
 		{
-			var userSettings = SettingsHelper.GetSetting(user);
+			var userSettings = SettingsHelper<SettingHelper>.GetSetting(user);
 			chatSettings.Game.Password = userSettings.Game.Password;
 			chatSettings.Game.Login = userSettings.Game.Login;
 			chatSettings.SetUri(userSettings.Game.Site);
@@ -203,7 +205,7 @@ namespace Nastya.Commands.Game
 			GetGame()?.SendCode(code, msg.User, msg.MessageId);
 		}
 
-		// private ISettings SettingHelper => SettingsHelper.GetSetting(ChatId);
+		// private ISettings SettingHelper => SettingsHelper<SettingHelper>.GetSetting(ChatId);
 		private IGame GetGame(Guid? gameId = null, IMessage msg = null, IMessageId messageId = null)
 		{
 			return _game;
