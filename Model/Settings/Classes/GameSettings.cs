@@ -1,4 +1,5 @@
 ﻿using BotModel.Bots.BotTypes.Interfaces.Ids;
+using BotModel.Settings.Classes;
 
 namespace Model.Settings.Classes
 {

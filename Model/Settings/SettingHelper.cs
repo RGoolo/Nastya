@@ -5,12 +5,13 @@ using BotModel.Bots.BotTypes.Interfaces.Ids;
 using BotModel.Exception;
 using BotModel.Files;
 using BotModel.Files.FileTokens;
+using BotModel.Settings;
 using Model.Logic.Coordinates;
 using Model.Settings.Classes;
 
 namespace Model.Settings
 {
-	public class SettingHelper : IChatService, ISettingValues
+	public class SettingHelper : IChatService
 	{
 		private readonly object _lockObj = new object();
 		private IChatFile _settingsFile;
@@ -21,7 +22,7 @@ namespace Model.Settings
 		public Guid GetValueGuid(string name, Guid @default = default) => Settings.GetValueGuid(name.ToLower(), @default);
 		public IMessageId GetIMessageId(string name, IMessageId @default = null) => Settings.GetMessageId(name.ToLower(), @default);
 
-		public Settings Settings { get; private set; }
+		public BotModel.Settings.Settings Settings { get; private set; }
 		public IChatId ChatId  => new ChatGuid(Settings.ChatGuid);
 		public TypeGame TypeGame => Settings.TypeGame;
 		public ISettingsBraille Braille { get; private set; }
@@ -48,34 +49,22 @@ namespace Model.Settings
 			Save();
 		}
 
-		public void Init(IChatId chatId, string directory)
+		public SettingHelper(SettingHelper0 helper0)
 		{
-			FileChatFactory = new ChatFileFactory(chatId, directory); //This 
+			FileChatFactory = helper0.FileChatFactory; //This 
 			_settingsFile = FileChatFactory.SystemFile(SystemChatFile.Settings);
-		
 
+            Settings = helper0.Settings;
 			// FileChatWorker = new LocalChatFileWorker(chatId);
-			Braille = new BrailleSettings(this);
-			Test = new TestSettings(this);
-			Coordinates = new CoordinatesSettings(this);
-			Game = new GameSettings(this);
-			Web = new WebSettings(this);
-			Page = new PageSettings(this);
+			Braille = new BrailleSettings(helper0);
+			Test = new TestSettings(helper0);
+			Coordinates = new CoordinatesSettings(helper0);
+			Game = new GameSettings(helper0);
+			Web = new WebSettings(helper0);
+			Page = new PageSettings(helper0);
 
-			DlGame = new GameDlSettings(this);
-			DzzzrGame = new GameDzzzrSettings(this);
-
-			if (!_settingsFile.Exists())
-			{
-				Settings = new Settings(chatId.GetId);
-				Save();
-			}
-
-			lock (_lockObj)
-			{
-				Settings = _settingsFile.Read<Settings>();
-				Settings.SetDictionary();
-			}
+			DlGame = new GameDlSettings(helper0);
+			DzzzrGame = new GameDzzzrSettings(helper0);
 
 			PointsFactory = new PointsFactory(this);
 		}

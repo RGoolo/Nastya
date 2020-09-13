@@ -80,7 +80,7 @@ namespace Web.DL
 				{
 					foreach (var msg in CheckChanges.Time(page, _lastPage))
 						SendMsg(msg);
-
+					
 					foreach (var msg in CheckChanges.Hints(page, _lastPage))
 						SendMsg(msg);
 

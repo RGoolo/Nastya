@@ -26,7 +26,10 @@ namespace NightGameBot.Commands.Google
 		}
 
 		[Command("CheckVision", "Расшифровывать текст с фото.")]
-		public Task<string> IsCheckVisionMsg { get; set; }
+		public bool IsCheckVisionMsg { get; set; }
+
+        [Command("CheckVisionBot", "Расшифровывать текст с фото присланные ботом.")]
+        public bool IsCheckVisionMsgForBot { get; set; }
 
 		[Command("text", "Получить текст с изображения.", resource: TypeResource.Photo)]
 		public Task<string> GetText(IChatFile token, IChatFileFactory factory) => ConvertToText(Vision.GetTextAsync, token, factory);
@@ -43,12 +46,19 @@ namespace NightGameBot.Commands.Google
 		[Command("imgdoc", "Получить список Landmark с изображения.", resource: TypeResource.Photo)]
 		public Task<string> GetDoc(IChatFile token, IChatFileFactory factory) => ConvertToText(Vision.GetDocAsync, token, factory);
 
-		[CommandOnMsg(nameof(GetTextMsg), MessageType.Photo, typeUser: TypeUser.User)]
+		[CommandOnMsg(nameof(IsCheckVisionMsg), MessageType.Photo, typeUser: TypeUser.User)]
 		public async Task<string> GetTextMsg(IBotMessage msg, IChatFileFactory factory)
 		{
 			if (msg.Resource == null) return null;
             return await GetText(msg.Resource.File, factory);
 		}
+
+        [CommandOnMsg(nameof(IsCheckVisionMsgForBot), MessageType.Photo, typeUser: TypeUser.Bot)]
+        public async Task<string> GetTextMsg2(IBotMessage msg, IChatFileFactory factory)
+        {
+            if (msg.Resource == null) return null;
+            return await GetText(msg.Resource.File, factory);
+        }
 
 		private async Task<string> ConvertToText(Func<IChatFile, IChatFileFactory, Task<string>> toText, IChatFile token, IChatFileFactory factory)
 		{

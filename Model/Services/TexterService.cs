@@ -21,7 +21,7 @@ namespace Model.Services
 			{
 				if (text.ReplaceCoordinates)
 				{
-					var set = SettingsHelper<SettingHelper>.GetSetting(chatId);
+					var set = SettingsHelper.GetChatService(chatId);
 					var points = set.PointsFactory.GetCoordinates(text.Text);
 					text.Replace(points.ReplacePoints(), true);
 				}

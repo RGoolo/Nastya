@@ -4,6 +4,7 @@ using BotModel.Bots.BotTypes;
 using BotModel.Bots.BotTypes.Class;
 using BotModel.Bots.BotTypes.Class.Ids;
 using BotModel.Settings;
+using Model;
 using Model.Settings;
 using Xunit;
 using Xunit.Abstractions;
@@ -26,7 +27,7 @@ namespace UnitTest.GoogleApi
 		public void Test()
 		{
 			var password = SecurityEnvironment.GetTextPassword("google", "maps", "token");
-			var settings = SettingsHelper<SettingHelper>.GetSetting(new ChatGuid(TestGuid));
+			var settings = SettingsHelper.GetChatService(new ChatGuid(TestGuid));
 			settings.Clear();
 			
 			var file = settings.FileChatFactory.NewResourcesFileByExt(".jpg");

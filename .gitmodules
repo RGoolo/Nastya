@@ -4,3 +4,6 @@
 [submodule "BotService"]
 	path = BotService
 	url = https://github.com/RGoolo/BotService.git
+[submodule "opencvsharp"]
+	path = opencvsharp
+	url = https://github.com/shimat/opencvsharp.git

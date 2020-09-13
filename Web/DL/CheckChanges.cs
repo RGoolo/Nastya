@@ -12,13 +12,13 @@ namespace Web.DL
 	{
 		public static List<IMessageToBot> Hints(DLPage page, DLPage lastPage)
 		{
+			var msg = new List<IMessageToBot>();
 			if (page.Hints == null || page.Hints.IsEmpty)
-				return null;
+				return msg;
 
 			if (lastPage.Hints == null || lastPage.Hints.IsEmpty)
-				return null;
+				return msg;
 
-			var msg = new List<IMessageToBot>();
 			foreach (var pageHint in page.Hints)
 			{
 				var lastHint = lastPage.Hints.GetById(pageHint.Number);
@@ -39,10 +39,10 @@ namespace Web.DL
 			var msg = new List<IMessageToBot>();
 
 			if (BaseCheckChanges.IsBorderValue(page.TimeToEnd, lastPage.TimeToEnd, 300))
-				msg.Add(MessageToBot.GetTextMsg("⏳ Осталось: " + page.TimeToEnd.Value.ToString("HH: mm:ss")));
+				msg.Add(MessageToBot.GetTextMsg("⏳ Осталось: " + page.TimeToEnd?.ToString("c")));
 
 			if (BaseCheckChanges.IsBorderValue(page.TimeToEnd, lastPage.TimeToEnd, 60))
-				msg.Add(MessageToBot.GetTextMsg($"⏳ Осталось: " + page.TimeToEnd.Value.ToString("HH: mm:ss")));
+				msg.Add(MessageToBot.GetTextMsg($"⏳ Осталось: " + page.TimeToEnd?.ToString("c")));
 
 			foreach (var newHint in page.Hints)
 			{

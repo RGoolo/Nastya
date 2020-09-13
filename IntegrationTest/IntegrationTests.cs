@@ -20,7 +20,7 @@ namespace IntegrationTest
         {
             var chatId = new ChatGuid(new Guid());
             
-            var token = SettingsHelper<SettingHelper>.GetSetting(chatId).FileChatFactory.InternetFile("https://i.pinimg.com/236x/a9/d9/c0/a9d9c035ccfa8066af73cd59829097a7.jpg");
+            var token = SettingsHelper0.GetChatService0(chatId).FileChatFactory.InternetFile("https://i.pinimg.com/236x/a9/d9/c0/a9d9c035ccfa8066af73cd59829097a7.jpg");
             IResource res = new Resource(token, TypeResource.Photo);
             
             var list = _convert.GetMessages("/ttt", chatId, res);

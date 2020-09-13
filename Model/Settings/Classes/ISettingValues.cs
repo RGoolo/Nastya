@@ -3,7 +3,7 @@ using BotModel.Bots.BotTypes.Interfaces.Ids;
 
 namespace Model.Settings.Classes
 {
-	public interface ISettingValues
+	public interface ISettingValues123123123
 	{
 		void SetValue(string name, string value);
 		string GetValue(string name, string @default = default(string));

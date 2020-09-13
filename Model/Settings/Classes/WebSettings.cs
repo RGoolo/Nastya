@@ -1,4 +1,6 @@
-﻿namespace Model.Settings.Classes
+﻿using BotModel.Settings.Classes;
+
+namespace Model.Settings.Classes
 {
 	public class WebSettings : SettingValues2, ISettingsWeb
 	{

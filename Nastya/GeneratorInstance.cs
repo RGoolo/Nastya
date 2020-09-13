@@ -7,6 +7,7 @@ using BotModel.Bots.BotTypes.Attribute;
 using BotModel.Bots.BotTypes.Interfaces.Ids;
 using BotModel.Settings;
 using BotService.Types;
+using Model;
 using Model.Settings;
 
 namespace NightGameBot
@@ -23,7 +24,7 @@ namespace NightGameBot
         private static object CreateInstance(Type type, ISendMessages messages, IChatId chatId)
         {
             //ToDo FirstOrDefault?
-            var settings = SettingsHelper<SettingHelper>.GetSetting(chatId);
+            var settings = SettingsHelper.GetChatService(chatId);
 
             var ctors = type.GetConstructors();
             var ctor = ctors.First();

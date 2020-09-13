@@ -17,7 +17,8 @@ namespace NightGameBot
 	class Program
 	{
 		static void Main(string[] args)
-		{
+        {
+            new Random().Next();
             try
             {
                 new Services().Start().Wait();
@@ -43,10 +44,10 @@ namespace NightGameBot
             var appConfig = config.GetSection("main").Get<Configuration>();
 
             if (!string.IsNullOrEmpty(appConfig.SettingsPath))
-                SettingsHelper<SettingHelper>.Directory = appConfig.SettingsPath;
+                SettingsHelper0.Directory = appConfig.SettingsPath;
 
             Console.WriteLine($"{nameof(Environment.SpecialFolder.ApplicationData)}: {Environment.SpecialFolder.ApplicationData}");
-            Console.WriteLine($"{nameof(SettingsHelper<SettingHelper>.Directory)}: {SettingsHelper<SettingHelper>.Directory}");
+            Console.WriteLine($"{nameof(SettingsHelper0.Directory)}: {SettingsHelper0.Directory}");
 
             if (!string.IsNullOrEmpty(appConfig.LogPath))
                 Logger.FileLog = Path.Combine(appConfig.LogPath, $"log_{DateTime.Now.ToString(Format)}.txt");
@@ -58,7 +59,7 @@ namespace NightGameBot
         private void ConfigureTest()
         {
             var tempFolder = Guid.NewGuid().ToString();
-            SettingsHelper<SettingHelper>.Directory = Path.Combine(Path.GetTempPath(), tempFolder,  "Resources");
+            SettingsHelper0.Directory = Path.Combine(Path.GetTempPath(), tempFolder,  "Resources");
             Logger.FileLog = Path.Combine(Path.GetTempPath(), tempFolder, "Log", $"log_{DateTime.Now}.txt");
 
             Console.OutputEncoding = Encoding.UTF8;

@@ -92,6 +92,8 @@ namespace Web.DL
 				try
 				{
 					await _httpMessages.GetText(LoginUrl(), LoginContext);
+					await _httpMessages.GetText(LoginUrl(), LoginContext);
+					await _httpMessages.GetText(CreateUrl());
 				}
 				catch
 				{

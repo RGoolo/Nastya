@@ -4,6 +4,7 @@ using BotModel.Bots.BotTypes.Enums;
 using BotModel.Bots.BotTypes.Interfaces.Ids;
 using BotModel.Bots.BotTypes.Interfaces.Messages;
 using BotModel.Settings;
+using Model;
 using Model.Settings;
 
 namespace NightGameBot.Commands
@@ -17,7 +18,7 @@ namespace NightGameBot.Commands
 		[Command(nameof(Clear), "Очистить настройки.")]
 		public string Clear(IChatId chatId)
 		{
-			SettingsHelper<SettingHelper>.GetSetting(chatId).Clear();
+			SettingsHelper.GetChatService(chatId).Clear();
 			return "Настройки сброшены";
 		}
 

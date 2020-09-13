@@ -6,6 +6,7 @@ using BotModel.Bots.BotTypes.Class;
 using BotModel.Bots.BotTypes.Class.Ids;
 using BotModel.Bots.BotTypes.Enums;
 using BotModel.Settings;
+using Model;
 using Model.Services;
 using Model.Settings;
 using Web.Base;
@@ -51,7 +52,7 @@ namespace UnitTest.Web
 			var testGuid =new ChatGuid( new Guid("C5121271-CF33-4EFA-B1E0-EE3486B1E724"));
 			var notifications = new CollectionNotification();
 		
-			var settings = SettingsHelper<SettingHelper>.GetSetting(testGuid);
+			var settings = SettingsHelper.GetChatService(testGuid);
 			settings.Clear();
 
 			var _pageController = new PageController(notifications, settings);

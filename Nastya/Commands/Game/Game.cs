@@ -9,6 +9,7 @@ using BotModel.Bots.BotTypes.Interfaces.Messages;
 using BotModel.Settings;
 using BotService.Types;
 using Google.Protobuf;
+using Model;
 using Model.Settings;
 using NightGameBot.Service;
 using Web.Entitiy;
@@ -71,14 +72,14 @@ namespace NightGameBot.Commands.Game
 		[Command(Const.Game.Site, "Задать адрес игры")]
 		public string Site(IChatId chatId, string url)
 		{
-			var  type = SettingsHelper<SettingHelper>.GetSetting(chatId).SetUri(url);
+			var  type = SettingsHelper.GetChatService(chatId).SetUri(url);
 			return $"type={type}\nurl={url}";
 		}
 
 		[Command(nameof(Const.Game.CopyFromPM), "Скопировать данные по игре с лички (логин, пароль, сайт).", TypeUser.Admin)]
 		public string CopyFromPM(IChatService chatSettings, IUser user)
 		{
-			var userSettings = SettingsHelper<SettingHelper>.GetSetting(user);
+			var userSettings = SettingsHelper.GetChatService(user);
 			chatSettings.Game.Password = userSettings.Game.Password;
 			chatSettings.Game.Login = userSettings.Game.Login;
 			chatSettings.SetUri(userSettings.Game.Site);
@@ -202,7 +203,7 @@ namespace NightGameBot.Commands.Game
 		[Command(nameof(Code), "Отправить код", TypeUser.User)]
 		public void Code(IBotMessage msg, string code)
 		{
-			GetGame()?.SendCode(code, msg.User, msg.MessageId);
+			GetGame()?.SendCode("." + code, msg.User, msg.MessageId); //Todo replace point
 		}
 
 		// private ISettings SettingHelper => SettingsHelper<SettingHelper>.GetSetting(ChatId);
@@ -256,8 +257,8 @@ namespace NightGameBot.Commands.Game
                 text = msg.Text.Substring(3).Replace(" ", "");
             
 			if (!string.IsNullOrEmpty(text))
-                GetGame()?.SendCode(text, msg.User, msg.MessageId);
-        }
+                GetGame()?.SendCode("." + text, msg.User, msg.MessageId); //ToDo remove point
+		}
 
 		public bool CheckSystemMsg => true;
 
