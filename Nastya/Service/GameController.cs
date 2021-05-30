@@ -103,7 +103,6 @@ namespace NightGameBot.Service
 				_senders.FirstOrDefault(s => Equals(s.ChatId, message.EditMsg.ChatId))?.Send(message);
 				return;
 			}
-
 		}
 	}
 }

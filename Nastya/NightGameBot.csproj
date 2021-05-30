@@ -3,13 +3,14 @@
   <PropertyGroup>
 	<OutputType>Exe</OutputType>
 	<LangVersion>preview</LangVersion>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFramework>net5.0</TargetFramework>
     <UserSecretsId>8ea83efa-765f-4c01-8a6c-3a9ded267749</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
 	<ProjectReference Include="..\BotService\BotModelService\BotModel.csproj" />
 	<ProjectReference Include="..\BotService\BotService\BotService.csproj" />
+	<ProjectReference Include="..\GoogleApi\GoogleApi\GoogleApi.csproj" />
 	<ProjectReference Include="..\Model\Model.csproj" />
 	<ProjectReference Include="..\Web\Web.csproj" />
   </ItemGroup>

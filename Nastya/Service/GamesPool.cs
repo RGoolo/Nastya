@@ -12,7 +12,7 @@ namespace NightGameBot.Service
 {
 	public class GamesPool
 	{
-		private static Dictionary<Guid, GameController> _games = new Dictionary<Guid, GameController>();
+		private static readonly Dictionary<Guid, GameController> _games = new Dictionary<Guid, GameController>();
 		private static IMessageId _messageId;
 		private static IChatService _mainGameSettings;
 

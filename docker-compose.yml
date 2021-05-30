@@ -1,0 +1,33 @@
+version: '3.4'
+
+services:
+  postgresql:
+    image: postgres:12
+    restart: always
+    ports:
+      - "9091:5432"
+    environment:
+      POSTGRES_USER: postgresql
+      POSTGRES_PASSWORD: postgresql
+      POSTGRES_DB: postgresql
+
+  pgadmin:
+    image: dpage/pgadmin4
+    depends_on:
+      - postgresql
+    ports:
+      - "9092:80"
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@test.com
+      PGADMIN_DEFAULT_PASSWORD: 123qwe
+
+  blazorserver:
+    image: ${DOCKER_REGISTRY-}blazorserver
+    build:
+      context: .
+      dockerfile: BlazorServer/Dockerfile
+    depends_on:
+      - postgresql
+    links:
+      - postgresql

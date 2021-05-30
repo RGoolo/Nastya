@@ -30,7 +30,7 @@ namespace Web.DL.PageTypes
 			
 			page.Type = PageType(contentBlock, htmlDocument.DocumentNode);
 			
-			if (page.Type != TypePage.InProcess && page.Type != TypePage.NotStarted)
+			if (page.Type == TypePage.InProcess || page.Type == TypePage.NotStarted)
 				return page;
 
 			page.LevelTitle = LevelTitle(contentBlock);

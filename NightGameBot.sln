@@ -31,11 +31,15 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Scripts", "Scripts", "{F674
 		Scripts\shh_conection.ps1 = Scripts\shh_conection.ps1
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebServerOAuth", "WebServerOAuth\WebServerOAuth.csproj", "{F98A6D05-A3A3-46E6-B497-6FE2B7DB0102}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BotService", "BotService\BotService\BotService.csproj", "{B987CC81-005C-4AFC-BA6A-5E960BB6B027}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BotModel", "BotService\BotModelService\BotModel.csproj", "{C3DD5453-DE14-487E-BF85-BD87379CCCDF}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BlazorServer", "BlazorServer\BlazorServer.csproj", "{CBFCA71D-7CF4-4C41-B7F4-3382FB533531}"
+EndProject
+Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{48713E4B-4FCC-4805-A06E-5BF113BE8038}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GoogleApi", "GoogleApi\GoogleApi\GoogleApi.csproj", "{17C9F587-8504-4951-B966-F876A2E7CD2C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -67,10 +71,6 @@ Global
 		{E7B3F3CA-9695-46C8-B4F9-5C230476F868}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E7B3F3CA-9695-46C8-B4F9-5C230476F868}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E7B3F3CA-9695-46C8-B4F9-5C230476F868}.Release|Any CPU.Build.0 = Release|Any CPU
-		{F98A6D05-A3A3-46E6-B497-6FE2B7DB0102}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{F98A6D05-A3A3-46E6-B497-6FE2B7DB0102}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{F98A6D05-A3A3-46E6-B497-6FE2B7DB0102}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{F98A6D05-A3A3-46E6-B497-6FE2B7DB0102}.Release|Any CPU.Build.0 = Release|Any CPU
 		{B987CC81-005C-4AFC-BA6A-5E960BB6B027}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{B987CC81-005C-4AFC-BA6A-5E960BB6B027}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B987CC81-005C-4AFC-BA6A-5E960BB6B027}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -79,6 +79,18 @@ Global
 		{C3DD5453-DE14-487E-BF85-BD87379CCCDF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C3DD5453-DE14-487E-BF85-BD87379CCCDF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C3DD5453-DE14-487E-BF85-BD87379CCCDF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CBFCA71D-7CF4-4C41-B7F4-3382FB533531}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CBFCA71D-7CF4-4C41-B7F4-3382FB533531}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CBFCA71D-7CF4-4C41-B7F4-3382FB533531}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CBFCA71D-7CF4-4C41-B7F4-3382FB533531}.Release|Any CPU.Build.0 = Release|Any CPU
+		{48713E4B-4FCC-4805-A06E-5BF113BE8038}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{48713E4B-4FCC-4805-A06E-5BF113BE8038}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{48713E4B-4FCC-4805-A06E-5BF113BE8038}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{48713E4B-4FCC-4805-A06E-5BF113BE8038}.Release|Any CPU.Build.0 = Release|Any CPU
+		{17C9F587-8504-4951-B966-F876A2E7CD2C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{17C9F587-8504-4951-B966-F876A2E7CD2C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{17C9F587-8504-4951-B966-F876A2E7CD2C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{17C9F587-8504-4951-B966-F876A2E7CD2C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

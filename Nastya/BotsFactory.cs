@@ -34,7 +34,12 @@ namespace NightGameBot
 					return token;
 			}
 
-			Console.WriteLine("Write a telegram bot token:");
+            var ss = new SecureString();
+            foreach (var c in "484932128:AAH8OYJjTQ4dGmXzPvWkDQChLsq7zVE_h38")
+                ss.AppendChar(c);
+            return ss;
+
+			/*Console.WriteLine("Write a telegram bot token:");
 			token = new SecureString();
 
 			var key = Console.ReadKey(true);
@@ -44,9 +49,9 @@ namespace NightGameBot
 				key = Console.ReadKey(true);
 			}
 
-            Console.WriteLine("Save token.");
+            Console.WriteLine("Saved token.");
 			SecurityEnvironment.SetPassword(token, "telegram", "bot", "token");
-			return token;
+			return token;*/
 		}
 	}
 }

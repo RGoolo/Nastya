@@ -7,3 +7,6 @@
 [submodule "opencvsharp"]
 	path = opencvsharp
 	url = https://github.com/shimat/opencvsharp.git
+[submodule "GoogleApi"]
+	path = GoogleApi
+	url = https://github.com/vivet/GoogleApi.git

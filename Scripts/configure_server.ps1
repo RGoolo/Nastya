@@ -25,4 +25,4 @@ ssh  -p $Port $User@$ComputerName "sudo apt-get install apt-transport-https"
 
 
 ssh  -p $Port $User@$ComputerName "sudo apt-get update"
-ssh  -p $Port $User@$ComputerName "sudo apt-get install dotnet-sdk-3.1"
+ssh  -p $Port $User@$ComputerName "sudo apt-get install dotnet-sdk-5.0"
